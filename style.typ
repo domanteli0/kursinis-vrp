@@ -38,6 +38,15 @@
   set page(numbering: (page_num, ..ns) => { if page_num == 1 { "" } else { str(page_num) } })
   set page(number-align: right)
 
+  set quote(block: true)
+  show quote: it => block(
+    width: 100%,
+    stroke: (left: 2pt + black), // Adds a black line on the right
+    inset: (right: 1em),         // Adds some space between text and line
+    spacing: 1em,  // Adjust this value as needed
+    [_#{it}_]
+  )
+
   // Title page
   page(
     align(center)[

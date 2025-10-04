@@ -1,17 +1,23 @@
-#let cite-with-title(bibitem) = {
-  bibitem.element
-  // let bib = bibtex.find(bibitem)
-  // let title = bib.title
-  // let shorthand = cite(bibitem)
+#import "@preview/citegeist:0.2.0": load-bibliography
 
-  // "„" + title + "“ " + shorthand
+#let bibtex_string = read("bibliography.bib")
+#let bib = load-bibliography(bibtex_string)
+
+#let cite-with-title(bibitem) = {
+  let key = bib.keys().find(key => key == str(bibitem))
+  let entry_fields = bib.at(key).at("fields")
+
+  "\"" + entry_fields.title + "\" " + ref(bibitem) + " (" + entry_fields.year + ")"
 }
 
-#let c(bibitem) = cite-with-title(bibitem)
+#let c = cite-with-title
+#let q(a: "", b: true, body) = {
+  quote(attribution: a, block: b)[#body]
+}
 
 // ----------------- //
 #let tab = "    "
 
 // ----------------- //
-// #let todo(body) = text(fill: COLOR)[#body] // todo: red color
 #let todo(body) = highlight(fill: red.lighten(50%))[#body]
+#let note(body) = highlight(fill: yellow.lighten(50%))[#body]
