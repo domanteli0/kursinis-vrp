@@ -1,5 +1,5 @@
 #import "style.typ": style
-#import "utils.typ": c, q, tab, todo
+#import "utils.typ": c, q, tab, todo, mine, note, angl, angl_
 
 #show: style.with(
   university: "Vilniaus universitetas",
@@ -40,67 +40,69 @@ Galimi #todo[constraints], kuriuos galima uždėti ant VRP problemų:
 
 == Metodai
 
-#todo[
-- Matematinis modeliavimas (google or-tools)
-- Heuristic -- A problem-specific rule or method to quickly find a good (not necessarily optimal) solution.
-  https://chatgpt.com/share/68b3151a-85a8-800e-9cc6-3558041fe679
-- Metaheuristic -- A higher-level strategy/framework that guides heuristics to explore solutions more effectively.
-  https://chatgpt.com/share/68b3151a-85a8-800e-9cc6-3558041fe679
+- Exact methods / Mathematical models (google or-tools)
+- Heuristic -- #todo[A problem-specific rule or method to quickly find a good (not necessarily optimal) solution.]
+- Metaheuristic -- #todo[A higher-level strategy/framework that guides heuristics to explore solutions more effectively.]
 
-  - Adaptive Large Neighborhood Search
+  - Adaptive Large Neighborhood Search / Hybrid Adaptive Large Neighborhood Search
     \ 🛠️ https://reinterpretcat.github.io/vrp/
 
-    - Hybrid Adaptive Large Neighborhood Search
-
   - Hybrid Genetic Search (HGS)
+    \ 🛠️ https://github.com/vidalt/HGS-CVRP
     \ 🛠️ https://pyvrp.org/
-]
 
-== Konkursai ir #todo[sprendimų/įrankių?] palyginimai
+  - Simulated Annealing Algorithm (SAA)
+
+  - Ant colony optimization (ACO)
+
+== Konkursai
 
 - DIMACS @dimacs2022vrp
-- #todo[the Amazon Last Mile Routing Research
-Challenge (Amazon last mile routing, 2021),
-where a specific problem was tackled, namely,
-the challenge of embedding driver knowledge
-into route optimisation;]
+- #c(<AmazonChallengeDataSet>) #todo[TODO: properly cite the challenge, not just the dataset]
+- #todo[EURO meets NeurIPS 2022 vehicle routing competition]
 
 == Įrankiai
 
+#note[
 - Matrix
   - OSMR
   - GraphHopper
   - Valhalla
   - BRouter
-- Routing
-  - https://pgrouting.org/
-
-  - PyVRP
-    \ supports CVRP, VRPTW
-
-  - RouteOpt
-    \ RouteOpt: An Open-Source Modular Exact Solver for Vehicle Routing Problems (2025)
 
 - Simulation
   https://roadsimulator3.fr/these/chapters/chapitre00.html
-
-
-Hibridinis genetinis paieškos (HGS) algoritmas yra vienas iš efektyviausių būdų spręsti transporto maršrutų optimizavimo uždavinius.
+]
 
 #pagebreak()
+
+Hibridinis genetinis paieškos (HGS) algoritmas yra vienas iš efektyviausių būdų spręsti transporto maršrutų optimizavimo uždavinius. #todo[[Citation needed?]]
+
 Pirma aprašytas #c(<vidal2012A_Hybr>).
 - #q(a: <vidal2012A_Hybr>)[#image("img/Screenshot From 2025-09-27 23-07-08.png")]
 - #q(a: <vidal2012A_Hybr>)[HGSADC proves to be extremely competitive CVRP.]
 - maintains diversity in search -> avoids local minima ir dar aukštesnės kokybės sprendimai ir reduced computational time.
 
-#pagebreak()
-Esminis patogulinimas - @vidal2022Hybrid.
+\ \
+Per daugelį iteracijų patobulintas aprašytas #c(<vidal2022Hybrid>).
+- #q(a: <vidal2022Hybrid>)[the generalization of this method into a unified algorithm for the vehicle routing problem (VRP) family (Vidal et al., 2014, 2016; Vidal, 2017; Vidal et al., 2021)]
+- #q(a: <vidal2022Hybrid>)[Beyond a simple reimplementation of the original algorithm, HGS-
+CVRP takes advantage of several lessons learned from the past decade
+of VRP studies: it relies on simple data structures to avoid move re-
+evaluations and uses the optimal linear-time Split algorithm of Vidal
+(2016). Moreover, its specialization to the CVRP permits significant
+methodological simplifications. In particular, it does not rely on the visit-pattern improvement (PI) operator (Vidal et al., 2012) originally
+designed for VRPs with multiple periods, and uses instead a new neigh-
+borhood called Swap\*.]
+- #q(a: <vidal2022Hybrid>)[In HGS-CVRP, we rely on the efficient linear-time Split algorithm introduced by Vidal (2016) #mine[@VIDAL2016] after each crossover operation.]
+  \ #todo[TODO: #c(<VIDAL2016>)]
+- naudoja #todo[#c(<UCHOA2017845>)] metodiką rezultatų palyginimui
 
-#todo[įvadas]
+#pagebreak()
 
 == Tikslas ir uždaviniai
 
-*Tikslas* - Išlygiagretinti hibridinio genetinio paieškos algoritmą, skirto transporto maršrutų optimizavimo uždaviniams spręsti.
+*Tikslas* -- Išlygiagretinti hibridinio genetinio paieškos algoritmą, skirto transporto maršrutų optimizavimo uždaviniams spręsti.
 
 *Uždavinai:*
 
@@ -114,20 +116,20 @@ Esminis patogulinimas - @vidal2022Hybrid.
 3. Atrinkti paralelizuojamas dalis, ar dalis, kurias galima galima pakeisti paralelizuojamomis
 3. Palyginti rezultatus su kitais state-of-the-art algoritmais
 
-= Abreviations
+= Santrumpos
 
-- VRP - Vechicle Routing Problem.
-- #todo[CVRP - Capacitated Vehicle Routing Problem.]
-- VRPTW - VRP with Time Windows.
-- MVRP - multidepot VRP
-- PVRP - periodic VRP
+- VRP - #angl_[Vechicle Routing Problem].
+- CVRP - #angl_[Capacitated Vehicle Routing Problem].
+- VRPTW - #angl_[VRP with Time Windows].
+- MVRP - #angl_[Multidepot VRP].
+- PVRP - #angl_[Periodic VRP].
   #q(a: [https://neo.lcc.uma.es/vrp/vrp-flavors/periodic-vrp/])[In classical VRPs, typically the planning period is a single day. In the case of the Period Vehicle Routing Problem (PVRP), the classical VRP is generalized by extending the planning period to M days.]
-- MDVRP - multidepot periodic MDPVRP
+- MDPVRP - #angl_[Multidepot Periodic VRP].
 - #todo[CVRP with Backhauls]
 
 = Matematinis formulavimas
 
-#todo[TODO: matematikai aprašyti problemą ir siekiamą tikslą.]
+#todo[TODO]
 
 = Notes
 
@@ -135,6 +137,13 @@ Esminis patogulinimas - @vidal2022Hybrid.
 - Specializuota optimizacija specializuotam uždaviniui
   \ #c(<bulhões2018The_ve>)
 - #image("img/Screenshot From 2025-09-27 22-41-30.png")
+- idea:
+  \ implement calculations on GPU to explore all possibilities (probs not faster, but might produce better results)
+  #q(a: <vidal2022Hybrid>)[We therefore only evaluate Swap\* moves between 𝑟 and 𝑟′ if the polar
+  sectors (from the depot) associated with these routes intercept each
+  other. As shown in our computational experiments, with this additional
+  restriction, the computational effort needed to explore Swap\* decreases]
+
 
 == Literatūros apžvalgos
 

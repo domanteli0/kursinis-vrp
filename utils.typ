@@ -19,5 +19,11 @@
 #let tab = "    "
 
 // ----------------- //
+
+#let angl(body) = [(#{angl_(body)})]
+#let angl_(body) = [_angl. #{body}_]
+
+// ----------------- //
 #let todo(body) = highlight(fill: red.lighten(50%))[#body]
 #let note(body) = highlight(fill: yellow.lighten(50%))[#body]
+#let mine(body) = highlight(fill: yellow.lighten(50%))[(autoriaus papildymas: #body)]

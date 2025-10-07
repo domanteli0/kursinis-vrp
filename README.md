@@ -1,6 +1,6 @@
-= kursinis-vrp
+# kursinis-vrp
 
-You need append the snippet below to `~/.gitconfig` in order to `git diff` pdfs.
+You need to append the snippet below to `~/.gitconfig` in order to `git diff` pdfs.
 ```
 [diff "pdfdiff"]
         command = diffpdf
