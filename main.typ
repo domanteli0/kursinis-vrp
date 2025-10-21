@@ -78,7 +78,7 @@ Galimi #todo[constraints], kuriuos galima uždėti ant VRP problemų:
 
 Hibridinis genetinis paieškos (HGS) algoritmas yra vienas iš efektyviausių būdų spręsti transporto maršrutų optimizavimo uždavinius. #todo[[Citation needed?]]
 
-Pirma aprašytas #c(<vidal2012A_Hybr>).
+Pirma aprašytas #c(<vidal2012A_Hybr>) ir patobulintas #todo[@vidal2014A_unif, @vidal2016Large_, @vidal2017Node__, @vidal2021Arc_Ro].
 - #q(a: <vidal2012A_Hybr>)[#image("img/Screenshot From 2025-09-27 23-07-08.png")]
 - #q(a: <vidal2012A_Hybr>)[HGSADC proves to be extremely competitive CVRP.]
 - maintains diversity in search -> avoids local minima ir dar aukštesnės kokybės sprendimai ir reduced computational time.
@@ -99,6 +99,27 @@ borhood called Swap\*.]
 - naudoja #todo[#c(<UCHOA2017845>)] metodiką rezultatų palyginimui
 
 #pagebreak()
+
+#c(<latorre2025A_hybr>)
+  \ grįstas HGS.
+  \ Pritaikytas _Generalized Vehicle Routing Problem_ variantui
+  \ #note[Nėra viešo source code].
+  \ #q[We show that adapting the meta-heuristic strategies designed for the CVRP to the GVRP can be quite a straightforward process.]
+  \ #q[we report the numerical results on the well-known instances problems for both the GVRP and CluVRP.]
+  \ Straipsnyje rezultatai palyginti tik su kitais CluVRP, GRVP-pritaikytais algoritmais.
+
+#pagebreak()
+
+#c(<latorre2025An_appHybr>)
+  \ grįstas HGS.
+  \ #q[we propose a tailored two-level HGS for the SoftCluVRP. Our approach integrates the efficient local search framework and data structures from [21] while restructuring HGS into a two-level algorithm.]
+  \ pritaikytas SoftCluVRP/CluVRP VRP variantui
+  \ Straipsnyje rezultatai palyginti tik su kitais CluVRP-pritaikytais algoritmais.
+
+== Lygiagretinimas
+
+- "A Parallel Hybrid Genetic Search for the Capacitated VRP with Pickup and Delivery" (2023)
+- "Effective Parallelization of the Vehicle Routing Problem" (2023)
 
 == Tikslas ir uždaviniai
 
@@ -126,7 +147,8 @@ borhood called Swap\*.]
   #q(a: [https://neo.lcc.uma.es/vrp/vrp-flavors/periodic-vrp/])[In classical VRPs, typically the planning period is a single day. In the case of the Period Vehicle Routing Problem (PVRP), the classical VRP is generalized by extending the planning period to M days.]
 - MDPVRP - #angl_[Multidepot Periodic VRP].
 - #todo[CVRP with Backhauls]
-
+- GVRP - #angl_[Generalized VRP] - #q(a: <latorre2025A_hybr>)[In this problem each vertex belongs to a cluster, and only one vertex per cluster must be visited, satisfying the associated cluster demands.]
+- CluVRP - #angl_[Clustered VRP] - #q(a: <latorre2025A_hybr>)[In the CluVRP, vehicles must visit all the nodes within a cluster before progressing to the next cluster, instead of visiting just one node per cluster as in the GVRP.]
 = Matematinis formulavimas
 
 #todo[TODO]
@@ -188,14 +210,18 @@ borhood called Swap\*.]
 
 - #todo[TODO: #c(<vidal2020A_conc>)]
 
+= Algoritmai
 
-= Research areas
-
-Related research:
-
-- "A Parallel Hybrid Genetic Search for the Capacitated VRP with Pickup and Delivery" (2023)
-- "Effective Parallelization of the Vehicle Routing Problem" (2023)
-- #c(<latorre2025A_hybr>)
+// #table(
+//   columns: (auto, auto, auto, auto, auto, auto),
+//   table.header([], [PyVRP @PyVRPwouda2024], [HGS-CVRP @vidal2022Hybrid], [@vidal2012A_Hybr], [@latorre2025A_hybr], [@latorre2025An_appHybr]),
+//   [Pritaikytas variantams], [#todo[many]], [CVRP], [MDPVRP], [GVRP], [SoftCluVRP],
+//   [#todo[Crossover]], [OX _arba_ selective route exchange crossover (SREX)], [ordered crossover (OX) ], [], [], [],
+//   [#todo[Diversity]], [], [], [], [], [],
+//   [#todo[Repair]], [], [], [], [], [],
+//   [#todo[Search]], [], [], [], [], [],
+//   [#todo[Stopping criteria]], [], [], [], [], [],
+// )
 
 #pagebreak()
 #bibliography(title: [Šaltiniai], "bibliography.bib")
