@@ -1,5 +1,5 @@
 #import "style.typ": style
-#import "utils.typ": c, q, tab, todo, mine, note, angl, angl_
+#import "utils.typ": c, q, tab, todo, mine, note, angl, angl_, br
 
 #show: style.with(
   university: "Vilniaus universitetas",
@@ -76,6 +76,8 @@ Galimi #todo[constraints], kuriuos galima uždėti ant VRP problemų:
 
 #pagebreak()
 
+=== HGS
+
 Hibridinis genetinis paieškos (HGS) algoritmas yra vienas iš efektyviausių būdų spręsti transporto maršrutų optimizavimo uždavinius. #todo[[Citation needed?]]
 
 Pirma aprašytas #c(<vidal2012A_Hybr>) ir patobulintas #todo[@vidal2014A_unif, @vidal2016Large_, @vidal2017Node__, @vidal2021Arc_Ro].
@@ -83,7 +85,8 @@ Pirma aprašytas #c(<vidal2012A_Hybr>) ir patobulintas #todo[@vidal2014A_unif, @
 - #q(a: <vidal2012A_Hybr>)[HGSADC proves to be extremely competitive CVRP.]
 - maintains diversity in search -> avoids local minima ir dar aukštesnės kokybės sprendimai ir reduced computational time.
 
-\ \
+#br
+
 Per daugelį iteracijų patobulintas aprašytas #c(<vidal2022Hybrid>).
 - #q(a: <vidal2022Hybrid>)[the generalization of this method into a unified algorithm for the vehicle routing problem (VRP) family (Vidal et al., 2014, 2016; Vidal, 2017; Vidal et al., 2021)]
 - #q(a: <vidal2022Hybrid>)[Beyond a simple reimplementation of the original algorithm, HGS-
@@ -98,7 +101,7 @@ borhood called Swap\*.]
   \ #todo[TODO: #c(<VIDAL2016>)]
 - naudoja #todo[#c(<UCHOA2017845>)] metodiką rezultatų palyginimui
 
-#pagebreak()
+#br
 
 #c(<latorre2025A_hybr>)
   \ grįstas HGS.
@@ -108,7 +111,7 @@ borhood called Swap\*.]
   \ #q[we report the numerical results on the well-known instances problems for both the GVRP and CluVRP.]
   \ Straipsnyje rezultatai palyginti tik su kitais CluVRP, GRVP-pritaikytais algoritmais.
 
-#pagebreak()
+#br
 
 #c(<latorre2025An_appHybr>)
   \ grįstas HGS.
@@ -116,56 +119,26 @@ borhood called Swap\*.]
   \ pritaikytas SoftCluVRP/CluVRP VRP variantui
   \ Straipsnyje rezultatai palyginti tik su kitais CluVRP-pritaikytais algoritmais.
 
-== Lygiagretinimas
+#br
 
-- "A Parallel Hybrid Genetic Search for the Capacitated VRP with Pickup and Delivery" (2023)
-- "Effective Parallelization of the Vehicle Routing Problem" (2023)
+#todo[#c(<rezaei2024Explor>)]
+  \ grįstas HGS, pristato naujo algoritmą DPIGA-HGS
+  \ #q[In the work herein, DPIGA-HGS is shown to outperform existing state-of-the-art algorithms from the literature]
 
-== Tikslas ir uždaviniai
+#pagebreak()
 
-*Tikslas* -- Išlygiagretinti hibridinio genetinio paieškos algoritmą, skirto transporto maršrutų optimizavimo uždaviniams spręsti.
+=== Kiti
 
-*Uždavinai:*
+- "Where to Split in Hybrid Genetic Search for the Capacitated Vehicle Routing Problem"
+  \ #q[Results indicate that simple adjustments of the starting point for the splitting procedure can improve the performance of the genetic search, as measured by the average primal gaps of the final solutions obtained, by 3.9%.]
 
-1. Išsirinkti duomenų rinkinį pagal, kurį galima būtų testuoti/analizuoti sprendimus, pvz.:
-  - Solomon
-  - CVRPLIB repository (repository of BKSs - Best Known Solutions)
-  - Neural Combinatorial Optimization for Real-World Routing (2025)
-  - Test-data generation and integration for long-distance e-vehicle routing (2023)
-  - #c(<uchoa2017New_be>)
-2. Išanalizuoti, kaip veikia HGS algoritmas
-3. Atrinkti paralelizuojamas dalis, ar dalis, kurias galima galima pakeisti paralelizuojamomis
-3. Palyginti rezultatus su kitais state-of-the-art algoritmais
+- ACO-grįsti:
+  - Multi-strategy ant colony optimization with k-means clustering algorithm for capacitated vehicle routing problem
 
-= Santrumpos
+- "Optimization of Heterogeneous Last-Mile Delivery of Fresh Products Considering Traffic Congestions and Other Real-World Parameters"
+  \ The variants considered in this paper are: (CVRP), (VRPTW), (VRPSTW), (HVRP), (MTVRP), (SVRP), (SDVRP), (TDVRP),
 
-- VRP - #angl_[Vechicle Routing Problem].
-- CVRP - #angl_[Capacitated Vehicle Routing Problem].
-- VRPTW - #angl_[VRP with Time Windows].
-- MVRP - #angl_[Multidepot VRP].
-- PVRP - #angl_[Periodic VRP].
-  #q(a: [https://neo.lcc.uma.es/vrp/vrp-flavors/periodic-vrp/])[In classical VRPs, typically the planning period is a single day. In the case of the Period Vehicle Routing Problem (PVRP), the classical VRP is generalized by extending the planning period to M days.]
-- MDPVRP - #angl_[Multidepot Periodic VRP].
-- #todo[CVRP with Backhauls]
-- GVRP - #angl_[Generalized VRP] - #q(a: <latorre2025A_hybr>)[In this problem each vertex belongs to a cluster, and only one vertex per cluster must be visited, satisfying the associated cluster demands.]
-- CluVRP - #angl_[Clustered VRP] - #q(a: <latorre2025A_hybr>)[In the CluVRP, vehicles must visit all the nodes within a cluster before progressing to the next cluster, instead of visiting just one node per cluster as in the GVRP.]
-= Matematinis formulavimas
-
-#todo[TODO]
-
-= Notes
-
-- VRPTW $in$ CVRP
-- Specializuota optimizacija specializuotam uždaviniui
-  \ #c(<bulhões2018The_ve>)
-- #image("img/Screenshot From 2025-09-27 22-41-30.png")
-- idea:
-  \ implement calculations on GPU to explore all possibilities (probs not faster, but might produce better results)
-  #q(a: <vidal2022Hybrid>)[We therefore only evaluate Swap\* moves between 𝑟 and 𝑟′ if the polar
-  sectors (from the depot) associated with these routes intercept each
-  other. As shown in our computational experiments, with this additional
-  restriction, the computational effort needed to explore Swap\* decreases]
-
+- "A systematic literature review on the use of metaheuristics for the optimisation of multimodal transportation"
 
 == Literatūros apžvalgos
 
@@ -209,6 +182,124 @@ borhood called Swap\*.]
   ]
 
 - #todo[TODO: #c(<vidal2020A_conc>)]
+
+== Lygiagretinimas
+
+- #todo["Pathways to Efficient and Equitable Solutions for Large-Scale Routing Problems" (2025)]
+  \ Dar neišleista disertacija - PREVIEW
+  \ Pagreitina HGS veikimą naudojant deep learning (ir vėliau jį pritaiko last-mile gig-economy panaudojimui).
+  \ #q[The third problem extends the classical Rural Postman Problem (RPP) to a mixed-
+  fleet scenario involving multiple trucks and drones, with the objective of minimizing makespan]
+
+- #c(<lei2025Speedi>) "Speeding up Local Optimization in Vehicle Routing with Tensor-based GPU Acceleration"
+  #q[In this study, we explore a promising
+  direction to address this challenge by introducing an original tensor-based GPU ac-
+  celeration method designed to speed up the commonly used local search operators
+  in vehicle routing.]
+  #q[[25] proposed a hybrid genetic algorithm integrating 2-opt local search to solve
+  the capacitated VRP on GPU. The GPU was used to handle all algorith-
+  mic components, including population initialization, reproduction, 2-opt local
+  search, and refining processes. [26] developed a GPU-based multi-objective
+  memetic algorithm for the VRP with route balancing. They proposed two
+  schemes for the parallelism: solution-level parallelism, where multiple solutions
+  were processed using parallel local search, and route-level parallelism, which
+  provided a finer granularity by parallelizing route level evaluations. However,
+  their method did not exploit the finer node-level parallelism commonly used
+  in neighborhood evaluations.
+  [27] explored GPU-based parallelization of 2-opt and 3-opt local search opera-
+  tors for the CVRP, achieving significant speedups over CPU implementations.
+  Similarly, [28] extended GPU-based local search for the CVRP by incorporat-
+  ing additional operators such as or-opt, swap, and relocate, achieving compa-
+  rable improvements in computational performance. However, their methods
+  were limited to the basic travel distance evaluation. [29] addressed the single
+  VRP with deliveries and selective pickups using a GPU-based variable neigh-
+  borhood search, where the GPU was also tasked with parallel neighborhood
+  evaluations. Despite incorporating multiple local search operators, their ap-
+  proach primarily optimized the evaluation of travel distance and struggled to
+  effectively manage complex constraints.]
+  [25]: "M. F. Abdelatti, M. S. Sodhi, An improved gpu-accelerated heuristic technique
+  applied to the capacitated vehicle routing problem, in: Proceedings of the 2020
+  Genetic and Evolutionary Computation Conference, 2020"
+
+  #q[We present the first innovative
+  tensor-based GPU acceleration method that can be embedded in local search
+  algorithms for solving various VRPs.]
+
+  #q[Our tensor-based GPU acceleration (TGA) method is highly extensible and
+  can be integrated into various local search based algorithms and frameworks.]
+
+  #q[we incorporated TGA into the MA-FIRD algorithm]
+
+  #note[
+    - ypatingas pagreitėjimas su ypač dideliais duomenų kiekiais
+    - pritaikytas šiem _local search operators_ (Relocate, Swap, 2-opt\*, and 2-opt)
+    - *IDEA: Pritaikyti HGS* (ir Swap\* ? reiktų pasidomėt ar Swap ir Swap\* tas pats dalykas)
+      \ Neaišku, kuriam VRP variantui, tikriausiai CVRP
+      \ Galimai bus sunku pritaikyti HGS:
+      \ #q[the current design of the tensor representation of solutions doesn’t
+      support easy implementation of pruning strategies and neighborhood reduc-
+      tion techniques that are often used in local search-based routing algorithms.]
+  ]
+
+- "A Parallel Hybrid Genetic Search for the Capacitated VRP with Pickup and Delivery" (2023)
+- "Effective Parallelization of the Vehicle Routing Problem" (2023)
+
+
+== Tikslas ir uždaviniai
+
+*Tikslas* -- Išlygiagretinti hibridinio genetinio paieškos algoritmą, skirto transporto maršrutų optimizavimo uždaviniams spręsti.
+
+*Uždavinai:*
+
+1. Išsirinkti duomenų rinkinį pagal, kurį galima būtų testuoti/analizuoti sprendimus, pvz.:
+  - tikriausiai CVRPLIB repository (repository of BKSs - Best Known Solutions)
+  - Solomon
+  - Neural Combinatorial Optimization for Real-World Routing (2025)
+  - Test-data generation and integration for long-distance e-vehicle routing (2023)
+  - #c(<uchoa2017New_be>)
+  - #q(a: <lei2025Speedi>)[For the CVRP and VRPTW, the BKS values are obtained
+  from the CVRPLIB repository (http://vrp.galgos.inf.puc-rio.br/) as of
+  April 30, 2025. For the CVRP, we use results from HGS-2012 [38] and HGS-
+  CVRP [14]. For the VRPTW, with the objective of minimizing the total travel
+  distance, we reference results from the DIMACS competition, including both
+  the official DIMACS reference results and the champion team’s algorithm,
+  HGS-DIMACS [39]. For the VRPSPDTW, we report the best results from the
+  state-of-the-art MA-FIRD method [32].]
+2. Išanalizuoti, kaip veikia HGS algoritmas
+3. Atrinkti paralelizuojamas dalis, ar dalis, kurias galima galima pakeisti paralelizuojamomis
+3. Palyginti rezultatus su kitais state-of-the-art algoritmais
+
+= Santrumpos
+
+- VRP - #angl_[Vechicle Routing Problem].
+- CVRP - #angl_[Capacitated Vehicle Routing Problem].
+- VRPTW - #angl_[VRP with Time Windows].
+- MVRP - #angl_[Multidepot VRP].
+- PVRP - #angl_[Periodic VRP].
+  #q(a: [https://neo.lcc.uma.es/vrp/vrp-flavors/periodic-vrp/])[In classical VRPs, typically the planning period is a single day. In the case of the Period Vehicle Routing Problem (PVRP), the classical VRP is generalized by extending the planning period to M days.]
+- MDPVRP - #angl_[Multidepot Periodic VRP].
+- #todo[CVRP with Backhauls]
+- GVRP - #angl_[Generalized VRP] - #q(a: <latorre2025A_hybr>)[In this problem each vertex belongs to a cluster, and only one vertex per cluster must be visited, satisfying the associated cluster demands.]
+- CluVRP - #angl_[Clustered VRP] - #q(a: <latorre2025A_hybr>)[In the CluVRP, vehicles must visit all the nodes within a cluster before progressing to the next cluster, instead of visiting just one node per cluster as in the GVRP.]
+- VRPSPDTW - #angl_[VRP with Simultaneous Pickup and Delivery and Time Windows]
+= Matematinis formulavimas
+
+#todo[TODO]
+
+= Notes
+
+- VRPTW $in$ CVRP
+- Specializuota optimizacija specializuotam uždaviniui
+  \ #c(<bulhões2018The_ve>)
+- #image("img/Screenshot From 2025-09-27 22-41-30.png")
+- idea:
+  \ implement calculations on GPU to explore all possibilities (probs not faster, but might produce better results)
+  #q(a: <vidal2022Hybrid>)[We therefore only evaluate Swap\* moves between 𝑟 and 𝑟′ if the polar
+  sectors (from the depot) associated with these routes intercept each
+  other. As shown in our computational experiments, with this additional
+  restriction, the computational effort needed to explore Swap\* decreases]
+
+
 
 = Algoritmai
 

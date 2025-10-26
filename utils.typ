@@ -17,6 +17,7 @@
 
 // ----------------- //
 #let tab = "    "
+#let br = align(center)[#v(1em) #line(stroke: 1pt, length: 70%) #v(1em)]
 
 // ----------------- //
 
