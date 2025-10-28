@@ -182,6 +182,7 @@ borhood called Swap\*.]
   ]
 
 - #todo[TODO: #c(<vidal2020A_conc>)]
+- #todo[TODO: #link("https://www.sciencedirect.com/science/article/abs/pii/S0377221724002923")[A hybrid genetic search and dynamic programming-based split algorithm for the multi-trip time-dependent vehicle routing problem]]
 
 == Lygiagretinimas
 
@@ -230,7 +231,8 @@ borhood called Swap\*.]
 
   #q[we incorporated TGA into the MA-FIRD algorithm]
 
-  #note[
+    - #highlight(fill: red.lighten(50%))[NĖRA SOURCE CODE]
+    - #note[PREPRINT]
     - ypatingas pagreitėjimas su ypač dideliais duomenų kiekiais
     - pritaikytas šiem _local search operators_ (Relocate, Swap, 2-opt\*, and 2-opt)
     - *IDEA: Pritaikyti HGS* (ir Swap\* ? reiktų pasidomėt ar Swap ir Swap\* tas pats dalykas)
@@ -239,10 +241,47 @@ borhood called Swap\*.]
       \ #q[the current design of the tensor representation of solutions doesn’t
       support easy implementation of pruning strategies and neighborhood reduc-
       tion techniques that are often used in local search-based routing algorithms.]
-  ]
+
+#br
 
 - "A Parallel Hybrid Genetic Search for the Capacitated VRP with Pickup and Delivery" (2023)
-- "Effective Parallelization of the Vehicle Routing Problem" (2023)
+
+  #q[In our paper A Hybrid Genetic Algorithm for Solving the VRP with Pickup and
+  Delivery in Rural Areas, we introduced an adapated gene transfer limiting the
+  amount of possible mutations in each generation. ]
+
+  #q[Here, several heuristic
+  methods are combined in an iterative process to find the most optimal solution
+  to the problem [4].]
+
+  #q[Yelmewad and Talawar use a parallel version of the Local Search heuristic, for
+  solving the Capacitated Vehicle Routing Problem (CVRP) [7].]
+
+  #q[In "A Multi-GPU Parallel Genetic Algorithm For Large-Scale Vehicle Rout-
+  ing Problems" Abdelatti et al. consider solving VRPs using GAs on high-
+  performance computing (HPC) platforms with up to 8 GPUs. The authors focus
+  on VRPs with up to 20, 000 nodes. To achieve the maximum degree of paral-
+  lelism, each array of the algorithm is mapped to block threads to achieve high
+  throughput and low latency [9].]
+
+  - [4]: B. D. Backer, V. Furnon, P. Shaw, P. Kilby, and P. Prosser, "Solving vehicle routing problems using constraint programming and metaheuristics," vol. 6, no. 4, pp. 501--523.
+  - [7]: "Parallel Version of Local Search Heuristic Algorithm to Solve Capacitated Vehicle Routing Problem" (2021)
+  - [9]: "A multi-gpu parallel genetic algorithm for large-scale vehicle routing problem" (2022)
+
+  #q[#image("img/Screenshot From 2025-10-28 22-51-12.png")]
+
+  #q[#image("img/Screenshot From 2025-10-29 01-43-32.png")]
+
+  - Grįstas HGS.
+  - padalina darbus per kelis įrenginius/GPUs? ("nodes" straipsnyje) naudojant MPI.
+    \ Naudoja CUDA, kad lygiagretinti LS.
+    - Reikalauja kelių node'ų kiekvienas su GPU.
+  - nėra rezultatų palyginimų, su pvz.: BKS
+  - palyginimas su Tabu search grįstu algoritmu, ne HGS
+
+#br
+
+- #todo[TODO: "Effective Parallelization of the Vehicle Routing Problem" (2023)]
 
 
 == Tikslas ir uždaviniai
@@ -273,7 +312,15 @@ borhood called Swap\*.]
 
 - VRP - #angl_[Vechicle Routing Problem].
 - CVRP - #angl_[Capacitated Vehicle Routing Problem].
+  #q(a: [@stadtler2023parallel])[the CVRPPD divides stops
+  into pickup and delivery points for passengers. Passengers are not arbitrary goods
+  delivered to interchangeable destinations from a common depot, but they have
+  individual starting points and destinations. Therefore, the pickup and delivery
+  constraint has multiple implications. On the one hand, the order in which a
+  person is picked up and dropped o by a vehicle must be in the correct order. In
+  addition, the delivery must be performed by the same vehicle as the pickups]
 - VRPTW - #angl_[VRP with Time Windows].
+- CVRPPD - #angl_[CVRP Pickup and Delivery].
 - MVRP - #angl_[Multidepot VRP].
 - PVRP - #angl_[Periodic VRP].
   #q(a: [https://neo.lcc.uma.es/vrp/vrp-flavors/periodic-vrp/])[In classical VRPs, typically the planning period is a single day. In the case of the Period Vehicle Routing Problem (PVRP), the classical VRP is generalized by extending the planning period to M days.]
@@ -316,3 +363,6 @@ borhood called Swap\*.]
 
 #pagebreak()
 #bibliography(title: [Šaltiniai], "bibliography.bib")
+
+// = The bad list
+// - A Hybrid Approach for Simultaneous Effective Automobile Navigation with DE and PSO (2024)
