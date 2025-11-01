@@ -100,6 +100,7 @@ borhood called Swap\*.]
 - #q(a: <vidal2022Hybrid>)[In HGS-CVRP, we rely on the efficient linear-time Split algorithm introduced by Vidal (2016) #mine[@VIDAL2016] after each crossover operation.]
   \ #todo[TODO: #c(<VIDAL2016>)]
 - naudoja #todo[#c(<UCHOA2017845>)] metodiką rezultatų palyginimui
+- ~2000 eilučių C++ kodo
 
 #br
 
@@ -278,10 +279,39 @@ borhood called Swap\*.]
     - Reikalauja kelių node'ų kiekvienas su GPU.
   - nėra rezultatų palyginimų, su pvz.: BKS
   - palyginimas su Tabu search grįstu algoritmu, ne HGS
+  - Nėra SOURCE CODE: AWAITING RESPONSE
 
 #br
 
-- #todo[TODO: "Effective Parallelization of the Vehicle Routing Problem" (2023)]
+- #c(<muniasamy2023Effect>)
+  - ~1500 eilučių C++ kodo (https://github.com/mrprajesh/parMDS)
+
+  #q[The state-of-the-art GPU
+  implementations are due to Yelmewad and Talawar [35], and Abde-
+  latti and Sodhi [1].]
+
+  [1]: 2020. An improved GPU-accelerated heuristic technique applied to the capacitated vehicle routing problem.
+
+  [35]: 2021. Parallel Version of Local Search Heuristic Algorithm to Solve Capacitated Vehicle Routing Problem.
+
+  #q[#image("img/Screenshot From 2025-11-01 17-55-54.png")]
+
+  [25]: 2018. A CPU-GPU Parallel Ant Colony Optimization Solver for the Vehicle Routing Problem
+
+  Naudojimas OpenMP pagreitinimui naudojant CPU (shared-memory).
+
+  Ganėtinai paprastas algoritmas, pagrinde naudojamas Local Search, iš esmės lygiagretinima ties kiekvienu bandymu ieškoti sprendimo:
+
+  #q[ #image("img/Screenshot From 2025-11-01 18-40-13.png") ]
+
+  Hmmmmm:
+
+  #q[We plan to develop a
+  GPU-parallel version of the proposed method to further enhance
+  performance. On the algorithmic front, we plan to build direction-
+  awareness into the current scheme, and add inter-route refinement
+  strategies to better the solution quality of ParMDS.]
+
 
 
 == Tikslas ir uždaviniai
@@ -291,7 +321,7 @@ borhood called Swap\*.]
 *Uždavinai:*
 
 1. Išsirinkti duomenų rinkinį pagal, kurį galima būtų testuoti/analizuoti sprendimus, pvz.:
-  - tikriausiai CVRPLIB repository (repository of BKSs - Best Known Solutions)
+  - tikriausiai CVRPLIB repository (repository of BKSs - Best Known Solutions) (https://vrp.galgos.inf.puc-rio.br/index.php/en/)
   - Solomon
   - Neural Combinatorial Optimization for Real-World Routing (2025)
   - Test-data generation and integration for long-distance e-vehicle routing (2023)
