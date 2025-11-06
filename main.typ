@@ -184,16 +184,17 @@ borhood called Swap\*.]
 
 - #todo[TODO: #c(<vidal2020A_conc>)]
 - #todo[TODO: #link("https://www.sciencedirect.com/science/article/abs/pii/S0377221724002923")[A hybrid genetic search and dynamic programming-based split algorithm for the multi-trip time-dependent vehicle routing problem]]
+- #todo[TODO: #link("https://link.springer.com/article/10.1007/s12351-020-00600-7")[Vehicle routing problem and related algorithms for logistics distribution: a literature review and classification (2020)]]
 
-== Lygiagretinimas
+=== Lygiagretinimas
 
-- #todo["Pathways to Efficient and Equitable Solutions for Large-Scale Routing Problems" (2025)]
+==== "Pathways to Efficient and Equitable Solutions for Large-Scale Routing Problems" (2025)
   \ Dar neišleista disertacija - PREVIEW
   \ Pagreitina HGS veikimą naudojant deep learning (ir vėliau jį pritaiko last-mile gig-economy panaudojimui).
   \ #q[The third problem extends the classical Rural Postman Problem (RPP) to a mixed-
   fleet scenario involving multiple trucks and drones, with the objective of minimizing makespan]
 
-- #c(<lei2025Speedi>) "Speeding up Local Optimization in Vehicle Routing with Tensor-based GPU Acceleration"
+==== #c(<lei2025Speedi>)
   #q[In this study, we explore a promising
   direction to address this challenge by introducing an original tensor-based GPU ac-
   celeration method designed to speed up the commonly used local search operators
@@ -236,16 +237,23 @@ borhood called Swap\*.]
     - #note[PREPRINT]
     - ypatingas pagreitėjimas su ypač dideliais duomenų kiekiais
     - pritaikytas šiem _local search operators_ (Relocate, Swap, 2-opt\*, and 2-opt)
-    - *IDEA: Pritaikyti HGS* (ir Swap\* ? reiktų pasidomėt ar Swap ir Swap\* tas pats dalykas)
+    - *IDEA: Pritaikyti HGS* (#note[Swap\* ir Swap nėra tas pats dalykas])
       \ Neaišku, kuriam VRP variantui, tikriausiai CVRP
       \ Galimai bus sunku pritaikyti HGS:
       \ #q[the current design of the tensor representation of solutions doesn’t
+      \ galima bandyti pritaikyti senesniems HGS variantams, kur naudojamas 2-opt/Swap.
       support easy implementation of pruning strategies and neighborhood reduc-
       tion techniques that are often used in local search-based routing algorithms.]
+      \ vietoje pagreitinimo galima bandyti panaudoti GPU, kad atrasti visas galimybes, galimai gausis geresni rezultai:
+      #q(a: <vidal2022Hybrid>)[We therefore only evaluate Swap\* moves between 𝑟 and 𝑟′ if the polar
+      sectors (from the depot) associated with these routes intercept each
+      other. As shown in our computational experiments, with this additional
+      restriction, the computational effort needed to explore Swap\* decreases]
+    - Gal galima pritaikyti #link("https://ieeexplore.ieee.org/abstract/document/10948368")["Efficient Parallel Sparse Tensor Contraction"], kad dar pagreitinti.
 
 #br
 
-- "A Parallel Hybrid Genetic Search for the Capacitated VRP with Pickup and Delivery" (2023)
+==== "A Parallel Hybrid Genetic Search for the Capacitated VRP with Pickup and Delivery" (2023)
 
   #q[In our paper A Hybrid Genetic Algorithm for Solving the VRP with Pickup and
   Delivery in Rural Areas, we introduced an adapated gene transfer limiting the
@@ -279,11 +287,11 @@ borhood called Swap\*.]
     - Reikalauja kelių node'ų kiekvienas su GPU.
   - nėra rezultatų palyginimų, su pvz.: BKS
   - palyginimas su Tabu search grįstu algoritmu, ne HGS
-  - Nėra SOURCE CODE: AWAITING RESPONSE
+  - Nėra SOURCE CODE: autorius pametė jį
 
 #br
 
-- #c(<muniasamy2023Effect>)
+==== #c(<muniasamy2023Effect>)
   - ~1500 eilučių C++ kodo (https://github.com/mrprajesh/parMDS)
 
   #q[The state-of-the-art GPU
@@ -300,11 +308,9 @@ borhood called Swap\*.]
 
   Naudojimas OpenMP pagreitinimui naudojant CPU (shared-memory).
 
-  Ganėtinai paprastas algoritmas, pagrinde naudojamas Local Search, iš esmės lygiagretinima ties kiekvienu bandymu ieškoti sprendimo:
+  Ganėtinai paprastas algoritmas, pagrinde naudojamas Local Search, iš esmės lygiagretinima ties kiekvienu bandymu ieškoti sprendimo (i.e. parelelizuojamas `for` ciklas):
 
-  #q[ #image("img/Screenshot From 2025-11-01 18-40-13.png") ]
-
-  Hmmmmm:
+  #q[ #image("img/Screenshot From 2025-11-01 18-40-13.png", width: 50%) ]
 
   #q[We plan to develop a
   GPU-parallel version of the proposed method to further enhance
@@ -312,7 +318,40 @@ borhood called Swap\*.]
   awareness into the current scheme, and add inter-route refinement
   strategies to better the solution quality of ParMDS.]
 
+  Autoriai yra parašę seriją straipsnių, kaip pagreitinti/lygiagretinti grafų operacijas. pvz.:
+  - https://scholar.google.com/citations?hl=fr&user=kfUNJb8AAAAJ&view_op=list_works&sortby=pubdate
+  - https://scholar.google.com/citations?hl=fr&user=nGUg9VUAAAAJ&view_op=list_works&sortby=pubdate
 
+  \ IDEA: galima bandyti pritaikyti HGS
+
+#br
+
+==== #c(<jastrzab2024Standa>) ["1.1 Related work" sekcija]
+
+#q[Finally, parallel
+techniques play an important role in solving different VRPs,
+as they can not only accelerate the computations [15, 54],
+but also allow to elaborate higher-quality routing schedules,
+e.g., through efficient cooperation of parallel solvers [6, 24,
+51, 53, 59].]
+
+[15]: (2019) Solving generalized vehicle routing problem with occa-
+sional drivers via evolutionary multitaskin
+
+[6]: (2023) Parallel cooperative memetic co-evolution for VRPTW
+
+[24]: (2023) Path planning algorithm for the multiple depot vehicle routing problem based on parallel clustering.
+
+[51]: (2023) Effective parallelization of the vehicle routing problem
+
+[53]: (2015) Co-operation in the parallel memetic algorithm
+
+[54]: 2015 A parallel algorithm with the search
+space partition for the pickup and delivery with time windows
+
+[59]: (2013) New selection schemes in a memetic algorithm for the vehicle routing problem with time windows
+
+=== Rezultatų palyginimas
 
 == Tikslas ir uždaviniai
 
@@ -327,6 +366,7 @@ borhood called Swap\*.]
   - Test-data generation and integration for long-distance e-vehicle routing (2023)
   - #c(<uchoa2017New_be>)
   - #q(a: <lei2025Speedi>)[For the CVRP and VRPTW, the BKS values are obtained
+  - @jastrzab2024Standa [3/1337 psl.]
   from the CVRPLIB repository (http://vrp.galgos.inf.puc-rio.br/) as of
   April 30, 2025. For the CVRP, we use results from HGS-2012 [38] and HGS-
   CVRP [14]. For the VRPTW, with the objective of minimizing the total travel
@@ -336,7 +376,9 @@ borhood called Swap\*.]
   state-of-the-art MA-FIRD method [32].]
 2. Išanalizuoti, kaip veikia HGS algoritmas
 3. Atrinkti paralelizuojamas dalis, ar dalis, kurias galima galima pakeisti paralelizuojamomis
-3. Palyginti rezultatus su kitais state-of-the-art algoritmais
+4. Palyginti rezultatus su kitais state-of-the-art algoritmais
+
+  1. Parinkti tinkamus (hyper-) parametrus (see @jastrzab2024Standa [3/1337 psl.])
 
 = Santrumpos
 
@@ -369,16 +411,6 @@ borhood called Swap\*.]
 - Specializuota optimizacija specializuotam uždaviniui
   \ #c(<bulhões2018The_ve>)
 - #image("img/Screenshot From 2025-09-27 22-41-30.png")
-- idea:
-  \ implement calculations on GPU to explore all possibilities (probs not faster, but might produce better results)
-  #q(a: <vidal2022Hybrid>)[We therefore only evaluate Swap\* moves between 𝑟 and 𝑟′ if the polar
-  sectors (from the depot) associated with these routes intercept each
-  other. As shown in our computational experiments, with this additional
-  restriction, the computational effort needed to explore Swap\* decreases]
-
-
-
-= Algoritmai
 
 // #table(
 //   columns: (auto, auto, auto, auto, auto, auto),
