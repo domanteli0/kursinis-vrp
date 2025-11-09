@@ -1,1 +1,5 @@
+# git-crypt
+.papers/** filter=git-crypt diff=git-crypt
+
+# pdf diff
 *.pdf diff=pdfdiff

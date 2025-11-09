@@ -240,10 +240,11 @@ borhood called Swap\*.]
     - *IDEA: Pritaikyti HGS* (#note[Swap\* ir Swap nėra tas pats dalykas])
       \ Neaišku, kuriam VRP variantui, tikriausiai CVRP
       \ Galimai bus sunku pritaikyti HGS:
+
       \ #q[the current design of the tensor representation of solutions doesn’t
-      \ galima bandyti pritaikyti senesniems HGS variantams, kur naudojamas 2-opt/Swap.
       support easy implementation of pruning strategies and neighborhood reduc-
       tion techniques that are often used in local search-based routing algorithms.]
+      \ galima bandyti pritaikyti senesniems HGS variantams, kur naudojamas 2-opt/Swap.
       \ vietoje pagreitinimo galima bandyti panaudoti GPU, kad atrasti visas galimybes, galimai gausis geresni rezultai:
       #q(a: <vidal2022Hybrid>)[We therefore only evaluate Swap\* moves between 𝑟 and 𝑟′ if the polar
       sectors (from the depot) associated with these routes intercept each
