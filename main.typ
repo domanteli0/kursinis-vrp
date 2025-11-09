@@ -100,7 +100,7 @@ borhood called Swap\*.]
 - #q(a: <vidal2022Hybrid>)[In HGS-CVRP, we rely on the efficient linear-time Split algorithm introduced by Vidal (2016) #mine[@VIDAL2016] after each crossover operation.]
   \ #todo[TODO: #c(<VIDAL2016>)]
 - naudoja #todo[#c(<UCHOA2017845>)] metodiką rezultatų palyginimui
-- ~2000 eilučių C++ kodo
+- ~2000 eilučių C++ kodo (be whitespace)
 
 #br
 
@@ -351,6 +351,31 @@ sional drivers via evolutionary multitaskin
 space partition for the pickup and delivery with time windows
 
 [59]: (2013) New selection schemes in a memetic algorithm for the vehicle routing problem with time windows
+
+==== #c(<abdelatti2020An_imp>)
+
+  SOURCE CODE: https://github.com/MAbdelatti/GA_VRP_GPU (~600 Python - be whitespace)
+  SOURCE CODE (pagal autorių - geresnė versija): https://github.com/MAbdelatti/GA_VRP_mod/ (~800 Python eil. - be whitespace)
+
+  Kelių GPU versija: https://github.com/MAbdelatti/GA_VRP_mGPU (#link("https://ieeexplore.ieee.org/abstract/document/9926363")[A Multi-GPU Parallel Genetic Algorithm For Large-Scale Vehicle Routing Problems])
+
+  tl;dr: veikia greičiau, bet prastesni rezultatai palyginus su BKS, ypač su didesniais duomenimis.
+
+  *#q[We incorporate a GA and a 2-opt local search into a hybrid algorithm to solve the CVRP]*
+
+  #q[The down side of this algorithm was in the
+huge computational load (almost 95% of CPU time) consumed by
+the local search and the clone-restricting algorithms [37].]
+
+  #q[[6] designed
+  a genetic algorithm implemented on the GPU for the Dynamic VRP
+  (DVRP) - which involves finding VRP solutions with some demands
+  that are revealed after the tour is in progress.]
+
+  [6]: A Benaini and A Berrajaa. 2018. Genetic algorithm for large dynamic vehicle rout-
+  ing problem on GPU. In 2018 4th International Conference on Logistics Operations
+  Management (GOL). IEEE, 1–9.
+
 
 === Rezultatų palyginimas
 
