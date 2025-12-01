@@ -61,19 +61,6 @@ Galimi #todo[constraints], kuriuos galima uždėti ant VRP problemų:
 - #c(<AmazonChallengeDataSet>) #todo[TODO: properly cite the challenge, not just the dataset]
 - #todo[EURO meets NeurIPS 2022 vehicle routing competition]
 
-== Įrankiai
-
-#note[
-- Matrix
-  - OSMR
-  - GraphHopper
-  - Valhalla
-  - BRouter
-
-- Simulation
-  https://roadsimulator3.fr/these/chapters/chapitre00.html
-]
-
 #pagebreak()
 
 === HGS
