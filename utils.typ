@@ -21,8 +21,8 @@
 
 // ----------------- //
 
-#let angl(body) = [(#{angl_(body)})]
 #let angl_(body) = [_angl. #{body}_]
+#let angl(body) = [(#{angl_(body)})]
 
 // ----------------- //
 #let todo(body) = highlight(fill: red.lighten(50%))[#body]

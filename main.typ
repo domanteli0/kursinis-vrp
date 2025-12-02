@@ -16,11 +16,86 @@
 
 = Terminai
 
+- Populiacija - #todo[set of individuals]
+- Individas - #todo[Individual solution (i.e. set of routes and points assigned to them) ]
+
+= Santrumpos <santr>
+
+- VRP - Martšrutų optimizavimo uždavinys #angl[Vechicle Routing Problem].
+- CVRP - #angl_[Capacitated Vehicle Routing Problem].
+  #q(a: [@stadtler2023parallel])[the CVRPPD divides stops
+  into pickup and delivery points for passengers. Passengers are not arbitrary goods
+  delivered to interchangeable destinations from a common depot, but they have
+  individual starting points and destinations. Therefore, the pickup and delivery
+  constraint has multiple implications. On the one hand, the order in which a
+  person is picked up and dropped o by a vehicle must be in the correct order. In
+  addition, the delivery must be performed by the same vehicle as the pickups]
+- VRPTW - #angl_[VRP with Time Windows].
+- CVRPPD - #angl_[CVRP Pickup and Delivery].
+- MVRP - #angl_[Multidepot VRP].
+- PVRP - #angl_[Periodic VRP].
+  #q(a: [https://neo.lcc.uma.es/vrp/vrp-flavors/periodic-vrp/])[In classical VRPs, typically the planning period is a single day. In the case of the Period Vehicle Routing Problem (PVRP), the classical VRP is generalized by extending the planning period to M days.]
+- MDPVRP - #angl_[Multidepot Periodic VRP].
+- #todo[CVRP with Backhauls]
+- GVRP - #angl_[Generalized VRP] - #q(a: <latorre2025A_hybr>)[In this problem each vertex belongs to a cluster, and only one vertex per cluster must be visited, satisfying the associated cluster demands.]
+- CluVRP - #angl_[Clustered VRP] - #q(a: <latorre2025A_hybr>)[In the CluVRP, vehicles must visit all the nodes within a cluster before progressing to the next cluster, instead of visiting just one node per cluster as in the GVRP.]
+- VRPSPDTW - #angl_[VRP with Simultaneous Pickup and Delivery and Time Windows]
+
 = Įvadas
 
-#todo[paragrafas apie VRP relevance]
+VRP -- Transporto maršrutų optimizavimo uždavinys #angl[Vehicle Routing Problem] yra uždavinys,
+kurio tikslas yra surasti kuo optimaliausią maršrutų rinkinį #todo[Čia dar reikia pasidomėti iš ko tiksliai susideda COST funkcija].
+Pirmą kartą ši problema aprašyta @dantzig1959The_Tr, kur autorius aprašė algoritmą, kuris suranda optimalius maršrutus tarp kuro depo ir degalinių.
+Tai yra modernios logistikos optimizavimo uždavinys -- optimaliai #todo[sudelioti] maršrutai gali lemti mažesnius kainos ir pristatymo laiko kaštus.
 
-== Plačiau apie #todo[VRP] #todo[constraints]
+Kur keliaujančio pardavėjo uždavinyje pagrindinė užduotis yra surasti optimaliausią kelią vienam keliautojui -- pardavėjui,
+VRP sprendimai #todo[susideda] iš kelių keliautojų -- literatūroje dažnai tiesiogiai #todo[referenced to as] transporto priemonės.
+Kadangi šis uždavinys priklauso #todo[NP-Hard] sudėtingumo klasei, tikslūs metodai su dideliais kiekiais duomenų tampa nepraktiški #todo[[CITATION NEEDED]].
+
+Praktikoje taikomos VRP variacijos (CVRP, VRPTW, MDPVRP, PVRP ir kt.)
+įveda papildomus apribojimus maršrutų ilgiui, transporto priemonių panaudojimo laikui ir talpai,
+ar prideda papildomas salygas:
+- keli depai iš kurių galima pradėti maršrutą (MDVRP),
+- maršrutai planuojami per kelias dienas, t.y. vieni taškai gali būti aplankyti vieną dieną, o kiti kitą. (#todo[TODO]).
+Algoritmų kokybei vertinti plačiai naudojami _de facto_ standartizuota geriausių sprendinių #angl[Best Known Solution -- BKS] rinkiniai, pvz., CVRPLIB #todo[[CITATION NEEDED: Uchoa]]
+
+Dėl skaičiavimo sąnaudų dominuoja heuristikomis ir metaheuristikomis grįsti algoritmai #todo[[CITATION NEEDED]].
+Vienas kokybiškiausių, atsižvelgiant į algoritmo vykdymo laiką, metaheuristinių algoritmų –- hibridinis genetinis paieškos algoritmas (#angl[Hydrid Genetic Search -- HGS]) [@vidal2012A_Hybr],
+kurio atviro kodo realizacijos ir vėlesnės pagerintos versijos išlieka etalonas daugeliui VRP variantų [@vidal2022Hybrid].
+
+Dideliems duomenų rinkiniams net HGS didžiąją laiko dalį skiria lokalių paieškų operatoriams #angl[Local Search Operator],
+todėl literatūroje nagrinėjamas jų lygiagretinimas:
+- GPU pagreitinti 2-opt/Swap operatoriai [@lei2025Speedi],
+- genetinių operacijų lygiagretinimas [@abdelatti2020An_imp]
+- OpenMP pagrįstas iteracijų skaidymas [@muniasamy2023Effect].
+
+Šio *darbo tikslas* -- išlygiagretinti hibridinio genetinio paieškos algoritmą, skirto transporto maršrutų optimizavimo uždaviniams spręsti,
+siekiant sumažinti vykdymo laiką neprarandant ar net pagerinant sprendimų kokybės.
+
+*Uždavinai:*
+
+1. Išsirinkti duomenų rinkinį pagal, kurį galima būtų testuoti/analizuoti sprendimus, pvz.:
+  - tikriausiai CVRPLIB repository (repository of BKSs - Best Known Solutions) (https://vrp.galgos.inf.puc-rio.br/index.php/en/)
+  - Solomon
+  - Neural Combinatorial Optimization for Real-World Routing (2025)
+  - Test-data generation and integration for long-distance e-vehicle routing (2023)
+  - #c(<UCHOA2017845>)
+  - #q(a: <lei2025Speedi>)[For the CVRP and VRPTW, the BKS values are obtained
+  - @jastrzab2024Standa [3/1337 psl.]
+  from the CVRPLIB repository (http://vrp.galgos.inf.puc-rio.br/) as of
+  April 30, 2025. For the CVRP, we use results from HGS-2012 [38] and HGS-
+  CVRP [14]. For the VRPTW, with the objective of minimizing the total travel
+  distance, we reference results from the DIMACS competition, including both
+  the official DIMACS reference results and the champion team’s algorithm,
+  HGS-DIMACS [39]. For the VRPSPDTW, we report the best results from the
+  state-of-the-art MA-FIRD method [32].]
+2. Išanalizuoti, kaip veikia HGS algoritmas
+3. Atrinkti paralelizuojamas dalis, ar dalis, kurias galima galima pakeisti paralelizuojamomis
+4. Palyginti rezultatus su kitais state-of-the-art algoritmais
+
+  1. Parinkti tinkamus (hyper-) parametrus (see @jastrzab2024Standa [3/1337 psl.])
+
+== Plačiau apie VRP #todo[constraints]
 
 Galimi #todo[constraints], kuriuos galima uždėti ant VRP problemų:
 
@@ -363,57 +438,54 @@ the local search and the clone-restricting algorithms [37].]
   ing problem on GPU. In 2018 4th International Conference on Logistics Operations
   Management (GOL). IEEE, 1–9.
 
+==== Parallel Version of Local Search Heuristic Algorithm to Solve Capacitated Vehicle Routing Problem (2021)
+
+   #q[ The GPU-based parallel com-
+  putation has already shown the effectiveness in reducing
+  the execution time [25]. The parallel computation for
+  heuristic algorithms are applied in [26, 27] and solves
+  instances up to 2401 nodes. The GPU-accelerated heuristic
+  [28] solves CVRP instances of up to 76 nodes. Parallel
+  heuristic presented in [29] provides solutions for instances
+  up to 20,000 nodes but could not solve Belgium instances.]
+
+   [25]: Yelmewad, P., Talawar, B.: Parallel iterative hill climbing
+   algorithm to solve tsp on gpu. Concurr. Comput. 31(7), e4974
+   (2019)
+
+   [26]: Jin, J., Crainic, T.G., Løkketangen, A.: A cooperative parallel
+   metaheuristic for the capacitated vehicle routing problem. Com-
+   put. Oper. Res. 44, 33–41 (2014)
+
+   [27]: Schulz, C.: Efficient local search on the gpu- investigations on the
+   vehicle routing problem. J. Parallel Distrib. Comput. 73(1),
+   14–31 (2013). (Metaheuristics on GPUs)
+
+   [28]: Abdelatti, M.F., Sodhi, M.S.: An improved gpu-accelerated
+   heuristic technique applied to the capacitated vehicle routing
+   problem. In: Proceedings of the 2020 Genetic and Evolutionary
+   Computation Conference, GECCO ’20. Association for Com-
+   puting Machinery, New York, NY, pp. 663–671 (2020)
+
+   [29]: Yelmewad, P., Talawar, B.: Gpu-based parallel heuristics for
+   capacited vehicle routing problem. In: 2020 IEEE International
+   Conference on Electronics, Computing and Communication
+   Technologies (CONECCT), pp. 1–6, (July 2020)
+
+==== #c(<jamshidi2025A_Para>)
+
+  Naudoja OpenMP.
+  IDEA: sukombinuoti šitą apprach'ą su local-search lygio lygiagretinimu ir perdaryti su MPI
+  SOURCE CODE: awaiting response from author
+
+- #q[The population in the Hybrid Genetic Search (HGS) algorithm consists of a set of individuals, each representing
+a potential solution to the CVRP]
 
 === Rezultatų palyginimas
 
 == Tikslas ir uždaviniai
 
-*Tikslas* -- Išlygiagretinti hibridinio genetinio paieškos algoritmą, skirto transporto maršrutų optimizavimo uždaviniams spręsti.
 
-*Uždavinai:*
-
-1. Išsirinkti duomenų rinkinį pagal, kurį galima būtų testuoti/analizuoti sprendimus, pvz.:
-  - tikriausiai CVRPLIB repository (repository of BKSs - Best Known Solutions) (https://vrp.galgos.inf.puc-rio.br/index.php/en/)
-  - Solomon
-  - Neural Combinatorial Optimization for Real-World Routing (2025)
-  - Test-data generation and integration for long-distance e-vehicle routing (2023)
-  - #c(<uchoa2017New_be>)
-  - #q(a: <lei2025Speedi>)[For the CVRP and VRPTW, the BKS values are obtained
-  - @jastrzab2024Standa [3/1337 psl.]
-  from the CVRPLIB repository (http://vrp.galgos.inf.puc-rio.br/) as of
-  April 30, 2025. For the CVRP, we use results from HGS-2012 [38] and HGS-
-  CVRP [14]. For the VRPTW, with the objective of minimizing the total travel
-  distance, we reference results from the DIMACS competition, including both
-  the official DIMACS reference results and the champion team’s algorithm,
-  HGS-DIMACS [39]. For the VRPSPDTW, we report the best results from the
-  state-of-the-art MA-FIRD method [32].]
-2. Išanalizuoti, kaip veikia HGS algoritmas
-3. Atrinkti paralelizuojamas dalis, ar dalis, kurias galima galima pakeisti paralelizuojamomis
-4. Palyginti rezultatus su kitais state-of-the-art algoritmais
-
-  1. Parinkti tinkamus (hyper-) parametrus (see @jastrzab2024Standa [3/1337 psl.])
-
-= Santrumpos
-
-- VRP - #angl_[Vechicle Routing Problem].
-- CVRP - #angl_[Capacitated Vehicle Routing Problem].
-  #q(a: [@stadtler2023parallel])[the CVRPPD divides stops
-  into pickup and delivery points for passengers. Passengers are not arbitrary goods
-  delivered to interchangeable destinations from a common depot, but they have
-  individual starting points and destinations. Therefore, the pickup and delivery
-  constraint has multiple implications. On the one hand, the order in which a
-  person is picked up and dropped o by a vehicle must be in the correct order. In
-  addition, the delivery must be performed by the same vehicle as the pickups]
-- VRPTW - #angl_[VRP with Time Windows].
-- CVRPPD - #angl_[CVRP Pickup and Delivery].
-- MVRP - #angl_[Multidepot VRP].
-- PVRP - #angl_[Periodic VRP].
-  #q(a: [https://neo.lcc.uma.es/vrp/vrp-flavors/periodic-vrp/])[In classical VRPs, typically the planning period is a single day. In the case of the Period Vehicle Routing Problem (PVRP), the classical VRP is generalized by extending the planning period to M days.]
-- MDPVRP - #angl_[Multidepot Periodic VRP].
-- #todo[CVRP with Backhauls]
-- GVRP - #angl_[Generalized VRP] - #q(a: <latorre2025A_hybr>)[In this problem each vertex belongs to a cluster, and only one vertex per cluster must be visited, satisfying the associated cluster demands.]
-- CluVRP - #angl_[Clustered VRP] - #q(a: <latorre2025A_hybr>)[In the CluVRP, vehicles must visit all the nodes within a cluster before progressing to the next cluster, instead of visiting just one node per cluster as in the GVRP.]
-- VRPSPDTW - #angl_[VRP with Simultaneous Pickup and Delivery and Time Windows]
 = Matematinis formulavimas
 
 #todo[TODO]
@@ -424,6 +496,9 @@ the local search and the clone-restricting algorithms [37].]
 - Specializuota optimizacija specializuotam uždaviniui
   \ #c(<bulhões2018The_ve>)
 - #image("img/Screenshot From 2025-09-27 22-41-30.png")
+- work-stealing pavyzdžiai:
+  - Tokio
+  - OpenMP, oneTBB
 
 // #table(
 //   columns: (auto, auto, auto, auto, auto, auto),
