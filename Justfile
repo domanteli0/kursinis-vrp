@@ -1,5 +1,8 @@
 pdf:
-	typst compile main.typ --font-path ./fonts
+	typst compile main.typ --features html --font-path ./fonts
+
+html:
+	typst compile main.typ --features html --format html --font-path ./fonts
 
 watch:
 	typst watch main.typ --font-path ./fonts

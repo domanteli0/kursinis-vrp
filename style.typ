@@ -26,17 +26,22 @@
   )
 
   // Configure page
-  set page(
-    paper: "a4",
-    margin: (
-      left: 3cm,
-      right: 1.5cm,
-      y: 2cm,
-    ),
-  )
+  context {
+    if target() == "paged" {
+      set page(
+        paper: "a4",
+        margin: (
+          left: 3cm,
+          right: 1.5cm,
+          y: 2cm,
+        ),
+      )
 
-  set page(numbering: (page_num, ..ns) => { if page_num == 1 { "" } else { str(page_num) } })
-  set page(number-align: right)
+      set page(numbering: (page_num, ..ns) => { if page_num == 1 { "" } else { str(page_num) } })
+      set page(number-align: right)
+    }
+  }
+
 
   set quote(block: true)
   show quote: it => block(

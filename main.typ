@@ -14,6 +14,8 @@
   date: "Vilnius - 2025",
 )
 
+IDEA IDEA: do a message passing
+
 = Terminai
 
 - Populiacija - #todo[set of individuals]
@@ -28,7 +30,7 @@
   delivered to interchangeable destinations from a common depot, but they have
   individual starting points and destinations. Therefore, the pickup and delivery
   constraint has multiple implications. On the one hand, the order in which a
-  person is picked up and dropped o by a vehicle must be in the correct order. In
+  person is picked up and dropped off by a vehicle must be in the correct order. In
   addition, the delivery must be performed by the same vehicle as the pickups]
 - VRPTW - #angl_[VRP with Time Windows].
 - CVRPPD - #angl_[CVRP Pickup and Delivery].
@@ -258,8 +260,7 @@ borhood called Swap\*.]
 
 ==== #c(<lei2025Speedi>)
   #q[In this study, we explore a promising
-  direction to address this challenge by introducing an original tensor-based GPU ac-
-  celeration method designed to speed up the commonly used local search operators
+  direction to address this challenge by introducing an original tensor-based GPU acceleration method designed to speed up the commonly used local search operators
   in vehicle routing.]
   #q[[25] proposed a hybrid genetic algorithm integrating 2-opt local search to solve
   the capacitated VRP on GPU. The GPU was used to handle all algorith-
@@ -318,8 +319,8 @@ borhood called Swap\*.]
 
 ==== "A Parallel Hybrid Genetic Search for the Capacitated VRP with Pickup and Delivery" (2023)
 
-  #q[In our paper A Hybrid Genetic Algorithm for Solving the VRP with Pickup and
-  Delivery in Rural Areas, we introduced an adapated gene transfer limiting the
+  #q[In our paper "A Hybrid Genetic Algorithm for Solving the VRP with Pickup and
+  Delivery in Rural Areas", we introduced an adapated gene transfer limiting the
   amount of possible mutations in each generation. ]
 
   #q[Here, several heuristic
@@ -355,7 +356,8 @@ borhood called Swap\*.]
 #br
 
 ==== #c(<muniasamy2023Effect>)
-  - ~1500 eilučių C++ kodo (https://github.com/mrprajesh/parMDS)
+  - parelizuota ant GPU
+  - ~1500 eilučių C++/CUDA kodo (https://github.com/mrprajesh/parMDS)
 
   #q[The state-of-the-art GPU
   implementations are due to Yelmewad and Talawar [35], and Abde-
@@ -472,7 +474,21 @@ the local search and the clone-restricting algorithms [37].]
    Conference on Electronics, Computing and Communication
    Technologies (CONECCT), pp. 1–6, (July 2020)
 
+==== #c(<rezaei2024Explor>)
+
+  Kombinuoja Islands modelį (Dynamic Population Island) su HGS
+
+  #q[
+    The algorithm’s
+    effectiveness is demonstrated through several experiments on diverse benchmark instances, including classical benchmarks
+    (Uchoa, CMT, and Golden) and #note[real-world application instances (LoggiBUD)].
+  ]
+
 ==== #c(<jamshidi2025A_Para>)
+
+  Irgi kombinuoja islands modelį su HGS,
+  kur kiekviena sala yra apskaičiuojama
+  atskiroje gijoje.
 
   Naudoja OpenMP.
   IDEA: sukombinuoti šitą apprach'ą su local-search lygio lygiagretinimu ir perdaryti su MPI
@@ -481,7 +497,14 @@ the local search and the clone-restricting algorithms [37].]
 - #q[The population in the Hybrid Genetic Search (HGS) algorithm consists of a set of individuals, each representing
 a potential solution to the CVRP]
 
+
+==== Decentralized message passing algorithm for heterogeneous multi-depot vehicle routing problems (2025)
+
+#q[a novel message-passing algorithm, named AMP-R, based on belief propagation is proposed]
+
 === Rezultatų palyginimas
+
+==== New benchmark instances for the Capacitated Vehicle Routing Problem (2017)
 
 == Tikslas ir uždaviniai
 
