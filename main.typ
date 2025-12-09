@@ -51,7 +51,7 @@ Pirmą kartą ši problema aprašyta @dantzig1959The_Tr, kur autorius aprašė a
 Tai yra modernios logistikos optimizavimo uždavinys -- optimaliai #todo[sudelioti] maršrutai gali lemti mažesnius kainos ir pristatymo laiko kaštus.
 
 Kur keliaujančio pardavėjo uždavinyje pagrindinė užduotis yra surasti optimaliausią kelią vienam keliautojui -- pardavėjui,
-VRP sprendimai #todo[susideda] iš kelių keliautojų -- literatūroje dažnai tiesiogiai #todo[referenced to as] transporto priemonės.
+VRP sprendimai #todo[susideda] iš kelių keliautojų -- literatūroje dažnai tiesiogiai vadinama transporto priemonėmis.
 Kadangi šis uždavinys priklauso #todo[NP-Hard] sudėtingumo klasei, tikslūs metodai su dideliais kiekiais duomenų tampa nepraktiški #todo[[CITATION NEEDED]].
 
 Praktikoje taikomos VRP variacijos (CVRP, VRPTW, MDPVRP, PVRP ir kt.)
@@ -59,7 +59,7 @@ Praktikoje taikomos VRP variacijos (CVRP, VRPTW, MDPVRP, PVRP ir kt.)
 ar prideda papildomas salygas:
 - keli depai iš kurių galima pradėti maršrutą (MDVRP),
 - maršrutai planuojami per kelias dienas, t.y. vieni taškai gali būti aplankyti vieną dieną, o kiti kitą. (#todo[TODO]).
-Algoritmų kokybei vertinti plačiai naudojami _de facto_ standartizuota geriausių sprendinių #angl[Best Known Solution -- BKS] rinkiniai, pvz., CVRPLIB #todo[[CITATION NEEDED: Uchoa]]
+Algoritmų kokybei vertinti plačiai naudojami _de facto_ standartizuota geriausių sprendinių #angl[Best Known Solution -- BKS] rinkiniai, pvz., "CVRPLIB" #todo[[CITATION NEEDED: Uchoa]]
 
 Dėl skaičiavimo sąnaudų dominuoja heuristikomis ir metaheuristikomis grįsti algoritmai #todo[[CITATION NEEDED]].
 Vienas kokybiškiausių, atsižvelgiant į algoritmo vykdymo laiką, metaheuristinių algoritmų –- hibridinis genetinis paieškos algoritmas (#angl[Hydrid Genetic Search -- HGS]) [@vidal2012A_Hybr],
@@ -67,37 +67,40 @@ kurio atviro kodo realizacijos ir vėlesnės pagerintos versijos išlieka etalon
 
 Dideliems duomenų rinkiniams net HGS didžiąją laiko dalį skiria lokalių paieškų operatoriams #angl[Local Search Operator],
 todėl literatūroje nagrinėjamas jų lygiagretinimas:
-- GPU pagreitinti 2-opt/Swap operatoriai [@lei2025Speedi],
-- genetinių operacijų lygiagretinimas [@abdelatti2020An_imp]
-- OpenMP pagrįstas iteracijų skaidymas [@muniasamy2023Effect].
+- GPU pagreitinimas
+// - GPU pagreitinti 2-opt/Swap operatoriai @lei2025Speedi,
+- Kombinuoja HGS su kitais modeliais @rezaei2024Explor, kurie leidžia lygiagretinimą naudojant #todo[message passing] @jamshidi2025A_Para.
 
 Šio *darbo tikslas* -- išlygiagretinti hibridinio genetinio paieškos algoritmą, skirto transporto maršrutų optimizavimo uždaviniams spręsti,
 siekiant sumažinti vykdymo laiką neprarandant ar net pagerinant sprendimų kokybės.
 
 *Uždavinai:*
 
-1. Išsirinkti duomenų rinkinį pagal, kurį galima būtų testuoti/analizuoti sprendimus, pvz.:
-  - tikriausiai CVRPLIB repository (repository of BKSs - Best Known Solutions) (https://vrp.galgos.inf.puc-rio.br/index.php/en/)
-  - Solomon
-  - Neural Combinatorial Optimization for Real-World Routing (2025)
-  - Test-data generation and integration for long-distance e-vehicle routing (2023)
-  - #c(<UCHOA2017845>)
-  - #q(a: <lei2025Speedi>)[For the CVRP and VRPTW, the BKS values are obtained
-  - @jastrzab2024Standa [3/1337 psl.]
-  from the CVRPLIB repository (http://vrp.galgos.inf.puc-rio.br/) as of
-  April 30, 2025. For the CVRP, we use results from HGS-2012 [38] and HGS-
-  CVRP [14]. For the VRPTW, with the objective of minimizing the total travel
-  distance, we reference results from the DIMACS competition, including both
-  the official DIMACS reference results and the champion team’s algorithm,
-  HGS-DIMACS [39]. For the VRPSPDTW, we report the best results from the
-  state-of-the-art MA-FIRD method [32].]
-2. Išanalizuoti, kaip veikia HGS algoritmas
-3. Atrinkti paralelizuojamas dalis, ar dalis, kurias galima galima pakeisti paralelizuojamomis
-4. Palyginti rezultatus su kitais state-of-the-art algoritmais
+#note[
+  1. Išsirinkti duomenų rinkinį pagal, kurį galima būtų testuoti/analizuoti sprendimus, pvz.:
+    - tikriausiai CVRPLIB repository (repository of BKSs - Best Known Solutions) (https://vrp.galgos.inf.puc-rio.br/index.php/en/)
+    - Solomon
+    - Neural Combinatorial Optimization for Real-World Routing (2025)
+    - Test-data generation and integration for long-distance e-vehicle routing (2023)
+    - #c(<UCHOA2017845>)
+    - #q(a: <lei2025Speedi>)[For the CVRP and VRPTW, the BKS values are obtained
+    - @jastrzab2024Standa [3/1337 psl.]
+    from the CVRPLIB repository (http://vrp.galgos.inf.puc-rio.br/) as of
+    April 30, 2025. For the CVRP, we use results from HGS-2012 [38] and HGS-
+    CVRP [14]. For the VRPTW, with the objective of minimizing the total travel
+    distance, we reference results from the DIMACS competition, including both
+    the official DIMACS reference results and the champion team’s algorithm,
+    HGS-DIMACS [39]. For the VRPSPDTW, we report the best results from the
+    state-of-the-art MA-FIRD method [32].]
+  2. Išanalizuoti, kaip veikia HGS algoritmas
+  3. Atrinkti paralelizuojamas dalis, ar dalis, kurias galima galima pakeisti paralelizuojamomis
+  4. Palyginti rezultatus su kitais state-of-the-art algoritmais
 
-  1. Parinkti tinkamus (hyper-) parametrus (see @jastrzab2024Standa [3/1337 psl.])
+    1. Parinkti tinkamus (hyper-) parametrus (see @jastrzab2024Standa [3/1337 psl.])
+]
 
-== Plačiau apie VRP #todo[constraints]
+#todo[TODO]: sekciją žemiau tikriausiai bus galima pašalinti arba stipriai sutrumpinti.
+#note[== Plačiau apie VRP #todo[constraints]
 
 Galimi #todo[constraints], kuriuos galima uždėti ant VRP problemų:
 
@@ -114,6 +117,7 @@ Galimi #todo[constraints], kuriuos galima uždėti ant VRP problemų:
   - per tašką
   - per atstumą
   - etc...
+]
 
 == Metodai
 
@@ -207,11 +211,11 @@ borhood called Swap\*.]
 
 == Literatūros apžvalgos
 
-- #c(<hameed2025A_Deta>)
+==== #c(<hameed2025A_Deta>)
   \ tl;dr: aprašto logistikos problemų kriterijus ir tipus,
   tada šias priskiria tam tikriem VRP tipams (e.g. VRPPD, VRPTW, etc...)
 
-- #c(<adamo2024A_revi>)
+==== #c(<adamo2024A_revi>)
   \ tl;dr: pagrinde pristato ir aprašo CVRP.
   Išskiria metodų grupes (tikslūs; apytikslūs - heuristiniai ir metaheuristiniai).
   Iš metaheuristinių algoritmų grupių išskiria tris grupes:
@@ -221,7 +225,7 @@ borhood called Swap\*.]
   •Swarm Intelligence like “Ant colony optimization (ACO)”.]
   pasirinkti ACO grįsti algortimai ir palyginti tarpusavyje.
 
-- #c(<petropoulos2023Operat>)
+==== #c(<petropoulos2023Operat>)
   \ tl;dr: apriebia visą _Operations Research_ iš 200 psl. ~2 skirta VRP.
   Pateikia įvairius naujus metaheuristinius algoritmus, išskiria HGS kaip vieną iš geresnių.
   #q()[An up-to-date survey on recent trends can be
@@ -296,6 +300,7 @@ borhood called Swap\*.]
 
   #q[we incorporated TGA into the MA-FIRD algorithm]
 
+    - lygiagretinama ant GPU
     - #highlight(fill: red.lighten(50%))[NĖRA SOURCE CODE]
     - #note[PREPRINT]
     - ypatingas pagreitėjimas su ypač dideliais duomenų kiekiais
@@ -346,7 +351,7 @@ borhood called Swap\*.]
   #q[#image("img/Screenshot From 2025-10-29 01-43-32.png")]
 
   - Grįstas HGS.
-  - padalina darbus per kelis įrenginius/GPUs? ("nodes" straipsnyje) naudojant MPI.
+  - padalina darbus per kelis įrenginius/GPUs? ( straipsnyje "nodes") naudojant MPI.
     \ Naudoja CUDA, kad lygiagretinti LS.
     - Reikalauja kelių node'ų kiekvienas su GPU.
   - nėra rezultatų palyginimų, su pvz.: BKS
@@ -355,7 +360,7 @@ borhood called Swap\*.]
 
 #br
 
-==== #c(<muniasamy2023Effect>)
+==== ⭐ #c(<muniasamy2023Effect>)
   - parelizuota ant GPU
   - ~1500 eilučių C++/CUDA kodo (https://github.com/mrprajesh/parMDS)
 
@@ -441,6 +446,8 @@ the local search and the clone-restricting algorithms [37].]
   Management (GOL). IEEE, 1–9.
 
 ==== Parallel Version of Local Search Heuristic Algorithm to Solve Capacitated Vehicle Routing Problem (2021)
+
+  - Lygiagretina pasinaudojant GPU
 
    #q[ The GPU-based parallel com-
   putation has already shown the effectiveness in reducing
