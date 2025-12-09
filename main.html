@@ -26,23 +26,29 @@
     <div>HGS <span style="display: inline-block;"></span> ⁠1</div>
     <div>Kiti <span style="display: inline-block;"></span> ⁠1</div>
     <div>Literatūros apžvalgos <span style="display: inline-block;"></span> ⁠1</div>
+    <div>"A Detailed Review of the Capacitated Vehicle Routing Problem: Model, Computational Complexity, Solutions, and Practical Applications" [Ham+25] (2025) <span style="display: inline-block;"></span> ⁠1</div>
+    <div>"A review of recent advances in time-dependent vehicle routing" [Ada+24] (2024) <span style="display: inline-block;"></span> ⁠1</div>
+    <div>"Operational Research: methods and applications" [Pet+23] (2023) <span style="display: inline-block;"></span> ⁠1</div>
     <div>Lygiagretinimas <span style="display: inline-block;"></span> ⁠1</div>
     <div>"Pathways to Efficient and Equitable Solutions for Large-Scale Routing Problems" (2025) <span style="display: inline-block;"></span> ⁠1</div>
     <div>"Speeding up Local Optimization in Vehicle Routing with Tensor-based GPU Acceleration" [LHW25] (2025) <span style="display: inline-block;"></span> ⁠1</div>
     <div>"A Parallel Hybrid Genetic Search for the Capacitated VRP with Pickup and Delivery" (2023) <span style="display: inline-block;"></span> ⁠1</div>
-    <div>"Effective Parallelization of the Vehicle Routing Problem" [Mun+23] (2023) <span style="display: inline-block;"></span> ⁠1</div>
+    <div>⭐ "Effective Parallelization of the Vehicle Routing Problem" [Mun+23] (2023) <span style="display: inline-block;"></span> ⁠1</div>
     <div>"Standardized validation of vehicle routing algorithms" [Jas+24] (2024) ["1.1 Related work" sekcija] <span style="display: inline-block;"></span> ⁠1</div>
     <div>"An improved GPU-accelerated heuristic technique applied to the capacitated vehicle routing problem" [AS20] (2020) <span style="display: inline-block;"></span> ⁠1</div>
     <div>Parallel Version of Local Search Heuristic Algorithm to Solve Capacitated Vehicle Routing Problem (2021) <span style="display: inline-block;"></span> ⁠1</div>
+    <div>"Exploring dynamic population Island genetic algorithm for solving the capacitated vehicle routing problem" [Rez+24] (2024) <span style="display: inline-block;"></span> ⁠1</div>
     <div>"A Parallel Hybrid Genetic Search for Solving the Capacitated Vehicle Routing Problem" [Jam+25] (2025) <span style="display: inline-block;"></span> ⁠1</div>
+    <div>Decentralized message passing algorithm for heterogeneous multi-depot vehicle routing problems (2025) <span style="display: inline-block;"></span> ⁠1</div>
     <div>Rezultatų palyginimas <span style="display: inline-block;"></span> ⁠1</div>
+    <div>New benchmark instances for the Capacitated Vehicle Routing Problem (2017) <span style="display: inline-block;"></span> ⁠1</div>
     <div>Tikslas ir uždaviniai <span style="display: inline-block;"></span> ⁠1</div>
     <div>Matematinis formulavimas <span style="display: inline-block;"></span> ⁠1</div>
     <div>Notes <span style="display: inline-block;"></span> ⁠1</div>
     <div>Šaltiniai <span style="display: inline-block;"></span> ⁠1</div>
     <h2>Terminai</h2>
     <ul>
-      <li>Populiacija - set of individuals</li>
+      <li>Populiacija - Rinkinys invididų.</li>
       <li>Individas - Individual solution (i.e. set of routes and points assigned to them)</li>
     </ul>
     <h2>Santrumpos</h2>
@@ -73,19 +79,18 @@
     </ul>
     <h2>Įvadas</h2>
     <p>VRP – Transporto maršrutų optimizavimo uždavinys (<em>angl. Vehicle Routing Problem</em>) yra uždavinys, kurio tikslas yra surasti kuo optimaliausią maršrutų rinkinį Čia dar reikia pasidomėti iš ko tiksliai susideda COST funkcija. Pirmą kartą ši problema aprašyta [DR59], kur autorius aprašė algoritmą, kuris suranda optimalius maršrutus tarp kuro depo ir degalinių. Tai yra modernios logistikos optimizavimo uždavinys – optimaliai sudelioti maršrutai gali lemti mažesnius kainos ir pristatymo laiko kaštus.</p>
-    <p>Kur keliaujančio pardavėjo uždavinyje pagrindinė užduotis yra surasti optimaliausią kelią vienam keliautojui – pardavėjui, VRP sprendimai susideda iš kelių keliautojų – literatūroje dažnai tiesiogiai referenced to as transporto priemonės. Kadangi šis uždavinys priklauso NP-Hard sudėtingumo klasei, tikslūs metodai su dideliais kiekiais duomenų tampa nepraktiški [CITATION NEEDED].</p>
+    <p>Kur keliaujančio pardavėjo uždavinyje pagrindinė užduotis yra surasti optimaliausią kelią vienam keliautojui – pardavėjui, VRP sprendimai susideda iš kelių keliautojų – literatūroje dažnai tiesiogiai vadinama transporto priemonėmis. Kadangi šis uždavinys priklauso NP-Hard sudėtingumo klasei, tikslūs metodai su dideliais kiekiais duomenų tampa nepraktiški [CITATION NEEDED].</p>
     <p>Praktikoje taikomos VRP variacijos (CVRP, VRPTW, MDPVRP, PVRP ir kt.) įveda papildomus apribojimus maršrutų ilgiui, transporto priemonių panaudojimo laikui ir talpai, ar prideda papildomas salygas:</p>
     <ul>
       <li>keli depai iš kurių galima pradėti maršrutą (MDVRP),</li>
       <li>maršrutai planuojami per kelias dienas, t.y. vieni taškai gali būti aplankyti vieną dieną, o kiti kitą. (TODO).</li>
     </ul>
-    <p>Algoritmų kokybei vertinti plačiai naudojami <em>de facto</em> standartizuota geriausių sprendinių (<em>angl. Best Known Solution – BKS</em>) rinkiniai, pvz., CVRPLIB [CITATION NEEDED: Uchoa]</p>
+    <p>Algoritmų kokybei vertinti plačiai naudojami <em>de facto</em> standartizuota geriausių sprendinių (<em>angl. Best Known Solution – BKS</em>) rinkiniai, pvz., "CVRPLIB" [CITATION NEEDED: Uchoa]</p>
     <p>Dėl skaičiavimo sąnaudų dominuoja heuristikomis ir metaheuristikomis grįsti algoritmai [CITATION NEEDED]. Vienas kokybiškiausių, atsižvelgiant į algoritmo vykdymo laiką, metaheuristinių algoritmų –- hibridinis genetinis paieškos algoritmas ((<em>angl. Hydrid Genetic Search – HGS</em>)) [[Vid+12]], kurio atviro kodo realizacijos ir vėlesnės pagerintos versijos išlieka etalonas daugeliui VRP variantų [[Vid22]].</p>
     <p>Dideliems duomenų rinkiniams net HGS didžiąją laiko dalį skiria lokalių paieškų operatoriams (<em>angl. Local Search Operator</em>), todėl literatūroje nagrinėjamas jų lygiagretinimas:</p>
     <ul>
-      <li>GPU pagreitinti 2-opt/Swap operatoriai [[LHW25]],</li>
-      <li>genetinių operacijų lygiagretinimas [[AS20]]</li>
-      <li>OpenMP pagrįstas iteracijų skaidymas [[Mun+23]].</li>
+      <li>GPU pagreitinimas</li>
+      <li>Kombinuoja HGS su kitais modeliais [Rez+24], kurie leidžia lygiagretinimą naudojant message passing [Jam+25].</li>
     </ul>
     <p>Šio <strong>darbo tikslas</strong> – išlygiagretinti hibridinio genetinio paieškos algoritmą, skirto transporto maršrutų optimizavimo uždaviniams spręsti, siekiant sumažinti vykdymo laiką neprarandant ar net pagerinant sprendimų kokybės.</p>
     <p><strong>Uždavinai:</strong></p>
@@ -112,6 +117,7 @@
         </ol>
       </li>
     </ol>
+    <p>TODO: sekciją žemiau tikriausiai bus galima pašalinti arba stipriai sutrumpinti.</p>
     <h3>Plačiau apie VRP constraints</h3>
     <p>Galimi constraints, kuriuos galima uždėti ant VRP problemų:</p>
     <ul>
@@ -185,29 +191,6 @@
       </li>
       <li>maintains diversity in search -> avoids local minima ir dar aukštesnės kokybės sprendimai ir reduced computational time.</li>
     </ul>
-    <p>HGS algoritmo veikimą galima suskaidyti į kelias glaudžiai susijusias dalis [[Vid+12]; [Vid+14]; [Vid+16]; [Vid17]; [Vid+21]; [Vid22]].</p>
-    <ul>
-      <li>
-        <p>Sprendinio reprezentacija ir Split algoritmas. HGS sprendinius koduoja kaip vieną klientų permutaciją (vadinamą „milžinišku turu“ (<em>angl. giant tour</em>)). Iš šios sekos maršrutų rinkinys sudaromas taikant specialų Split algoritmą, kuris dinaminiu programavimu randa pigiausią būdą padalyti turą į maršrutus, tenkinančius talpos ir kitus apribojimus [[Vid+12]; [Vid+16]]. HGS-CVRP variante naudojama optimizuota, linijinio laiko Split realizacija, leidžianti reikšmingai sumažinti skaičiavimo sąnaudas [[Vid22]].</p>
-      </li>
-      <li>
-        <p>Tinkamumo funkcija ir baudos už apribojimų pažeidimą. Kiekvienam individui apskaičiuojama tikslinė funkcija, sujungianti maršrutų sąnaudas ir baudas už talpos, maršruto ilgio ar kitų apribojimų pažeidimus [[Vid+12]]. HGS palaiko atskiras leistinų ir neleistinų (šiek tiek apribojimus pažeidžiančių) sprendinių populiacijas. Baudos koeficientai adaptuojami taip, kad būtų palaikomas tikslinis leistinų sprendinių santykis, todėl paieška neišsigimsta nei į vien tik neleistinus, nei į pernelyg konservatyvius sprendinius [[Vid+14]].</p>
-      </li>
-      <li>
-        <p>Pradinė populiacija. Pradiniai individai generuojami taikant konstrukcines heuristikas ir atsitiktines klientų permutacijas, kurios iš karto pagerinamos lokalia paieška [[Vid+12]]. Taip užtikrinama, kad populiacijoje nuo pat pradžių būtų lokaliniu požiūriu geri sprendiniai, o genetiniai operatoriai dirbtų su jau pakankamai kokybiškais maršrutais.</p>
-      </li>
-      <li>
-        <p>Genetiniai operatoriai. Tėvai parenkami pagal reitinguotą tinkamumą, tačiau atranka sąmoningai iškreipiama taip, kad būtų palaikoma sprendinių įvairovė (išvengiama situacijos, kai visi individai tampa labai panašūs) [[Vid+12]]. Kryžminimo operatoriai konstruoja naują klientų seką iš dviejų tėvų, stengdamiesi išsaugoti geras maršrutų struktūras ir ilgesnius potūrių fragmentus [[Vid+14]]. Po kryžminimo naujas individas vėl padalomas į maršrutus Split algoritmu ir, jei reikia, patobulinamas lokalia paieška.</p>
-      </li>
-      <li>
-        <p>Lokali paieška. HGS didelę laiko dalį skiria intensyviai lokaliai paieškai, taikančiai kelis kaimynystės operatorius, pvz., kliento perkėlimą į kitą maršrutą, klientų apsikeitimą, dviejų lankų inversiją maršrute ir pan. [[Vid+12]; [Vid+16]]. Kaimynystės struktūros ir duomenų struktūros parinktos taip, kad daug skaičiavimų būtų galima pernaudoti ir atmes­ti akivaizdžiai nepalankius judesius dar prieš pilną sprendinio pervertinimą [[Vid22]].</p>
-      </li>
-      <li>
-        <p>Populiacijos valdymas ir diversifikacija. HGS eksplciitiškai matuoja sprendinių panašumą (pagal sutampančius lankus ar maršrutus) ir riboja per daug panašių individų skaičių populiacijoje [[Vid+14]; [Vid17]]. Reguliariai eliminuojami blogiausi arba per daug panašūs individai, o jų vietą užima nauji, labiau skirtingi sprendiniai. Tokia populiacijos valdymo schema leidžia išlaikyti ilgalaikę paieškos įvairovę ir kartu koncentruotis ties geriausių iki tol rastų sprendinių struktūromis [[Vid+21]].</p>
-      </li>
-    </ul>
-    <p>Tipinė HGS iteracija susideda iš tėvų poros atrankos, kryžminimo (ir, jei taikoma, mutacijos), naujo individo padalijimo į maršrutus Split algoritmu, lokalios paieškos, tinkamumo įvertinimo ir sprendimo, ar šis individas įtraukiamas į populiaciją, ar pakeičia esamus panašius, bet blogesnius sprendinius [[Vid+12]]. Procesas kartojamas tol, kol pasiekiamas sustabdymo kriterijus (laiko limitas, iteracijų skaičius be pagerinimo ar kt.) [[Vid22]].</p>
-    <p>Dėl tokios architektūros HGS ir jo išvestiniai variantai (pvz., GVRP ir SoftCluVRP sprendžiantys metodai [[Lat25a]; [Lat25b]] ar DPIGA-HGS algoritmas [[Rez+24]]) laikomi vienais iš „aukso standarto“ metaheuristinių metodų VRP uždavinių šeimai ir dažnai naudojami kaip etalonas lyginant naujus algoritmus.</p>
     <p>Per daugelį iteracijų patobulintas aprašytas "Hybrid genetic search for the CVRP: Open-source implementation and SWAP* neighborhood" [Vid22] (2022).</p>
     <ul>
       <li>
@@ -253,42 +236,34 @@
       </li>
     </ul>
     <h3>Literatūros apžvalgos</h3>
+    <h5>"A Detailed Review of the Capacitated Vehicle Routing Problem: Model, Computational Complexity, Solutions, and Practical Applications" [Ham+25] (2025)</h5>
+    <p><br>tl;dr: aprašto logistikos problemų kriterijus ir tipus, tada šias priskiria tam tikriem VRP tipams (e.g. VRPPD, VRPTW, etc…)</p>
+    <h5>"A review of recent advances in time-dependent vehicle routing" [Ada+24] (2024)</h5>
+    <p><br>tl;dr: pagrinde pristato ir aprašo CVRP. Išskiria metodų grupes (tikslūs; apytikslūs - heuristiniai ir metaheuristiniai). Iš metaheuristinių algoritmų grupių išskiria tris grupes:</p>
+    <div><em><blockquote>•Evolutionary such as “Genetic Algorithm (GA)”;<br>•Physic - Based such as “Simulated Annealing Algorithm (SAA)”; and<br>•Swarm Intelligence like “Ant colony optimization (ACO)”.</blockquote><p>— Tommaso Adamo, Michel Gendreau, Gianpaolo Ghiani, Emanuela Guerriero [Ada+24]</p></em></div>
+    <p>pasirinkti ACO grįsti algortimai ir palyginti tarpusavyje.</p>
+    <h5>"Operational Research: methods and applications" [Pet+23] (2023)</h5>
+    <p><br>tl;dr: apriebia visą <em>Operations Research</em> iš 200 psl.  2 skirta VRP. Pateikia įvairius naujus metaheuristinius algoritmus, išskiria HGS kaip vieną iš geresnių.</p>
+    <div><em><blockquote>An up-to-date survey on recent trends can be found in Vidal et al. (2020) [[VLM20]]</blockquote><p>— </p></em></div>
+    <div><em><blockquote>Clear standards have been set by the CVRP com­ munity around which benchmark instances should be used for testing the performance of an algorithm, and which are ways of testing a computer code for a fair comparison with other previously proposed algorithms. Uchoa et al. (2017) discuss the most widely used instances and provides a link to the repository, in which the input data, as well as the best known solu­ tions, are provided and kept up-to-date by the authors. A more recent set of instances and best known solu­ tions is available in Queiroga et al. (2022), where the authors provide data enabling the use of machine learning approaches to solve the CVRP. Accorsi et al. (2022) present the standard practices to test CVRP algorithms: how to determine computing time (typic­ ally on a single thread), common ways of tuning parameters, and providing best and average solutions on a specified number of executions, among others.</blockquote><p>— </p></em></div>
     <ul>
-      <li>
-        <p>"A Detailed Review of the Capacitated Vehicle Routing Problem: Model, Computational Complexity, Solutions, and Practical Applications" [Ham+25] (2025)<br>tl;dr: aprašto logistikos problemų kriterijus ir tipus, tada šias priskiria tam tikriem VRP tipams (e.g. VRPPD, VRPTW, etc…)</p>
-      </li>
-      <li>
-        <p>"A review of recent advances in time-dependent vehicle routing" [Ada+24] (2024)<br>tl;dr: pagrinde pristato ir aprašo CVRP. Išskiria metodų grupes (tikslūs; apytikslūs - heuristiniai ir metaheuristiniai). Iš metaheuristinių algoritmų grupių išskiria tris grupes:</p>
-        <div><em><blockquote>•Evolutionary such as “Genetic Algorithm (GA)”;<br>•Physic - Based such as “Simulated Annealing Algorithm (SAA)”; and<br>•Swarm Intelligence like “Ant colony optimization (ACO)”.</blockquote><p>— Tommaso Adamo, Michel Gendreau, Gianpaolo Ghiani, Emanuela Guerriero [Ada+24]</p></em></div>
-        <p>pasirinkti ACO grįsti algortimai ir palyginti tarpusavyje.</p>
-      </li>
-      <li>
-        <p>"Operational Research: methods and applications" [Pet+23] (2023)<br>tl;dr: apriebia visą <em>Operations Research</em> iš 200 psl.  2 skirta VRP. Pateikia įvairius naujus metaheuristinius algoritmus, išskiria HGS kaip vieną iš geresnių.</p>
-        <div><em><blockquote>An up-to-date survey on recent trends can be found in Vidal et al. (2020) [[VLM20]]</blockquote><p>— </p></em></div>
-        <div><em><blockquote>Clear standards have been set by the CVRP com­ munity around which benchmark instances should be used for testing the performance of an algorithm, and which are ways of testing a computer code for a fair comparison with other previously proposed algorithms. Uchoa et al. (2017) discuss the most widely used instances and provides a link to the repository, in which the input data, as well as the best known solu­ tions, are provided and kept up-to-date by the authors. A more recent set of instances and best known solu­ tions is available in Queiroga et al. (2022), where the authors provide data enabling the use of machine learning approaches to solve the CVRP. Accorsi et al. (2022) present the standard practices to test CVRP algorithms: how to determine computing time (typic­ ally on a single thread), common ways of tuning parameters, and providing best and average solutions on a specified number of executions, among others.</blockquote><p>— </p></em></div>
-      </li>
-      <li>
-        <p>TODO: "A concise guide to existing and emerging vehicle routing problem variants" [VLM20] (2020)</p>
-      </li>
-      <li>
-        <p>TODO: <a href="https://www.sciencedirect.com/science/article/abs/pii/S0377221724002923">A hybrid genetic search and dynamic programming-based split algorithm for the multi-trip time-dependent vehicle routing problem</a></p>
-      </li>
-      <li>
-        <p>TODO: <a href="https://link.springer.com/article/10.1007/s12351-020-00600-7">Vehicle routing problem and related algorithms for logistics distribution: a literature review and classification (2020)</a></p>
-      </li>
+      <li>TODO: "A concise guide to existing and emerging vehicle routing problem variants" [VLM20] (2020)</li>
+      <li>TODO: <a href="https://www.sciencedirect.com/science/article/abs/pii/S0377221724002923">A hybrid genetic search and dynamic programming-based split algorithm for the multi-trip time-dependent vehicle routing problem</a></li>
+      <li>TODO: <a href="https://link.springer.com/article/10.1007/s12351-020-00600-7">Vehicle routing problem and related algorithms for logistics distribution: a literature review and classification (2020)</a></li>
     </ul>
     <h4>Lygiagretinimas</h4>
     <h5>"Pathways to Efficient and Equitable Solutions for Large-Scale Routing Problems" (2025)</h5>
     <p><br>Dar neišleista disertacija - PREVIEW<br>Pagreitina HGS veikimą naudojant deep learning (ir vėliau jį pritaiko last-mile gig-economy panaudojimui).<br></p>
     <div><em><blockquote>The third problem extends the classical Rural Postman Problem (RPP) to a mixed- fleet scenario involving multiple trucks and drones, with the objective of minimizing makespan</blockquote><p>— </p></em></div>
     <h5>"Speeding up Local Optimization in Vehicle Routing with Tensor-based GPU Acceleration" [LHW25] (2025)</h5>
-    <div><em><blockquote>In this study, we explore a promising direction to address this challenge by introducing an original tensor-based GPU ac- celeration method designed to speed up the commonly used local search operators in vehicle routing.</blockquote><p>— </p></em></div>
+    <div><em><blockquote>In this study, we explore a promising direction to address this challenge by introducing an original tensor-based GPU acceleration method designed to speed up the commonly used local search operators in vehicle routing.</blockquote><p>— </p></em></div>
     <div><em><blockquote>[25] proposed a hybrid genetic algorithm integrating 2-opt local search to solve the capacitated VRP on GPU. The GPU was used to handle all algorith- mic components, including population initialization, reproduction, 2-opt local search, and refining processes. [26] developed a GPU-based multi-objective memetic algorithm for the VRP with route balancing. They proposed two schemes for the parallelism: solution-level parallelism, where multiple solutions were processed using parallel local search, and route-level parallelism, which provided a finer granularity by parallelizing route level evaluations. However, their method did not exploit the finer node-level parallelism commonly used in neighborhood evaluations. [27] explored GPU-based parallelization of 2-opt and 3-opt local search opera- tors for the CVRP, achieving significant speedups over CPU implementations. Similarly, [28] extended GPU-based local search for the CVRP by incorporat- ing additional operators such as or-opt, swap, and relocate, achieving compa- rable improvements in computational performance. However, their methods were limited to the basic travel distance evaluation. [29] addressed the single VRP with deliveries and selective pickups using a GPU-based variable neigh- borhood search, where the GPU was also tasked with parallel neighborhood evaluations. Despite incorporating multiple local search operators, their ap- proach primarily optimized the evaluation of travel distance and struggled to effectively manage complex constraints.</blockquote><p>— </p></em></div>
     <p>[25]: "M. F. Abdelatti, M. S. Sodhi, An improved gpu-accelerated heuristic technique applied to the capacitated vehicle routing problem, in: Proceedings of the 2020 Genetic and Evolutionary Computation Conference, 2020"</p>
     <div><em><blockquote>We present the first innovative tensor-based GPU acceleration method that can be embedded in local search algorithms for solving various VRPs.</blockquote><p>— </p></em></div>
     <div><em><blockquote>Our tensor-based GPU acceleration (TGA) method is highly extensible and can be integrated into various local search based algorithms and frameworks.</blockquote><p>— </p></em></div>
     <div><em><blockquote>we incorporated TGA into the MA-FIRD algorithm</blockquote><p>— </p></em></div>
     <ul>
+      <li>lygiagretinama ant GPU</li>
       <li>NĖRA SOURCE CODE</li>
       <li>PREPRINT</li>
       <li>ypatingas pagreitėjimas su ypač dideliais duomenų kiekiais</li>
@@ -317,7 +292,7 @@
     <ul>
       <li>Grįstas HGS.</li>
       <li>
-        <p>padalina darbus per kelis įrenginius/GPUs? ("nodes" straipsnyje) naudojant MPI.<br>Naudoja CUDA, kad lygiagretinti LS.</p>
+        <p>padalina darbus per kelis įrenginius/GPUs? ( straipsnyje "nodes") naudojant MPI.<br>Naudoja CUDA, kad lygiagretinti LS.</p>
         <ul>
           <li>Reikalauja kelių node'ų kiekvienas su GPU.</li>
         </ul>
@@ -326,9 +301,10 @@
       <li>palyginimas su Tabu search grįstu algoritmu, ne HGS</li>
       <li>Nėra SOURCE CODE: autorius pametė jį</li>
     </ul>
-    <h5>"Effective Parallelization of the Vehicle Routing Problem" [Mun+23] (2023)</h5>
+    <h5>⭐ "Effective Parallelization of the Vehicle Routing Problem" [Mun+23] (2023)</h5>
     <ul>
-      <li> 1500 eilučių C++ kodo (<a href="https://github.com/mrprajesh/parMDS">https://github.com/mrprajesh/parMDS</a>)</li>
+      <li>parelizuota ant GPU</li>
+      <li> 1500 eilučių C++/CUDA kodo (<a href="https://github.com/mrprajesh/parMDS">https://github.com/mrprajesh/parMDS</a>)</li>
     </ul>
     <div><em><blockquote>The state-of-the-art GPU implementations are due to Yelmewad and Talawar [35], and Abde- latti and Sodhi [1].</blockquote><p>— </p></em></div>
     <p>[1]: 2020. An improved GPU-accelerated heuristic technique applied to the capacitated vehicle routing problem.</p>
@@ -363,20 +339,32 @@
     <div><em><blockquote>[6] designed a genetic algorithm implemented on the GPU for the Dynamic VRP (DVRP) - which involves finding VRP solutions with some demands that are revealed after the tour is in progress.</blockquote><p>— </p></em></div>
     <p>[6]: A Benaini and A Berrajaa. 2018. Genetic algorithm for large dynamic vehicle rout- ing problem on GPU. In 2018 4th International Conference on Logistics Operations Management (GOL). IEEE, 1–9.</p>
     <h5>Parallel Version of Local Search Heuristic Algorithm to Solve Capacitated Vehicle Routing Problem (2021)</h5>
-    <div><em><blockquote>The GPU-based parallel com- putation has already shown the effectiveness in reducing the execution time [25]. The parallel computation for heuristic algorithms are applied in [26, 27] and solves instances up to 2401 nodes. The GPU-accelerated heuristic [28] solves CVRP instances of up to 76 nodes. Parallel heuristic presented in [29] provides solutions for instances up to 20,000 nodes but could not solve Belgium instances.</blockquote><p>— </p></em></div>
-    <p>[25]: Yelmewad, P., Talawar, B.: Parallel iterative hill climbing algorithm to solve tsp on gpu. Concurr. Comput. 31(7), e4974 (2019)</p>
-    <p>[26]: Jin, J., Crainic, T.G., Løkketangen, A.: A cooperative parallel metaheuristic for the capacitated vehicle routing problem. Com- put. Oper. Res. 44, 33–41 (2014)</p>
-    <p>[27]: Schulz, C.: Efficient local search on the gpu- investigations on the vehicle routing problem. J. Parallel Distrib. Comput. 73(1), 14–31 (2013). (Metaheuristics on GPUs)</p>
-    <p>[28]: Abdelatti, M.F., Sodhi, M.S.: An improved gpu-accelerated heuristic technique applied to the capacitated vehicle routing problem. In: Proceedings of the 2020 Genetic and Evolutionary Computation Conference, GECCO ’20. Association for Com- puting Machinery, New York, NY, pp. 663–671 (2020)</p>
-    <p>[29]: Yelmewad, P., Talawar, B.: Gpu-based parallel heuristics for capacited vehicle routing problem. In: 2020 IEEE International Conference on Electronics, Computing and Communication Technologies (CONECCT), pp. 1–6, (July 2020)</p>
+    <ul>
+      <li>
+        <p>Lygiagretina pasinaudojant GPU</p>
+        <div><em><blockquote>The GPU-based parallel com- putation has already shown the effectiveness in reducing the execution time [25]. The parallel computation for heuristic algorithms are applied in [26, 27] and solves instances up to 2401 nodes. The GPU-accelerated heuristic [28] solves CVRP instances of up to 76 nodes. Parallel heuristic presented in [29] provides solutions for instances up to 20,000 nodes but could not solve Belgium instances.</blockquote><p>— </p></em></div>
+        <p>[25]: Yelmewad, P., Talawar, B.: Parallel iterative hill climbing algorithm to solve tsp on gpu. Concurr. Comput. 31(7), e4974 (2019)</p>
+        <p>[26]: Jin, J., Crainic, T.G., Løkketangen, A.: A cooperative parallel metaheuristic for the capacitated vehicle routing problem. Com- put. Oper. Res. 44, 33–41 (2014)</p>
+        <p>[27]: Schulz, C.: Efficient local search on the gpu- investigations on the vehicle routing problem. J. Parallel Distrib. Comput. 73(1), 14–31 (2013). (Metaheuristics on GPUs)</p>
+        <p>[28]: Abdelatti, M.F., Sodhi, M.S.: An improved gpu-accelerated heuristic technique applied to the capacitated vehicle routing problem. In: Proceedings of the 2020 Genetic and Evolutionary Computation Conference, GECCO ’20. Association for Com- puting Machinery, New York, NY, pp. 663–671 (2020)</p>
+        <p>[29]: Yelmewad, P., Talawar, B.: Gpu-based parallel heuristics for capacited vehicle routing problem. In: 2020 IEEE International Conference on Electronics, Computing and Communication Technologies (CONECCT), pp. 1–6, (July 2020)</p>
+      </li>
+    </ul>
+    <h5>"Exploring dynamic population Island genetic algorithm for solving the capacitated vehicle routing problem" [Rez+24] (2024)</h5>
+    <p>Kombinuoja Islands modelį (Dynamic Population Island) su HGS</p>
+    <div><em><blockquote>The algorithm’s effectiveness is demonstrated through several experiments on diverse benchmark instances, including classical benchmarks (Uchoa, CMT, and Golden) and real-world application instances (LoggiBUD).</blockquote><p>— </p></em></div>
     <h5>"A Parallel Hybrid Genetic Search for Solving the Capacitated Vehicle Routing Problem" [Jam+25] (2025)</h5>
+    <p>Irgi kombinuoja islands modelį su HGS, kur kiekviena sala yra apskaičiuojama atskiroje gijoje.</p>
     <p>Naudoja OpenMP. IDEA: sukombinuoti šitą apprach'ą su local-search lygio lygiagretinimu ir perdaryti su MPI SOURCE CODE: awaiting response from author</p>
     <ul>
       <li>
         <div><em><blockquote>The population in the Hybrid Genetic Search (HGS) algorithm consists of a set of individuals, each representing a potential solution to the CVRP</blockquote><p>— </p></em></div>
       </li>
     </ul>
+    <h5>Decentralized message passing algorithm for heterogeneous multi-depot vehicle routing problems (2025)</h5>
+    <div><em><blockquote>a novel message-passing algorithm, named AMP-R, based on belief propagation is proposed</blockquote><p>— </p></em></div>
     <h4>Rezultatų palyginimas</h4>
+    <h5>New benchmark instances for the Capacitated Vehicle Routing Problem (2017)</h5>
     <h3>Tikslas ir uždaviniai</h3>
     <h2>Matematinis formulavimas</h2>
     <p>TODO</p>

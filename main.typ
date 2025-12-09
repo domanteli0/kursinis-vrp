@@ -14,12 +14,10 @@
   date: "Vilnius - 2025",
 )
 
-IDEA IDEA: do a message passing
-
 = Terminai
 
-- Populiacija - #todo[set of individuals]
-- Individas - #todo[Individual solution (i.e. set of routes and points assigned to them) ]
+- Populiacija - Rinkinys invididų.
+- Individas - #todo[Individual solution (i.e. set of routes and points assigned to them)]
 
 = Santrumpos <santr>
 
