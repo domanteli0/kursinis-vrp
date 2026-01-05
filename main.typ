@@ -1,5 +1,6 @@
 #import "style.typ": style
 #import "utils.typ": c, q, tab, todo, mine, note, angl, angl_, br
+#import "@preview/drafting:0.2.2": *
 
 #show: style.with(
   university: "Vilniaus universitetas",
@@ -15,6 +16,8 @@
 )
 
 = Terminai
+
+#q(a: <jamshidi2025A_Para>)[#image("diagrams/HGS1.svg")]
 
 - Populiacija - Rinkinys invididų.
 - Individas - #todo[Individual solution (i.e. set of routes and points assigned to them)]
@@ -50,17 +53,29 @@ Tai yra modernios logistikos optimizavimo uždavinys -- optimaliai #todo[sudelio
 
 Kur keliaujančio pardavėjo uždavinyje pagrindinė užduotis yra surasti optimaliausią kelią vienam keliautojui -- pardavėjui,
 VRP sprendimai #todo[susideda] iš kelių keliautojų -- literatūroje dažnai tiesiogiai vadinama transporto priemonėmis.
-Kadangi šis uždavinys priklauso #todo[NP-Hard] sudėtingumo klasei, tikslūs metodai su dideliais kiekiais duomenų tampa nepraktiški #todo[[CITATION NEEDED]].
+
+Nors egzistuoja įrankiai, kurie pasiteklia tikslius metodus (pavyzdžiui "Google or-tools" @ortools), kadangi šis uždavinys priklauso #todo[NP-Hard] sudėtingumo klasei, visgi dominuoja heuristikomis ir metaheuristikomis grįsti algoritmai #todo[[CITATION NEEDED]], nes šie beveik optimalius sprendimus suranda per greitesnį laiko tarpą sunaudodami mažiau resursų. Tikslūs metodai su ypač dideliais kiekiais duomenų tampa nepraktiški #todo[[CITATION NEEDED]].
 
 Praktikoje taikomos VRP variacijos (CVRP, VRPTW, MDPVRP, PVRP ir kt.)
 įveda papildomus apribojimus maršrutų ilgiui, transporto priemonių panaudojimo laikui ir talpai,
 ar prideda papildomas salygas:
 - keli depai iš kurių galima pradėti maršrutą (MDVRP),
-- maršrutai planuojami per kelias dienas, t.y. vieni taškai gali būti aplankyti vieną dieną, o kiti kitą. (#todo[TODO]).
-Algoritmų kokybei vertinti plačiai naudojami _de facto_ standartizuota geriausių sprendinių #angl[Best Known Solution -- BKS] rinkiniai, pvz., "CVRPLIB" #todo[[CITATION NEEDED: Uchoa]]
+- maršrutai planuojami per kelias dienas, t.y. vieni taškai gali būti aplankyti vieną dieną, o kiti kitą. (Periodic VRP).
+Algoritmų kokybei vertinti plačiai naudojami _de facto_ standartizuota geriausių sprendinių #angl[Best Known Solution -- BKS] rinkiniai, pavyzdžiui "CVRPLIB" @uchoa2017.
 
-Dėl skaičiavimo sąnaudų dominuoja heuristikomis ir metaheuristikomis grįsti algoritmai #todo[[CITATION NEEDED]].
-Vienas kokybiškiausių, atsižvelgiant į algoritmo vykdymo laiką, metaheuristinių algoritmų –- hibridinis genetinis paieškos algoritmas (#angl[Hydrid Genetic Search -- HGS]) [@vidal2012A_Hybr],
+Šiai problemai egzistuoja heuristiniai ir metaheuristinai (Aukštesnio lygio strategija/karkasas, kuris diriguoja, kurias heuristikas pritaikyti, kad efektyviau atrasti sprendimus) algoritmai. Keli dominuojantys pavyzdžiai
+
+  - "Adaptive Large Neighborhood Search" ir "Hybrid Adaptive Large Neighborhood Search"
+
+  - "Hybrid Genetic Search (HGS)"
+
+  - "Simulated Annealing Algorithm (SAA)"
+
+  - "Ant colony optimization (ACO)"
+
+#margin-note(dy: -13em)[Ar šita sekcija gal nereikalinga?]
+
+Vienas kokybiškiausių #todo[[CITATION NEEDED]], atsižvelgiant į algoritmo vykdymo laiką, metaheuristinių algoritmų –- hibridinis genetinis paieškos algoritmas (#angl[Hydrid Genetic Search -- HGS]) [@vidal2012A_Hybr],
 kurio atviro kodo realizacijos ir vėlesnės pagerintos versijos išlieka etalonas daugeliui VRP variantų [@vidal2022Hybrid].
 
 Dideliems duomenų rinkiniams net HGS didžiąją laiko dalį skiria lokalių paieškų operatoriams #angl[Local Search Operator],
@@ -80,7 +95,7 @@ siekiant sumažinti vykdymo laiką neprarandant ar net pagerinant sprendimų kok
     - Solomon
     - Neural Combinatorial Optimization for Real-World Routing (2025)
     - Test-data generation and integration for long-distance e-vehicle routing (2023)
-    - #c(<UCHOA2017845>)
+    - #c(<uchoa2017>)
     - #q(a: <lei2025Speedi>)[For the CVRP and VRPTW, the BKS values are obtained
     - @jastrzab2024Standa [3/1337 psl.]
     from the CVRPLIB repository (http://vrp.galgos.inf.puc-rio.br/) as of
@@ -119,21 +134,6 @@ Galimi #todo[constraints], kuriuos galima uždėti ant VRP problemų:
 
 == Metodai
 
-- Exact methods / Mathematical models (google or-tools)
-- Heuristic -- #todo[A problem-specific rule or method to quickly find a good (not necessarily optimal) solution.]
-- Metaheuristic -- #todo[A higher-level strategy/framework that guides heuristics to explore solutions more effectively.]
-
-  - Adaptive Large Neighborhood Search / Hybrid Adaptive Large Neighborhood Search
-    \ 🛠️ https://reinterpretcat.github.io/vrp/
-
-  - Hybrid Genetic Search (HGS)
-    \ 🛠️ https://github.com/vidalt/HGS-CVRP
-    \ 🛠️ https://pyvrp.org/
-
-  - Simulated Annealing Algorithm (SAA)
-
-  - Ant colony optimization (ACO)
-
 == Konkursai
 
 - DIMACS @dimacs2022vrp
@@ -146,7 +146,7 @@ Galimi #todo[constraints], kuriuos galima uždėti ant VRP problemų:
 
 Hibridinis genetinis paieškos (HGS) algoritmas yra vienas iš efektyviausių būdų spręsti transporto maršrutų optimizavimo uždavinius. #todo[[Citation needed?]]
 
-Pirma aprašytas #c(<vidal2012A_Hybr>) ir patobulintas #todo[@vidal2014A_unif, @vidal2016Large_, @vidal2017Node__, @vidal2021Arc_Ro].
+Pirma aprašytas #c(<vidal2012A_Hybr>) ir patobulintas #todo[@vidal2014A_unif, @vidal2016Large_, @vidal2017Node__, @vidal2021Arc_Ro, @vidal2022Hybrid].
 - #q(a: <vidal2012A_Hybr>)[#image("img/Screenshot From 2025-09-27 23-07-08.png")]
 - #q(a: <vidal2012A_Hybr>)[HGSADC proves to be extremely competitive CVRP.]
 - maintains diversity in search -> avoids local minima ir dar aukštesnės kokybės sprendimai ir reduced computational time.
@@ -165,7 +165,7 @@ designed for VRPs with multiple periods, and uses instead a new neigh-
 borhood called Swap\*.]
 - #q(a: <vidal2022Hybrid>)[In HGS-CVRP, we rely on the efficient linear-time Split algorithm introduced by Vidal (2016) #mine[@VIDAL2016] after each crossover operation.]
   \ #todo[TODO: #c(<VIDAL2016>)]
-- naudoja #todo[#c(<UCHOA2017845>)] metodiką rezultatų palyginimui
+- naudoja #todo[#c(<uchoa2017>)] metodiką rezultatų palyginimui
 - ~2000 eilučių C++ kodo (be whitespace)
 
 #br

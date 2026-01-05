@@ -1,0 +1,84 @@
+flowchart TD
+  subgraph EntryPoints["Entry Points"]
+    CLI["main.cpp (CLI)"]
+    CAPI["C_Interface.cpp (solve_cvrp / solve_cvrp_dist_mtx)"]
+  end
+
+  CLI --> Cmd["CommandLine: parse args + AlgorithmParameters overrides"]
+  Cmd --> Inst["InstanceCVRPLIB: read .vrp, build dist_mtx"]
+  CAPI --> Dist["Build distance matrix (if needed)"]
+  CAPI --> APIn["AlgorithmParameters from caller"]
+  Cmd --> APIn
+  Inst --> Params
+  Dist --> Params
+  APIn --> Params
+  Params["Params ctor: seed RNG, compute correlatedVertices, penalties, bounds"] --> Gen["Genetic ctor: Split + LocalSearch + Population + offspring"]
+
+  Gen --> Run["Genetic::run"]
+
+  subgraph GenRun["Genetic::run (single thread)"]
+    InitPopStart["Population.generatePopulation (start)"]
+    InitPopEnd["Population.generatePopulation (end)"]
+    Run --> InitPopStart
+    InitPopEnd --> LoopCond{{Stop? nbIterNonProd <= nbIter and time limit}}
+
+    LoopCond -- no --> Select["Population.getBinaryTournament x2"]
+    Select --> Cross["crossoverOX"]
+    Cross --> SplitStart
+
+    SplitEnd --> LSStart
+    LSEnd --> PopAddStart
+    PopAddEnd --> Repair{{Repair infeasible?}}
+
+    Repair -- yes --> RepairLS["LocalSearch.run (penalties x10)"]
+    RepairLS --> RepairAdd["Population.addIndividual (updateFeasible=false)"]
+    Repair -- no --> IterUpdate["Update nbIterNonProd; managePenalties; printState"]
+    RepairAdd --> IterUpdate
+
+    IterUpdate --> Restart{{Time limit and nbIterNonProd==nbIter?}}
+    Restart -- yes --> RestartDo["Population.restart (clear + generatePopulation)"]
+    RestartDo --> LoopCond
+    Restart -- no --> LoopCond
+    LoopCond -- yes --> Finish["Finish GA"]
+  end
+
+  Finish --> Output["Export best solution + progress CSV"]
+  Output --> CLIOut["Write CVRPLib solution file"]
+  Finish --> CAPIOut["prepare_solution returns Solution struct"]
+
+  subgraph SplitFlow["Split.generalSplit"]
+    SplitStart["Compute maxVehicles; precompute cliSplit + prefix sums"]
+    SplitStart --> SplitSimple["splitSimple DP"]
+    SplitSimple --> SplitOK{{Feasible?}}
+    SplitOK -- no --> SplitLF["splitLF DP (limited fleet)"]
+    SplitOK -- yes --> BuildChrom["Build chromR from preds"]
+    SplitLF --> BuildChrom
+    BuildChrom --> Eval["Individual.evaluateCompleteCost"]
+    Eval --> SplitEnd["Split done"]
+  end
+
+  subgraph LSFlow["LocalSearch.run"]
+    LSStart["loadIndividual (linked-list routes)"]
+    LSStart --> LSShuffle["Shuffle orderNodes/orderRoutes; shuffle correlatedVertices"]
+    LSShuffle --> LSMoves["RI moves + empty-route moves"]
+    LSMoves --> SwapStar{{Swap* enabled + coordinates?}}
+    SwapStar -- yes --> SwapMoves["SWAP* route pairs with overlapping sectors"]
+    SwapStar -- no --> LSExport["exportIndividual + evaluateCompleteCost"]
+    SwapMoves --> LSExport
+    LSExport --> LSEnd["LocalSearch done"]
+  end
+
+  subgraph PopAddFlow["Population.addIndividual"]
+    PopAddStart["Update feasibility lists"]
+    PopAddStart --> PopSub["Pick feasible/infeasible subpop"]
+    PopSub --> PopDist["Update brokenPairsDistance + proximity sets"]
+    PopDist --> PopInsert["Insert sorted by penalizedCost"]
+    PopInsert --> PopTrim{{Size > mu+lambda?}}
+    PopTrim -- yes --> PopRemove["removeWorstBiasedFitness"]
+    PopTrim -- no --> PopBest["Update bestSolution + searchProgress"]
+    PopRemove --> PopBest
+    PopBest --> PopAddEnd["AddIndividual done"]
+  end
+
+  InitPopStart --> InitPopLS["Initial population loop: random Individual -> Split -> LocalSearch -> addIndividual -> optional repair"]
+  InitPopLS --> InitPopEnd

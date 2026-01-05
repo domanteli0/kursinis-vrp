@@ -1,2 +1,5 @@
 .xdp-bibliography.bib~*
 .local
+diagrams/*.pdf
+diagrams/*.svg
+diagrams/*.png
