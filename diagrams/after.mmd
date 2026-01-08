@@ -1,49 +1,27 @@
-
 flowchart TD
-  subgraph MPI["MPI Multi-Start (one GA per rank)"]
-    MPIInit["MPI_Init (MpiGuard)"]
-    RankInfo["Get rank/size; seed offset; non-root quiet"]
-    MPIInit --> RankInfo
-  end
+  classDef changed fill:#ffe6b3,stroke:#cc7a00,stroke-width:1px;
 
-  RankInfo --> Cmd["CommandLine: parse args + AlgorithmParameters overrides"]
-  Cmd --> Inst["InstanceCVRPLIB: read .vrp, build dist_mtx"]
-  Inst --> Params["Params ctor: thread-local RNG seed base; correlatedVertices; penalties"]
-  Params --> Gen["Genetic ctor (Split + LocalSearch + Population)"]
-  Gen --> Run["Genetic::run"]
+  Start["Start (MPI rank)"]
+  MPIInit["MPI init + rank/size"]:::changed
+  Seed["Rank-based seed offset; quiet non-root"]:::changed
+  Parse["Parse CLI options"]
+  Load["Load instance data"]
+  Init["Initialize parameters + thread-local RNG"]:::changed
+  InitPop["Build initial population\n(split + local search per individual)"]:::changed
+  LoopCond{{Stop? time limit or no-improve}}
+  Offspring["Create offspring\n(selection + crossover + split)"]
+  Eval["Local search + feasibility repair"]:::changed
+  Update["Update population + penalties + traces"]
+  Restart{{Restart? time limit + stagnation}}
+  Output["Write best solution + progress\n(rank-suffixed for non-root)"]:::changed
+  MPIReduce["MPI reduce: report global best"]:::changed
+  OMPNote["OpenMP workers evaluate individuals\n(parallel regions)"]:::changed
 
-  subgraph OpenMPGen["Genetic::run (OpenMP-aware)"]
-    Run --> UseOMP{{OpenMP enabled and threads > 1?}}
+  Start --> MPIInit --> Seed --> Parse --> Load --> Init --> InitPop --> LoopCond
+  LoopCond -- no --> Offspring --> Eval --> Update --> Restart
+  Restart -- yes --> InitPop
+  Restart -- no --> LoopCond
+  LoopCond -- yes --> Output --> MPIReduce
 
-    UseOMP -- no --> SeqPath["Sequential path (same as before)"]
-
-    UseOMP -- yes --> OMPPar["#pragma omp parallel"]
-    OMPPar --> OMPGetWork["critical: selection + crossover; snapshot penalties"]
-    OMPGetWork --> OMPWork["thread-local Split + LocalSearch; optional repair"]
-    OMPWork --> OMPCommit["critical: addIndividual; counters; penalties; traces; restart"]
-    OMPCommit --> OMPGetWork
-  end
-
-  subgraph OpenMPInit["Population.generatePopulation (OpenMP-aware)"]
-    InitOMP{{OpenMP enabled and not already in parallel?}}
-    InitOMP -- yes --> OMPFor["#pragma omp parallel for: per-thread Split + LocalSearch"]
-    OMPFor --> OMPAdd["critical: addIndividual + optional repair"]
-    InitOMP -- no --> InitSeq["Sequential initial population loop"]
-  end
-
-  Run --> InitOMP
-  InitOMP --> UseOMP
-
-  subgraph RNG["Thread-local RNG (Params::rng)"]
-    RNGNote["Used by: crossover, tournament selection, individual shuffles, LS shuffles, repair coinflip"]
-  end
-
-  subgraph LSChanges["LocalSearch thread safety"]
-    LSCopy["LocalSearch holds its own correlatedVertices copy"]
-  end
-
-  Run --> RNGNote
-  Run --> LSCopy
-
-  Run --> Output["Export solution for this rank (rank>0: .rankN)"]
-  Output --> MPIReport["MPI_Allreduce: report global best cost + best rank"]
+  OMPNote -.-> InitPop
+  OMPNote -.-> Eval

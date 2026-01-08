@@ -47,7 +47,7 @@
 = Įvadas
 
 VRP -- Transporto maršrutų optimizavimo uždavinys #angl[Vehicle Routing Problem] yra uždavinys,
-kurio tikslas yra surasti kuo optimaliausią maršrutų rinkinį #todo[Čia dar reikia pasidomėti iš ko tiksliai susideda COST funkcija].
+kurio tikslas yra surasti kuo optimaliausią maršrutų rinkinį #todo[TODO: Čia dar reikia pasidomėti iš ko tiksliai susideda COST funkcija]. #todo[TODO: Paryškinti uždavinio svarbą].
 Pirmą kartą ši problema aprašyta @dantzig1959The_Tr, kur autorius aprašė algoritmą, kuris suranda optimalius maršrutus tarp kuro depo ir degalinių.
 Tai yra modernios logistikos optimizavimo uždavinys -- optimaliai #todo[sudelioti] maršrutai gali lemti mažesnius kainos ir pristatymo laiko kaštus.
 
@@ -59,8 +59,14 @@ Nors egzistuoja įrankiai, kurie pasiteklia tikslius metodus (pavyzdžiui "Googl
 Praktikoje taikomos VRP variacijos (CVRP, VRPTW, MDPVRP, PVRP ir kt.)
 įveda papildomus apribojimus maršrutų ilgiui, transporto priemonių panaudojimo laikui ir talpai,
 ar prideda papildomas salygas:
+- naudojamos transporto priemonės turi limituotą talpą (CVRP).
+- visi taškai turi gali būti aplankyti tik specifinėmis darbo valandomis (VRPTW)
 - keli depai iš kurių galima pradėti maršrutą (MDVRP),
 - maršrutai planuojami per kelias dienas, t.y. vieni taškai gali būti aplankyti vieną dieną, o kiti kitą. (Periodic VRP).
+- kt.
+
+Šis darbas atsižvelgia tik į CVRP uždavinį.
+
 Algoritmų kokybei vertinti plačiai naudojami _de facto_ standartizuota geriausių sprendinių #angl[Best Known Solution -- BKS] rinkiniai, pavyzdžiui "CVRPLIB" @uchoa2017.
 
 Šiai problemai egzistuoja heuristiniai ir metaheuristinai (Aukštesnio lygio strategija/karkasas, kuris diriguoja, kurias heuristikas pritaikyti, kad efektyviau atrasti sprendimus) algoritmai. Keli dominuojantys pavyzdžiai
@@ -75,14 +81,8 @@ Algoritmų kokybei vertinti plačiai naudojami _de facto_ standartizuota geriaus
 
 #margin-note(dy: -13em)[Ar šita sekcija gal nereikalinga?]
 
-Vienas kokybiškiausių #todo[[CITATION NEEDED]], atsižvelgiant į algoritmo vykdymo laiką, metaheuristinių algoritmų –- hibridinis genetinis paieškos algoritmas (#angl[Hydrid Genetic Search -- HGS]) [@vidal2012A_Hybr],
-kurio atviro kodo realizacijos ir vėlesnės pagerintos versijos išlieka etalonas daugeliui VRP variantų [@vidal2022Hybrid].
-
-Dideliems duomenų rinkiniams net HGS didžiąją laiko dalį skiria lokalių paieškų operatoriams #angl[Local Search Operator],
-todėl literatūroje nagrinėjamas jų lygiagretinimas:
-- GPU pagreitinimas
-// - GPU pagreitinti 2-opt/Swap operatoriai @lei2025Speedi,
-- Kombinuoja HGS su kitais modeliais @rezaei2024Explor, kurie leidžia lygiagretinimą naudojant #todo[message passing] @jamshidi2025A_Para.
+Metaheuristinių algoritmai išsiskiria šioje uždavinių klasėje kaip efektyviausi, pasižymintys žemu algoritmo vykdymo laiku ir aukšta uždavinių rezultatų kokybe. Šis algoritmas yra pritaikytas CVRP, VRPTW, #todo[k.t.].
+Hibridinis genetinis paieškos (#angl[Hydrid Genetic Search -- HGS]) -- yra vienas iš efektyviausių metaheuristinių algoritmų. Šis algoritmas ir vėlesnės pagerintos versijos išlieka etalonas daugeliui VRP variantų, "DIMACS" konkurse @dimacs2022vrp parodęs geriausius rezultatus VRPTW uždavinyje @kool2022hybrid, ir kurio modifikuotas variantas @jiang2022fhcsolver pasirodė geriausiai CVRP uždavinyje.
 
 Šio *darbo tikslas* -- išlygiagretinti hibridinio genetinio paieškos algoritmą, skirto transporto maršrutų optimizavimo uždaviniams spręsti,
 siekiant sumažinti vykdymo laiką neprarandant ar net pagerinant sprendimų kokybės.
@@ -112,44 +112,28 @@ siekiant sumažinti vykdymo laiką neprarandant ar net pagerinant sprendimų kok
     1. Parinkti tinkamus (hyper-) parametrus (see @jastrzab2024Standa [3/1337 psl.])
 ]
 
-#todo[TODO]: sekciją žemiau tikriausiai bus galima pašalinti arba stipriai sutrumpinti.
-#note[== Plačiau apie VRP #todo[constraints]
-
-Galimi #todo[constraints], kuriuos galima uždėti ant VRP problemų:
-
-- kiekviena transporto priemonė gali turėti (skirtingą) maršruto pradžios laiką
-- kiekviena transporto priemonė gali turėti (skirtingą) maksimalų atstumą, kurį gali nukeliauti
-- kiekviena transporto priemonė gali turėti (skirtingą) maksimalią talpą
-- kiekvienos transporto priemonės vairuotojas gali turėti (skirtingą) tvarkaraštį (skirtingas pamainos laikas, su arba be pertraukų)
-
-- kiekvienas taškas gali turėti (skirtingas) veikimo valandas (galimai su pietų pertraukom, etc...)
-- kiekvienas taškas gali turėti (skirtingas) #todo[service time]
-- kiekvienas taškui gali būti arba nebūti griežtas reikalavimas jį aplankyti
-
-- apmokėjimo #todo[constraints]:
-  - per tašką
-  - per atstumą
-  - etc...
-]
-
-== Metodai
-
-== Konkursai
-
-- DIMACS @dimacs2022vrp
-- #c(<AmazonChallengeDataSet>) #todo[TODO: properly cite the challenge, not just the dataset]
-- #todo[EURO meets NeurIPS 2022 vehicle routing competition]
-
 #pagebreak()
 
-=== HGS
+=== HGS algoritmo veikimas
 
-Hibridinis genetinis paieškos (HGS) algoritmas yra vienas iš efektyviausių būdų spręsti transporto maršrutų optimizavimo uždavinius. #todo[[Citation needed?]]
+#note[Dideliems duomenų rinkiniams net HGS didžiąją laiko dalį skiria lokalių paieškų operatoriams #angl[Local Search Operator],
+todėl literatūroje nagrinėjamas jų lygiagretinimas:
+- GPU pagreitinimas
+// - GPU pagreitinti 2-opt/Swap operatoriai @lei2025Speedi,
+- Kombinuoja HGS su kitais modeliais @rezaei2024Explor, kurie leidžia lygiagretinimą naudojant #todo[message passing] @jamshidi2025A_Para.]
+
 
 Pirma aprašytas #c(<vidal2012A_Hybr>) ir patobulintas #todo[@vidal2014A_unif, @vidal2016Large_, @vidal2017Node__, @vidal2021Arc_Ro, @vidal2022Hybrid].
 - #q(a: <vidal2012A_Hybr>)[#image("img/Screenshot From 2025-09-27 23-07-08.png")]
 - #q(a: <vidal2012A_Hybr>)[HGSADC proves to be extremely competitive CVRP.]
 - maintains diversity in search -> avoids local minima ir dar aukštesnės kokybės sprendimai ir reduced computational time.
+
+#figure(
+  caption: [HGS veikimas @jamshidi2025A_Para]
+)[#image("img/jamshidi2025A_Para_HGS.png")]
+#todo[Išversti į lietuvių k.???]
+
+#todo[Aprašyti HGS veikimą žodžiais]
 
 #br
 
