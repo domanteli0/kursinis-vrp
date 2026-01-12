@@ -17,7 +17,7 @@
 
 = Terminai
 
-#q(a: <jamshidi2025A_Para>)[#image("diagrams/HGS1.svg")]
+#q(a: <jamshidi2025A_Para>)[#image("diagrams/HGS1.svg", width: 30%)]
 
 - Populiacija - Rinkinys invididų.
 - Individas - #todo[Individual solution (i.e. set of routes and points assigned to them)]
@@ -25,34 +25,28 @@
 = Santrumpos <santr>
 
 - VRP - Martšrutų optimizavimo uždavinys #angl[Vechicle Routing Problem].
-- CVRP - #angl_[Capacitated Vehicle Routing Problem].
-  #q(a: [@stadtler2023parallel])[the CVRPPD divides stops
-  into pickup and delivery points for passengers. Passengers are not arbitrary goods
-  delivered to interchangeable destinations from a common depot, but they have
-  individual starting points and destinations. Therefore, the pickup and delivery
-  constraint has multiple implications. On the one hand, the order in which a
-  person is picked up and dropped off by a vehicle must be in the correct order. In
-  addition, the delivery must be performed by the same vehicle as the pickups]
+- CVRP - #angl_[Capacitated Vehicle Routing Problem]. Kiekviena transporto priemonė turi maksimalią siuntų talpą.
 - VRPTW - #angl_[VRP with Time Windows].
+
+#note[
 - CVRPPD - #angl_[CVRP Pickup and Delivery].
 - MVRP - #angl_[Multidepot VRP].
-- PVRP - #angl_[Periodic VRP].
-  #q(a: [https://neo.lcc.uma.es/vrp/vrp-flavors/periodic-vrp/])[In classical VRPs, typically the planning period is a single day. In the case of the Period Vehicle Routing Problem (PVRP), the classical VRP is generalized by extending the planning period to M days.]
+- PVRP - #angl_[Periodic VRP]. Pridedama laiko dimescija, t.y. išmetama presumpcija, kad visi taškai turi būti vienu kartu, sprendimas susidaro iš kelių maršrutų rinkinių atitinkačius dienas, kuriomis bus aplankomi taškai.
 - MDPVRP - #angl_[Multidepot Periodic VRP].
-- #todo[CVRP with Backhauls]
-- GVRP - #angl_[Generalized VRP] - #q(a: <latorre2025A_hybr>)[In this problem each vertex belongs to a cluster, and only one vertex per cluster must be visited, satisfying the associated cluster demands.]
-- CluVRP - #angl_[Clustered VRP] - #q(a: <latorre2025A_hybr>)[In the CluVRP, vehicles must visit all the nodes within a cluster before progressing to the next cluster, instead of visiting just one node per cluster as in the GVRP.]
-- VRPSPDTW - #angl_[VRP with Simultaneous Pickup and Delivery and Time Windows]
+- GVRP - #angl_[Generalized VRP]. Taškai grupuojami į klusterius. Tik vienas taškas iš viso klusterio turi būti aplankytas.
+- CluVRP - #angl_[Clustered VRP]. Taškai grupuojami į klusterius. Visi taškai klusteryje turi būti aplankyti prieš važiuojant į kitą klusterį.
+- VRPSPDTW - #angl_[VRP with Simultaneous Pickup and Delivery and Time Windows].
+] #margin-note(dy: -13em)[Ar šita sekcija reikalinga?]
 
 = Įvadas
 
 VRP -- Transporto maršrutų optimizavimo uždavinys #angl[Vehicle Routing Problem] yra uždavinys,
-kurio tikslas yra surasti kuo optimaliausią maršrutų rinkinį #todo[TODO: Čia dar reikia pasidomėti iš ko tiksliai susideda COST funkcija]. #todo[TODO: Paryškinti uždavinio svarbą].
+kurio tikslas yra surasti kuo optimaliausią maršrutų rinkinį.  #todo[TODO: Čia dar reikia pasidomėti iš ko tiksliai susideda COST funkcija]. Optimaliai parinkti maršrutai gali lemti kiek taškų įmanoma aplankyti per nustatytą laiką, sumažinti transporto kaštus.
 Pirmą kartą ši problema aprašyta @dantzig1959The_Tr, kur autorius aprašė algoritmą, kuris suranda optimalius maršrutus tarp kuro depo ir degalinių.
 Tai yra modernios logistikos optimizavimo uždavinys -- optimaliai #todo[sudelioti] maršrutai gali lemti mažesnius kainos ir pristatymo laiko kaštus.
 
 Kur keliaujančio pardavėjo uždavinyje pagrindinė užduotis yra surasti optimaliausią kelią vienam keliautojui -- pardavėjui,
-VRP sprendimai #todo[susideda] iš kelių keliautojų -- literatūroje dažnai tiesiogiai vadinama transporto priemonėmis.
+VRP sprendimai susidaro iš kelių keliautojų -- literatūroje dažnai tiesiogiai vadinama transporto priemonėmis.
 
 Nors egzistuoja įrankiai, kurie pasiteklia tikslius metodus (pavyzdžiui "Google or-tools" @ortools), kadangi šis uždavinys priklauso #todo[NP-Hard] sudėtingumo klasei, visgi dominuoja heuristikomis ir metaheuristikomis grįsti algoritmai #todo[[CITATION NEEDED]], nes šie beveik optimalius sprendimus suranda per greitesnį laiko tarpą sunaudodami mažiau resursų. Tikslūs metodai su ypač dideliais kiekiais duomenų tampa nepraktiški #todo[[CITATION NEEDED]].
 
@@ -78,8 +72,6 @@ Algoritmų kokybei vertinti plačiai naudojami _de facto_ standartizuota geriaus
   - "Simulated Annealing Algorithm (SAA)"
 
   - "Ant colony optimization (ACO)"
-
-#margin-note(dy: -13em)[Ar šita sekcija gal nereikalinga?]
 
 Metaheuristinių algoritmai išsiskiria šioje uždavinių klasėje kaip efektyviausi, pasižymintys žemu algoritmo vykdymo laiku ir aukšta uždavinių rezultatų kokybe. Šis algoritmas yra pritaikytas CVRP, VRPTW, #todo[k.t.].
 Hibridinis genetinis paieškos (#angl[Hydrid Genetic Search -- HGS]) -- yra vienas iš efektyviausių metaheuristinių algoritmų. Šis algoritmas ir vėlesnės pagerintos versijos išlieka etalonas daugeliui VRP variantų, "DIMACS" konkurse @dimacs2022vrp parodęs geriausius rezultatus VRPTW uždavinyje @kool2022hybrid, ir kurio modifikuotas variantas @jiang2022fhcsolver pasirodė geriausiai CVRP uždavinyje.
