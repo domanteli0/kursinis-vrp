@@ -12,7 +12,14 @@
 
 #let c = cite-with-title
 #let q(a: "", b: true, body) = {
-  quote(attribution: a, block: b)[#body]
+  block(
+    width: 100%,
+    stroke: (left: 2pt + black), // Adds a black line on the right
+    inset: (right: 1em),         // Adds some space between text and line
+    spacing: 1em,  // Adjust this value as needed
+    quote(attribution: a, block: b)[#body]
+  )
+
 }
 
 // ----------------- //
@@ -28,3 +35,8 @@
 #let todo(body) = highlight(fill: red.lighten(50%))[#body]
 #let note(body) = highlight(fill: yellow.lighten(50%))[#body]
 #let mine(body) = highlight(fill: yellow.lighten(50%))[(autoriaus papildymas: #body)]
+
+#let qi(isBlock: false, body, original) = {
+  quote(block: isBlock)[#body]
+  footnote(original)
+}

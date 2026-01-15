@@ -1,9 +1,6 @@
 pdf:
-	cd "{{justfile_directory()}}/diagrams" && for f in *.mmd; do \
-	  base="${f%.mmd}"; \
-	  mmdc -i "$f" -o "$base.pdf" --pdfFit &&  mutool draw -o "$base.svg" "$base.pdf" && magick "${base}1.svg" "$base.png"; \
-	done
-	typst compile main.typ --features html --font-path ./fonts
+    d2 -l elk diagrams/HGS.d2 diagrams/HGS.svg
+    typst compile main.typ --features html --font-path ./fonts
 
 html:
 	typst compile main.typ --features html --format html --font-path ./fonts
