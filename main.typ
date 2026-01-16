@@ -19,7 +19,7 @@
 = Terminai
 
 - Populiacija - Rinkinys invididų.
-- Individas - #todo[Individual solution (i.e. set of routes and points assigned to them)]
+- Individas - Užduoties sprendimas t.y. rinkinys maršrutų.
 
 = Santrumpos <santr>
 
@@ -34,16 +34,12 @@
 - MDPVRP - #angl_[Multidepot Periodic VRP]. MDVRP ir PVRP kombinacija.
 - CVRPPD - #angl_[CVRP Pickup and Delivery]. CVRP ir VRPPD kombinacija.
 
-= TODO
-
-- .
-
 = Įvadas
 
 VRP -- Transporto maršrutų optimizavimo uždavinys #angl[Vehicle Routing Problem] yra uždavinys,
 kurio tikslas yra surasti kuo optimaliausią maršrutų rinkinį.  #todo[TODO: Čia dar reikia pasidomėti iš ko tiksliai susideda COST funkcija]. Optimaliai parinkti maršrutai gali lemti kiek taškų įmanoma aplankyti per nustatytą laiką, sumažinti transporto kaštus.
 Pirmą kartą ši problema aprašyta @dantzig1959The_Tr, kur autorius aprašė algoritmą, kuris suranda optimalius maršrutus tarp kuro depo ir degalinių.
-Tai yra modernios logistikos optimizavimo uždavinys -- optimaliai #todo[sudelioti] maršrutai gali lemti mažesnius kainos ir pristatymo laiko kaštus.
+Tai yra modernios logistikos optimizavimo uždavinys -- optimaliai parinkti maršrutai gali lemti mažesnius kainos ir pristatymo laiko kaštus.
 
 Kur keliaujančio pardavėjo uždavinyje pagrindinė užduotis yra surasti optimaliausią kelią vienam keliautojui -- pardavėjui,
 VRP sprendimai susidaro iš kelių keliautojų -- literatūroje dažnai tiesiogiai vadinama transporto priemonėmis.
@@ -71,7 +67,7 @@ ar prideda papildomas salygas:
 
   - "Ant colony optimization (ACO)"
 
-Hibridinis genetinis paieškos (#angl[Hydrid Genetic Search -- HGS]) -- yra vienas iš efektyviausių genetinių metaheuristinių algoritmų @petropoulos2023Operat. Šis algoritmas ir vėlesnės pagerintos versijos išlieka etalonas daugeliui VRP variantų, "DIMACS" konkurse @dimacs2022vrp parodęs geriausius rezultatus VRPTW uždavinyje @kool2022hybrid, ir kurio modifikuotas variantas @jiang2022fhcsolver pasirodė geriausiai CVRP uždavinyje. Šis algoritmas yra pritaikytas CVRP, VRPTW, GVRP @latorre2025A_hybr, CluVRP, SoftCluVRP @latorre2025An_appHybr, #todo[k.t.].
+Hibridinis genetinis paieškos (#angl[Hydrid Genetic Search -- HGS]) -- yra vienas iš efektyviausių genetinių metaheuristinių algoritmų @petropoulos2023Operat. Šis algoritmas ir vėlesnės pagerintos versijos išlieka etalonas daugeliui VRP variantų, "DIMACS" konkurse @dimacs2022vrp parodęs geriausius rezultatus VRPTW uždavinyje @kool2022hybrid, ir kurio modifikuotas variantas @jiang2022fhcsolver pasirodė geriausiai CVRP uždavinyje. Šis algoritmas yra pritaikytas CVRP, VRPTW, GVRP @latorre2025A_hybr, CluVRP, SoftCluVRP @latorre2025An_appHybr.
 
 Šio *darbo tikslas* -- išlygiagretinti hibridinio genetinio paieškos algoritmą, skirto transporto maršrutų optimizavimo uždaviniams spręsti,
 siekiant sumažinti vykdymo laiką neprarandant ar net pagerinant sprendimų kokybės.
@@ -124,11 +120,9 @@ Genetinis hydridinis paieškos algoritmas prie genetinio komponento prideda page
 
 Lokalioje paieškoje taikomos _relocate_, _2-opt_, _2-opt\*_, bei  _swap\*_ heuristikos.
 
-It carefully applies a combination of well-known local search
-heuristics, and also proposes an efficient inter-route refinement
-heuristic called SWAP
+// #q[It carefully applies a combination of well-known local search heuristics, and also proposes an efficient inter-route refinement heuristic called SWAP]
 
-Palaikant neįvykdomus #angl[infeasible] ir įvykdomus #angl[feasible] sprendimus, palaikoma populiacijos įvairovė #angl[diversity], kuri leidžia išvengti lokalios minimos #angl[local minima] iteruojant sprendimais #todo[iteruojant per sprendimus???].
+Palaikant neįvykdomus #angl[infeasible] ir įvykdomus #angl[feasible] sprendimus, palaikoma populiacijos įvairovė #angl[diversity], kuri leidžia išvengti lokalios minimos #angl[local minima] iteruojant per sprendimus.
 
 #figure[
   #align(left)[#block(stroke: black, inset: 0.5em)[
@@ -136,9 +130,9 @@ Palaikant neįvykdomus #angl[infeasible] ir įvykdomus #angl[feasible] sprendimu
     *HGS algoritmo pseudokodas* @vidal2012A_Hybr
 
     1: Sugeneruoti pradinę populiaciją \
-    2: Kol $"iteracijų skaičius be sprendimo pagerėjimo " <  "ir kol nepraėjo laiko limitas"$ \ // "It"_("NI")$ ir $"time" < T_max$ \
+    2: Kol $"iteracijų skaičius be sprendimo pagerėjimo " < "nustatyas skaičius ir kol nepraėjo laiko limitas"$ \ // "It"_("NI")$ ir $"time" < T_max$ \
       3: Pasirinkti tėvinius sprendimus #todo[(binary tournament)] \
-      4: #todo[Perform crossover (generate offspring)] \
+      4: Atlikti kryžminimą #angl[crossover] \
       5: Išmokyti #todo[offsrping] (atlikti lokalią paiešką) \
       6: jeigu sprendimas neįmanomas: \
           pridėti sprendimą prie neįvykdomų aibės bei sutaisyti su tam tikra tikimybe \ // $P_"rep"$ \
@@ -147,13 +141,13 @@ Palaikant neįvykdomus #angl[infeasible] ir įvykdomus #angl[feasible] sprendimu
       8: jeigu pasiekas maksimalus sprendimų skaičius: \
          pasirinkti geriausius ir labiausiai įvairius sprendimus \
       9: Pakeisti #todo[penalty parameters] \
-      10: Jeigu geriausias sprendimas per $"It"_"div"$ iteracijų nepagerėjo: \
+      10: Jeigu geriausias sprendimas per #todo[$"It"_"div"$] iteracijų nepagerėjo: \
           diversifikuoti populiaciją \
     11: Gražinti geriausią sprendimą
   ]]
 ] <algo>
 
-#todo[TODO: add swap\*]
+#todo[TODO: pridėti swap\*]
 
 #figure(
   caption: [HGS veikimas @vidal2022Hybrid]
@@ -245,7 +239,7 @@ $
 
 // #read_instance("X-n148-k46")
 
-Iš rezultatų matyti, kad užduočių kokybė t.y. COST nesumažėjo, tačiau vykdymo laikas vidutiniškai pakilo X kartų. Uždaviniai su didesniu kiekiu taškų ypač nukenčia.
+Iš rezultatų matyti, kad užduočių kokybė t.y. COST nesumažėjo, tačiau vykdymo laikas sumažėjo X kartų iki Y gijų skaičiaus, daugiau didinant gijų skaičių vykdymo laikas vidutiniškai pakilo X kartų
 
 // #q()[An up-to-date survey on recent trends can be
 //   found in Vidal et al. (2020) [@vidal2020A_conc]]
