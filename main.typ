@@ -1,6 +1,7 @@
 #import "style.typ": style
 #import "utils.typ": c, q, qi, tab, todo, mine, note, angl, angl_, br
 #import "@preview/drafting:0.2.2": *
+#import "data.typ": *
 
 #show: style.with(
   university: "Vilniaus universitetas",
@@ -97,7 +98,7 @@ siekiant sumažinti vykdymo laiką neprarandant ar net pagerinant sprendimų kok
   3. Atrinkti paralelizuojamas dalis, ar dalis, kurias galima galima pakeisti paralelizuojamomis
   4. Palyginti rezultatus su kitais state-of-the-art algoritmais
 
-    1. Parinkti tinkamus (hyper-) parametrus (see @jastrzab2024Standa [3/1337 psl.])
+    // 1. Parinkti tinkamus (hyper-) parametrus (see @jastrzab2024Standa [3/1337 psl.])
 ]
 
 #pagebreak()
@@ -167,8 +168,6 @@ Palaikant neįvykdomus #angl[infeasible] ir įvykdomus #angl[feasible] sprendimu
 
 // GPU metodai dažniausiai orientuojasi į 2-opt, Swap ir susijusių operatorių spartinimą, tačiau daugelyje darbų optimizuojamas tik kelionės ilgio įvertinimas, o sudėtingesnių apribojimų apdorojimas lieka ribotas @lei2025Speedi, @abdelatti2020An_imp, @muniasamy2023Effect. Vis dėlto nemaža dalis pagreitinimų neturi viešo kodo ar detalių palyginimų su BKS, todėl jų pritaikomumas HGS kontekste (pvz., su Swap\* operatoriumi) išlieka atvira problema @vidal2022Hybrid.
 
-#br
-
 @lei2025Speedi lygiagretinimui lokalio paieškios algoritmą išreiškia tenzorių operatoriais, tai leidžia HGS vykdymą perkelti ant GPU. Taip pagreitintas lokalios paieškos operatorius.
 Tačiau @lei2025Speedi pasiūlytas metodas nėra pritaikomas HGS su swap\*.
 #qi[Dabartinė sprendimų reprezentacija per tensorius neleidžia lengvai įgyvendinti apkarpymo strategijų kaimynysčių sumažinimo technikų, kurie dažnai yra naudojami lokalios paieškos grįstais algoritmais.][the current design of the tensor representation of solutions doesn’t support easy implementation of pruning strategies and neighborhood reduction techniques that are often used in local search-based routing algorithms.]
@@ -190,37 +189,45 @@ Priešintai nei dauguma implementacijų @muniasamy2023Effect naudoja grafų duom
   caption: [HGS su salų modeliu @jamshidi2025A_Para]
 )[#image("img/44196_2025_1059_Fig5_HTML.webp", width: 50%)]
 
+= Lygiagretinimas
+
+Daugiausiai laiko užima lokalios paieškos žingsnis @jamshidi2025A_Para #todo[TODO: pridėti savo matavimus]. Todėl siekiant sumažinti viso HGS algoritmo vykdymo laiką šį žingsnį yra labiausiai verta lygiagretinti.
+
+Kiekvienai gijai yra parenkami atliekamas kryžminimas. Tada kiekviena gija atlieka lokalios paieškos žingsnį. Vėliau, kai kiekviena gija atlieka šį žingsnį, individai yra pridedami į visų populiaciją.
+
+#todo[TODO: praplėsti ir padaryti diagramą]
+
 // @jastrzab2024Standa siūlo metodiką kaip lyginti algoritmus tarpusavyje, taip kad jie kuo tiksliau atitiktų rezultatus realybėje.
 
-= Greitaveikos nagrinėjimas
+// - A Multi-GPU Parallel Genetic Algorithm For Large-Scale Vehicle Routing Problems
+// - 2020 An Improved GPU-Accelerated Heuristic Technique Applied to the Capacitated Vehicle Routing Problem
+// - 2022 A Multi-GPU Parallel Genetic Algorithm For Large-Scale Vehicle Routing Problems
 
-Dideliems duomenų rinkiniams net HGS didžiąją laiko dalį skiria lokaliai paieškai #todo[TODO: pateikti skaičius???] #angl[Local Search].
+// = Greitaveikos nagrinėjimas
+
+// Dideliems duomenų rinkiniams net HGS didžiąją laiko dalį skiria lokaliai paieškai #todo[TODO: pateikti skaičius???] #angl[Local Search].
 // - GPU pagreitinti 2-opt/Swap operatoriai @lei2025Speedi,
 
-= Pavyzdinių duomenų rinkiniai ir rezultatų palyginimas
+// = Pavyzdinių duomenų rinkiniai ir rezultatų palyginimas
 
-Algoritmų kokybei vertinti plačiai naudojami _de facto_ standartizuoti rinkiniai @petropoulos2023Operat:  geriausių sprendinių #angl[Best Known Solution -- BKS] rinkiniai, pavyzdžiui "CVRPLIB" @uchoa2017.
+// Algoritmų kokybei vertinti plačiai naudojami _de facto_ standartizuoti rinkiniai @petropoulos2023Operat:  geriausių sprendinių #angl[Best Known Solution -- BKS] rinkiniai, pavyzdžiui "CVRPLIB" @uchoa2017.
 
-= Rezultatai
+= Metodika
 
-Iš rezultatų matyti, kad užduočių kokybė t.y. COST nesumažėjo, tačiau vykdymo laikas vidutiniškai pakilo X kartų. Uždaviniai su didesniu kiekiu taškų ypač nukenčia.
-HIPOTEZE: Taip atisitinka, dėlto, kad kiekviena gija iš esmės atlieką tą patį darbą, o papildomi resursai sunaudojami duomenų kopijavimui ir sinchronizacijai tarp gijų.
-// #q()[An up-to-date survey on recent trends can be
-//   found in Vidal et al. (2020) [@vidal2020A_conc]]
+// #q(a: <rezaei2024Explor>)[
+//   The algorithm’s
+//   effectiveness is demonstrated through several experiments on diverse benchmark instances, including classical benchmarks
+//   (Uchoa, CMT, and Golden) and #note[real-world application instances (LoggiBUD)].
+// ]
 
-#q(a: <rezaei2024Explor>)[
-  The algorithm’s
-  effectiveness is demonstrated through several experiments on diverse benchmark instances, including classical benchmarks
-  (Uchoa, CMT, and Golden) and #note[real-world application instances (LoggiBUD)].
-]
-
-@petropoulos2023Operat
-  #q()[
-  A more recent set of instances and best known solutions is available in Queiroga et al. (2022), where the authors provide data enabling the use of machine learning approaches to solve the CVRP. Accorsi et al.
-  (2022) present the standard practices to test CVRP algorithms: how to determine computing time (typically on a single thread), common ways of tuning parameters, and providing best and average solutions on a specified number of executions, among others.
-  ]
-
-= Kita
+Dėl rezultatų palyginamumo pasirinkta naudoti @vidal2022Hybrid aprašytus duomenų rinkinius ir metodiką.
+#q[We monitor each algorithm’s progress up to a time limit of $𝑇_"max" = 𝑛 × 240∕100$ seconds, where 𝑛 represents the number of customers.
+Therefore, the smallest instance with 100 clients is run for 4 minutes,
+whereas the largest instance containing 1000 clients is run for 40
+minutes. During each run, we record the best solution value after
+1%, 2%, 5%, 10%, 15%, 20%, 30%, 50%, 75%, and 100% of the
+time limit to measure the performance of the algorithms at different
+stages of the search. ]
 
 _Gap_ apbidrėžimas.
 
@@ -229,6 +236,29 @@ $
   Z_s &= #[Algoritmo sprendimo kaina] \
   Z_"BKS" &= #[Geriausio sprendimo kaina]
 $
+
+#todo[TODO: sprendimo kaina/COST apibrėžimas]
+
+= Rezultatai
+
+#todo[TODO: pateikti rezultatus]
+
+// #read_instance("X-n148-k46")
+
+Iš rezultatų matyti, kad užduočių kokybė t.y. COST nesumažėjo, tačiau vykdymo laikas vidutiniškai pakilo X kartų. Uždaviniai su didesniu kiekiu taškų ypač nukenčia.
+
+// #q()[An up-to-date survey on recent trends can be
+//   found in Vidal et al. (2020) [@vidal2020A_conc]]
+
+// @petropoulos2023Operat
+//   #q()[
+//   A more recent set of instances and best known solutions is available in Queiroga et al. (2022), where the authors provide data enabling the use of machine learning approaches to solve the CVRP. Accorsi et al.
+//   (2022) present the standard practices to test CVRP algorithms: how to determine computing time (typically on a single thread), common ways of tuning parameters, and providing best and average solutions on a specified number of executions, among others.
+//   ]
+
+= Išvados
+
+#todo[TODO]
 
 #pagebreak()
 #bibliography(title: [Šaltiniai], "bibliography.bib")
