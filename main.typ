@@ -1,5 +1,5 @@
 #import "style.typ": style
-#import "utils.typ": c, q, qi, tab, todo, mine, note, angl, angl_, br
+#import "utils.typ": c, q, qi, tab, todo, mine, note, angl, angl_, br, lt_ame, lt_oje, lt_a
 #import "data.typ": golden_instances, cmt_instances, x_vrp_instances
 #import "table1.typ": *
 #import "data_gap.typ": gap_data
@@ -8,6 +8,7 @@
 #import "@preview/drafting:0.2.2": *
 #import "@preview/cetz:0.4.2": canvas, draw
 #import "@preview/cetz-plot:0.1.3": plot, chart
+#import "@preview/i-figured:0.2.4"
 
 #show: style.with(
   university: "Vilniaus universitetas",
@@ -21,6 +22,10 @@
   supervisor: "Doc., Dr. Algirdas Lančinskas",
   date: "Vilnius - 2025",
 )
+
+// #show heading: i-figured.reset-counters
+// #show figure: i-figured.show-figure
+// #show math.equation: i-figured.show-equation
 
 = Terminai
 
@@ -49,29 +54,6 @@ Tai yra modernios logistikos optimizavimo uždavinys -- optimaliai parinkti mar�
 Kur keliaujančio pardavėjo uždavinyje pagrindinė užduotis yra surasti optimaliausią kelią vienam keliautojui -- pardavėjui,
 VRP sprendiniai susidaro iš kelių keliautojų -- literatūroje dažnai tiesiogiai vadinama transporto priemonėmis.
 
-Nors egzistuoja įrankiai, kurie pasiteklia tikslius metodus (pavyzdžiui "Google or-tools" @ortools), kadangi šis uždavinys priklauso _NP-Hard_ sudėtingumo klasei, visgi dominuoja heuristikomis ir metaheuristikomis grįsti algoritmai, nes šie beveik optimalius sprendinius suranda per greitesnį laiko tarpą sunaudodami mažiau resursų. Tikslūs metodai su ypač dideliais kiekiais duomenų tampa nepraktiški. Metaheuristiniai algoritmai išsiskiria šioje uždavinių klasėje kaip efektyviausi, pasižymintys žemu algoritmo vykdymo laiku ir aukšta uždavinių rezultatų kokybe.
-
-Praktikoje taikomos VRP variacijos (CVRP, VRPTW, MDPVRP, PVRP ir kt.)
-įveda papildomus apribojimus maršrutų ilgiui, transporto priemonių panaudojimo laikui ir talpai,
-ar prideda papildomas salygas:
-- naudojamos transporto priemonės turi limituotą talpą (CVRP).
-- visi klientai turi gali būti aplankyti tik specifinėmis darbo valandomis (VRPTW)
-- keli depai iš kurių galima pradėti maršrutą (MDVRP),
-- maršrutai planuojami per kelias dienas, t.y. vieni klientai gali būti aplankyti vieną dieną, o kiti kitą. (Periodic VRP).
-- kt.
-
-Šis darbas atsižvelgia tik į CVRP uždavinį.
-
-Šiai problemai egzistuoja heuristiniai ir metaheuristinai (Aukštesnio lygio strategija/karkasas, kuris diriguoja, kurias heuristikas pritaikyti, kad efektyviau atrasti sprendinius) algoritmai. Keli dominuojantys pavyzdžiai @adamo2024A_revi
-
-  - "Adaptive Large Neighborhood Search" ir "Hybrid Adaptive Large Neighborhood Search"
-
-  - "Hybrid Genetic Search (HGS)"
-
-  - "Simulated Annealing Algorithm (SAA)"
-
-  - "Ant colony optimization (ACO)"
-
 Hibridinis genetinis paieškos #angl[Hydrid Genetic Search -- HGS] -- yra vienas iš efektyviausių genetinių metaheuristinių algoritmų @petropoulos2023Operat. Šis algoritmas ir vėlesnės pagerintos versijos išlieka etalonas daugeliui VRP variantų, "DIMACS" konkurse @dimacs2022vrp parodęs geriausius rezultatus VRPTW uždavinyje @kool2022hybrid, ir kurio modifikuotas variantas @jiang2022fhcsolver pasirodė geriausiai CVRP uždavinyje. Šis algoritmas yra pritaikytas CVRP, VRPTW, GVRP @latorre2025A_hybr, CluVRP, SoftCluVRP @latorre2025An_appHybr.
 
 Šio *darbo tikslas* -- išlygiagretinti hibridinio genetinio paieškos algoritmą, skirto transporto maršrutų optimizavimo uždaviniams spręsti,
@@ -82,41 +64,61 @@ siekiant sumažinti vykdymo laiką neprarandant ar net pagerinant sprendinių ko
 1. Išsirinkti duomenų rinkinį pagal, kurį galima būtų testuoti/analizuoti sprendinius.
 2. Išanalizuoti, kaip veikia HGS algoritmas
 3. Atrinkti paralelizuojamas dalis, ar dalis, kurias galima galima pakeisti paralelizuojamomis.
-4. Palyginti rezultatus su kitais state-of-the-art algoritmais
+4. Palyginti rezultatus su kitais #todo[state-of-the-art] algoritmais
 
 #pagebreak()
 
-= Uždavinio apibrėžimas
+= Transporto maršrutų optimizavimo uždaviniai
 
-CVRP nagrinėjamas grafas $𝐺 = (𝑉, 𝐸)$, kuriame $v_0 in V$ žymi depą, kuris turi $m$ transporto priemonių, o likusios viršūnės ${v_1, ..., v_(|V|)}$ atitinka klientus, kuriuos reikia aplankyti. Kiekviena briauna $(i, j) in E$ reiškia galimybę keliauti tarp vietų $i$ ir $j$ su kaina $c_(i,j)$ -- atstumas tarp vietų $i$ ir $j$. CVRP reikia surasti sprendinį, kuriame panaudotos ne daugiau kaip $K$ transporto priemonių, prasidedančių ir pasibaigiančių depe, taip, kad kiekvienas klientas būtų aplankytas vieną kartą ir bendras klientų paklausos dydis bet kuriame maršrute neviršytų transporto priemonės talpos $Q$, o bendras transporto priemonių nuvažiuotas atstumas -- kaina @math_cost kiek įmanoma mažesnis.
+== Tikslūs ir apytiksliai metodai
 
-#figure(caption: "Sprendinio kainos apibrėžimas")[$
+Nors egzistuoja įrankiai, kurie pasiteklia tikslius metodus (pavyzdžiui "Google or-tools" @ortools), kadangi šis uždavinys priklauso _NP-Hard_ sudėtingumo klasei, visgi dominuoja heuristikomis ir metaheuristikomis grįsti algoritmai, nes šie beveik optimalius sprendinius suranda per greitesnį laiko tarpą sunaudodami mažiau resursų. Tikslūs metodai su ypač dideliais kiekiais duomenų tampa nepraktiški. Metaheuristiniai algoritmai išsiskiria šioje uždavinių klasėje kaip efektyviausi, pasižymintys žemu algoritmo vykdymo laiku ir aukšta uždavinių rezultatų kokybe.
+
+Šiai problemai egzistuoja heuristiniai ir metaheuristinai (Aukštesnio lygio strategija, kuris diriguoja, kurias heuristikas pritaikyti, kad efektyviau atrasti sprendinius) algoritmai. Keli dominuojantys pavyzdžiai @adamo2024A_revi
+
+  - "Adaptive Large Neighborhood Search" ir "Hybrid Adaptive Large Neighborhood Search"
+
+  - "Hybrid Genetic Search (HGS)"
+
+  - "Simulated Annealing Algorithm (SAA)"
+
+  - "Ant colony optimization (ACO)"
+
+== VRP variacijos
+
+Praktikoje taikomos keletas VRP variacijų (CVRP, VRPTW, MDPVRP, PVRP ir kt.).
+Jos įveda papildomus apribojimus maršrutų ilgiui, transporto priemonių panaudojimo laikui ir talpai, ar prideda papildomas salygas:
+- naudojamos transporto priemonės turi limituotą talpą (CVRP);
+- visi klientai turi gali būti aplankyti tik specifinėmis darbo valandomis (VRPTW);
+- keli depai iš kurių galima pradėti maršrutą (MDVRP);
+- maršrutai planuojami per kelias dienas, t.y. vieni klientai gali būti aplankyti vieną dieną, o kiti kitą. (Periodic VRP);
+- kt.
+Šis darbas atsižvelgia tik į CVRP uždavinį.
+
+== CVRP
+
+CVRP nagrinėjamas grafas $𝐺 = (𝑉, 𝐸)$, kuriame $v_0 in V$ žymi depą, kuris turi $m$ transporto priemonių, o likusios viršūnės ${v_1, ..., v_(|V|)}$ atitinka klientus, kuriuos reikia aplankyti. Kiekviena briauna $(i, j) in E$ reiškia galimybę keliauti tarp vietų $i$ ir $j$ su kaina $c_(i,j)$ -- atstumas tarp vietų $i$ ir $j$. CVRP reikia surasti sprendinį, kuriame panaudotos ne daugiau kaip $K$ transporto priemonių, prasidedančių ir pasibaigiančių depe, taip, kad kiekvienas klientas būtų aplankytas vieną kartą ir bendras klientų paklausos dydis bet kuriame maršrute neviršytų transporto priemonės talpos $Q$, o bendras transporto priemonių nuvažiuotas atstumas -- kaina (žr. #lt_a(<math_cost>) lygtis) kiek įmanoma mažesnis.
+
+$
   "Sprendinio kaina" &= &&sum_(k=1)^(K) sum_(i=0)^(|V|) sum_(j=0)^(|V|) c_(i,j) x_(i,j,k) \
   c_(i,j) &= &&"astumas nuo kliento" i "iki kliento" j \
   x_(i,j,k) &= &&1 "Indikatorinė" "funkcija", "kuri" \
   & &&"lygi" 1, "jei" "transporto" "priemonė" k " " (1 <= k <= K)\
   & &&"keliauja" "nuo" "kliento" i "iki" "kliento" j, \
   & &&"lygi" 0 "priešingu" "atveju"
-$] <math_cost>
+$ <math_cost>
 
 Lyginant transporto maršrutų optimizavimo uždavinio sprendinius taip pat naudojamas tarpas #angl[gap], kuris nusako atstumą nuo geriausio sprendinio išreikštas procentais @math_gap.
 
-#figure(caption: "Tarpo apibrėžimas")[$
+$
   "Tarpas" &= ((Z_s - Z_"BKS") / Z_"BKS") dot 100% \
   Z_s &= #[Pasirinkto algoritmo sprendinio kaina] \
   Z_"BKS" &= #[Geriausio sprendinio kaina]
-$] <math_gap>
+$ <math_gap>
 
 = HGS algoritmo veikimas
 
 Pirma aprašytas #c(<vidal2012A_Hybr>) skirtas spręsti MDPVRP. Patobulintas per daugelį iteracijų: @vidal2014A_unif, @vidal2016Large_, @vidal2017Node__, @vidal2021Arc_Ro, @vidal2022Hybrid ir pritaikytas CVRP.
-- #q(a: <vidal2022Hybrid>)[Beyond a simple reimplementation of the original algorithm, HGS-
-CVRP takes advantage of several lessons learned from the past decade
-of VRP studies: it relies on simple data structures to avoid move reevaluations and uses the optimal linear-time Split algorithm of Vidal
-(2016). Moreover, its specialization to the CVRP permits significant
-methodological simplifications. In particular, it does not rely on the visit-pattern improvement (PI) operator (Vidal et al., 2012) originally
-designed for VRPs with multiple periods, and uses instead a new neighborhood called Swap\*.]
-- #q(a: <vidal2022Hybrid>)[In HGS-CVRP, we rely on the efficient linear-time Split algorithm introduced by Vidal (2016) #mine[@VIDAL2016] after each crossover operation.]
 
 Genetiniai algoritmai imituoja evoliucijos procesą. Populiacija yra aibė, kurią sudaro individai (t.y. užduoties sprendiniai). Šie algoritmai naudoja įvairius kryžminimo operatorius, kurie iš kelių individų populiacijoje sukuria naują, mutuotą individą ir prideda prie populiacijos. Prastos kokybės ir panašūs individai (sprendiniai) vykdimo eigoje yra pašalinami iš populiacijos.
 
@@ -258,11 +260,26 @@ Lygiagretinimas įgyvendintas kiekvienai gijai, atliekant vietinę paiešką. Ly
 ] <algo_parallel>
 
 
+// We measure wall clock
+// fair comparison of parallel vs sequential implementations, and (3) alignment with standard evaluation prac-
+// tices. This prevents artificial inflation of parallel versions’ apparent resource usage through thread aggregation.
+
+
+Palyginimui naudoti geriausių sprendinių rinkinys#footnote[https://galgos.inf.puc-rio.br/cvrplib/index.php/en/instances, prieigos data: 2026-01-07].
+
+= Lygiagretintos ir nuoseklios programos palyginimas
+
 == Metodika
 
-Dėl rezultatų palyginamumo pasirinkta naudoti @vidal2022Hybrid aprašytus duomenų rinkinius (@uchoa2017) ir metodiką.
+_HGS_ ir kiti iteratyvūs algoritmas sustoja tik, kai pasiekiamas tam tikras kriterijus. HGS atveju, tai iteracijų skaičius be pagerėjimo ar veikimo laikas. Kadangi šiek parametrai gali būti laisvai parinkti, pasirinkus pakankamai aukštus parametrus algoritmo veikimo laikas gali tęstis ilgiau negu dabartinis visatos amžius.
 
-#qi()[@vidal2022Hybrid.][We monitor each algorithm’s progress up to a time limit of $𝑇_"max" = 𝑛 dot 240∕100$ seconds, where 𝑛 represents the number of customers.
+Dėl rezultatų palyginamumo pasirinkta naudoti @vidal2022Hybrid aprašytus duomenų rinkinius (@uchoa2017) ir metodiką:
+#qi()[Mes stebime kiekvieno algoritmo pažangą iki laiko ribos $𝑇_"max" = 𝑛 dot 240∕100$ sekundžių, kur $n$ reiškia klientų skaičių.
+Todėl mažiausias atvejis su 100 klientais vykdomas 4 minutes,
+o didžiausias atvejis su 1000 klientų vykdomas 40
+minučių. Kiekvieno veikimo metu mes užregistruojame geriausią sprendimo vertę po 1%, 2%, 5%, 10%, 15%, 20%, 30%, 50%, 75% ir 100%
+laiko ribos, kad galėtume įvertinti algoritmų našumą skirtinguose
+paieškos etapuose @vidal2022Hybrid.][We monitor each algorithm’s progress up to a time limit of $𝑇_"max" = 𝑛 dot 240∕100$ seconds, where 𝑛 represents the number of customers.
 Therefore, the smallest instance with 100 clients is run for 4 minutes,
 whereas the largest instance containing 1000 clients is run for 40
 minutes. During each run, we record the best solution value after
@@ -270,19 +287,13 @@ minutes. During each run, we record the best solution value after
 time limit to measure the performance of the algorithms at different
 stages of the search.]
 
- _HGS_ algoritmas sustoja tik, kai pasiekiamas iteracijų skaičius be pagerėjimo ar veikimo laikas viršija tuos nustatytus pagal parinkus parametrus. Parinkus pakankamai aukštus parametrus algoritmo veikimo laikas gali tęstis ilgiau negu dabartinis visatos amžius.
-
-Šiam eksperimentui iteracijų skaičius be pagerėjimo buvo parinktas begalinis iteracijų be pagreitėjimo skaičius ir $T_"max" = n 24/100$ tam, kad sutilpti į duotus MIF
-
-
-
-Palyginimui naudoti geriausių sprendinių rinkinys#footnote[https://galgos.inf.puc-rio.br/cvrplib/index.php/en/instances, prieigos data: 2026-01-07].
-
-= Rezultatai
-
+Vykdimo duomenys surinkti paleidžiant lygiagretintą ir palyginimui originalią HGS-CVRP programą ant "Intel® Xeon® Gold 6252" procesoriaus. Šiam eksperimentui iteracijų skaičius begalinis iteracijų be pagreitėjimo skaičius ir $T_"max" = n 24/100$, 10 kartų mažesnis negu @vidal2022Hybrid, tam, kad sutilpti į duotus MIF STSC resursų limitus.
 Lygiagretintos programos versija patalpinta "Codeberg" repozitorijoje#footnote[https://codeberg.org/Dom/HGS-CVRP/src/commit/411e391ffefac9a308d28e280194d65004d8332c].
 
+== Rezultatai
+
 #let gap_result = gap_data()
+#let table1 = table_100_avg_from(gap_result)
 
 #figure(
   caption: [Sprendimo kokybė pagal gijų skaičių. Gap apskaičiuojamas pagal BKS, o x ašis rodo vykdymo laiką procentais.]
@@ -308,16 +319,34 @@ Palyginus su @jamshidi2025A_Para matomas didesnis pagreitėjimas su 16
 //   (2022) present the standard practices to test CVRP algorithms: how to determine computing time (typically on a single thread), common ways of tuning parameters, and providing best and average solutions on a specified number of executions, among others.
 //   ]
 
-= Išvados
+#pagebreak()
+= Rezultatai ir išvados
+
+== Rezulatai
+
+1. Išsirinkti duomenų rinkinį pagal, kurį galima būtų testuoti/analizuoti sprendinius.
+2. Išanalizuoti, kaip veikia HGS algoritmas
+3. Atrinkti paralelizuojamas dalis, ar dalis, kurias galima galima pakeisti paralelizuojamomis.
+4. Palyginti rezultatus su kitais state-of-the-art algoritmais
+
+1. Parinktas duomenų rinkinys pagal, kurį galima būtų testuoti/analizuoti sprendinius.
+2. Atlinka HGS algoritmo veikimo analizė.
+3. Atrinkti paralelizuojamas dalis, ar dalis, kurias galima galima pakeisti paralelizuojamomis.
+4. Atliktas palyginimas su kitais #todo[state-of-the-art] algoritmais.
+
+== Išvados
 
 #todo[TODO]
 
+#pagebreak()
 = Priedai
+
+== Vidutinės pasiektos sprendimų kainos ir tarpas galutiniu laiko momentu
 
 #show figure.where(kind: table): set block(breakable: true)
 #figure(
-  block(breakable: true, width: 115%)[#table1],
-  caption: [Mažiausios pasiektos sprendimų kainos ir Gap]
+  block(breakable: true, width: 118%)[#table1],
+    caption: [Vidutinės pasiektos sprendimų kainos ir tarpas galutiniu laiko momentu]
 )
 
 #pagebreak()

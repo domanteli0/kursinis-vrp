@@ -40,3 +40,7 @@
   quote(block: isBlock)[#body]
   footnote(original)
 }
+
+#let lt_ame(label) = [#ref(<eq:first>, form: "number")-ame]
+#let lt_oje(label) = context { [#str(counter(math.equation).at(label).at(0))-oje] }
+#let lt_a(label) = context { [#str(counter(math.equation).at(label).at(0))-a] }

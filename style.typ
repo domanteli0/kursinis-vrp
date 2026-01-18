@@ -89,7 +89,9 @@
   pagebreak()
 
   set text(size: 12pt)
+  set par(justify: true)
 
+  set math.equation(numbering: "(1)")
   // Main content
   body
 }

@@ -1,4 +1,4 @@
-#import "data.typ": gap_percent, max_value, min_value, min_value_valid, read_bks_cost, read_costs, x_vrp_instances
+#import "data.typ": gap_percent, max_value, min_value, read_bks_cost, read_costs, x_vrp_instances
 
 #let gap_floor = 0.02
 
@@ -8,6 +8,11 @@
     let magnitude = calc.abs(value)
     if magnitude < gap_floor { gap_floor } else { magnitude }
   }
+}
+
+#let avg_value_valid(values) = {
+  let filtered = values.filter(value => value != none)
+  if filtered.len() == 0 { none } else { filtered.sum() / filtered.len() }
 }
 
 #let build_gap_series(instances: x_vrp_instances) = {
@@ -23,10 +28,10 @@
         let file = "sols/data/" + name + ".t_" + str(thread) + ".seed-" + str(seed) + ".sol.100ths.csv"
         read_costs(file, invalid_above: 1e29)
       })
-      let best_per_percent = steps.map(idx => {
-        min_value_valid(seed_costs.map(costs => costs.at(idx)))
+      let avg_per_percent = steps.map(idx => {
+        avg_value_valid(seed_costs.map(costs => costs.at(idx)))
       })
-      (thread: thread, best_per_percent: best_per_percent)
+      (thread: thread, avg_per_percent: avg_per_percent)
     }),
   ))
 
@@ -35,7 +40,7 @@
     points: steps.map(idx => {
       let gaps = per_instance.map(inst => {
         let thread_data = inst.threads.filter(t => t.thread == thread).at(0)
-        let cost = thread_data.best_per_percent.at(idx)
+        let cost = thread_data.avg_per_percent.at(idx)
         if cost == none { none } else { gap_percent(cost, inst.bks) }
       }).filter(gap => gap != none)
       let avg_gap = if gaps.len() == 0 { none } else { gaps.sum() / gaps.len() }

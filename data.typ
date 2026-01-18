@@ -338,7 +338,7 @@
   let rows = instances.map(instance => {
     let instance_name = instance.at(0).instance_name
     let stats = instance.map(row => (
-      min: row._100_cost_min,
+      avg: row._100_cost_avg,
     ))
 
     (instance_name: instance_name, stats: stats)
@@ -350,15 +350,15 @@
     table.header(
       table.cell(rowspan: 2)[Instance],
       ..threads.map(t => table.cell(colspan: 2)[#(if t == 1 { [1 gija#footnote[Naudota originali realizacija]] } else { str(t) + " gijos" })]),
-      ..threads.map(_ => ([Min], [Gap])).flatten(),
+      ..threads.map(_ => ([Avg], [Gap])).flatten(),
     ),
     ..rows.map(row => {
       let bks = read_bks_cost(row.instance_name)
       (
         table.cell(breakable: false)[#row.instance_name],
         ..row.stats.map(stat => (
-          table.cell(breakable: true)[#format_2(stat.min)],
-          table.cell(breakable: true)[#(format_2(gap_percent(stat.min, bks)) + "%")],
+          table.cell(breakable: true)[#format_2(stat.avg)],
+          table.cell(breakable: true)[#(format_2(gap_percent(stat.avg, bks)) + "%")],
         )).flatten(),
       )
     }).flatten(),
