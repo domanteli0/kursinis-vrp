@@ -1,7 +1,11 @@
 #import "style.typ": style
 #import "utils.typ": c, q, qi, tab, todo, mine, note, angl, angl_, br
+#import "table1.typ": *
+#import "diagrams/gap_threads.typ": gap_speedup_plot, gap_threads_plot, gap_time_plot
+#import "diagrams/hgs_flowchart.typ": hgs_flowchart
 #import "@preview/drafting:0.2.2": *
-#import "data.typ": *
+#import "@preview/cetz:0.4.2": canvas, draw
+#import "@preview/cetz-plot:0.1.3": plot, chart
 
 #show: style.with(
   university: "Vilniaus universitetas",
@@ -105,7 +109,7 @@ siekiant sumažinti vykdymo laiką neprarandant ar net pagerinant sprendimų kok
 
 = HGS algoritmo veikimas
 
-Pirma aprašytas #c(<vidal2012A_Hybr>) skirtas spręsti MDPVRP. Patobulintas per daugelį iteracijų: #todo[@vidal2014A_unif, @vidal2016Large_, @vidal2017Node__, @vidal2021Arc_Ro, @vidal2022Hybrid] ir pritaikytas CVRP.
+Pirma aprašytas #c(<vidal2012A_Hybr>) skirtas spręsti MDPVRP. Patobulintas per daugelį iteracijų: @vidal2014A_unif, @vidal2016Large_, @vidal2017Node__, @vidal2021Arc_Ro, @vidal2022Hybrid ir pritaikytas CVRP.
 - #q(a: <vidal2022Hybrid>)[Beyond a simple reimplementation of the original algorithm, HGS-
 CVRP takes advantage of several lessons learned from the past decade
 of VRP studies: it relies on simple data structures to avoid move reevaluations and uses the optimal linear-time Split algorithm of Vidal
@@ -116,45 +120,60 @@ designed for VRPs with multiple periods, and uses instead a new neighborhood cal
 
 Genetiniai algoritmai imituoja evoliucijos procesą. Populiacija yra aibė, kurią sudaro individai (t.y. užduoties sprendimai). Šie algoritmai naudoja įvairius kryžminimo operatorius, kurie iš kelių individų populiacijoje sukuria naują, mutuotą individą ir prideda prie populiacijos. Prastos kokybės ir panašūs individai (sprendimai) vykdimo eigoje yra pašalinami iš populiacijos.
 
-Genetinis hydridinis paieškos algoritmas prie genetinio komponento prideda pagerinimo žingsnį (lokalią paiešką), kuri po kryžminimo žinsnio yra pritaikoma mutuotam individui, kad pagerinti gautą individo kokybę.
+Genetinis hydridinis paieškos algoritmas prie genetinio komponento prideda pagerinimo žingsnį (vietinę paiešką #angl[local search]), kuri po kryžminimo žinsnio yra pritaikoma naujam individui, kad pagerinti gautą individo kokybę.
 
-Lokalioje paieškoje taikomos _relocate_, _2-opt_, _2-opt\*_, bei  _swap\*_ heuristikos.
-
-// #q[It carefully applies a combination of well-known local search heuristics, and also proposes an efficient inter-route refinement heuristic called SWAP]
+Vietinėje paieškoje taikomos _relocate_, _2-opt_, _2-opt\*_, bei  _swap\*_ heuristikos.
 
 Palaikant neįvykdomus #angl[infeasible] ir įvykdomus #angl[feasible] sprendimus, palaikoma populiacijos įvairovė #angl[diversity], kuri leidžia išvengti lokalios minimos #angl[local minima] iteruojant per sprendimus.
 
-#figure[
-  #align(left)[#block(stroke: black, inset: 0.5em)[
-    #set par(leading: 0.75em, first-line-indent: (amount: 0cm))
-    *HGS algoritmo pseudokodas* @vidal2012A_Hybr
+#figure(
+  caption: [HGS algoritmo pseudokodas @vidal2012A_Hybr]
+)[
+  #let alg-line(num, body, indent: 0, bar: false) = {
+    let stroke = if bar { (left: 0.4pt + gray) } else { none }
+    grid(
+      columns: (auto, 1fr),
+      row-gutter: 0em,
+      align: top,
+    )[
+      #text(weight: "semibold")[#num]
+      #box(stroke: stroke, inset: (left: indent * 0.85em))#body
+    ]
+  }
 
-    1: Sugeneruoti pradinę populiaciją \
-    2: Kol $"iteracijų skaičius be sprendimo pagerėjimo " < "nustatyas skaičius ir kol nepraėjo laiko limitas"$ \ // "It"_("NI")$ ir $"time" < T_max$ \
-      3: Pasirinkti tėvinius sprendimus #todo[(binary tournament)] \
-      4: Atlikti kryžminimą #angl[crossover] \
-      5: Išmokyti #todo[offsrping] (atlikti lokalią paiešką) \
-      6: jeigu sprendimas neįmanomas: \
-          pridėti sprendimą prie neįvykdomų aibės bei sutaisyti su tam tikra tikimybe \ // $P_"rep"$ \
-      7: jeigu sprendimas įmanomas: \
-         pridėti sprendimą prie įvykdomų aibės \
-      8: jeigu pasiekas maksimalus sprendimų skaičius: \
-         pasirinkti geriausius ir labiausiai įvairius sprendimus \
-      9: Pakeisti #todo[penalty parameters] \
-      10: Jeigu geriausias sprendimas per #todo[$"It"_"div"$] iteracijų nepagerėjo: \
-          diversifikuoti populiaciją \
-    11: Gražinti geriausią sprendimą
-  ]]
+  #block(
+    stroke: black,
+    inset: 0.55em,
+    fill: luma(98%),
+    radius: 2pt,
+    spacing: 0.5em,
+  )[
+    #set par(leading: 0.4em, first-line-indent: (amount: 0cm))
+
+    #align(left)[
+      #stack(
+        spacing: 0.3em,
+        alg-line("1", [Sugeneruoti pradinę populiaciją ir pagerinti ją vietine paieška]),
+        alg-line("2", [*Kol* iteracijų be pagerėjimo skaičius mažesnis už ribą ir $t < T_max$ atlikti], bar: true),
+        alg-line("3", [Pasirinkti tėvinius sprendimus (dvejetainis turnyras #angl[binary tournament])], indent: 1, bar: true),
+        alg-line("4", [Atlikti kryžminimą #angl[crossover]], indent: 1, bar: true),
+        alg-line("5", [Išmokyti naują individą (vietinė paieška)], indent: 1, bar: true),
+        alg-line("6", [Įterpti išmokytą invdividą į atitinkamą subpopuliaciją], indent: 1, bar: true),
+        alg-line("7", [*Jeigu* individas neįvykdomas:], indent: 1, bar: true),
+        alg-line("8", [Su 50% tikimybe bandyti sutaisyti individą ir įtraukti į atitinkamą subpopuliaciją], indent: 2, bar: true),
+        alg-line("9", [*Jeigu* pasiektas maksimalus aibės dydis:], indent: 1, bar: true),
+        alg-line("10", [pašalinti blogiausius ir neįvairius individus iš populiacijos], indent: 2, bar: true),
+        alg-line("11", [Patikslinti baudos parametrus #angl[penalty parameters]], indent: 1, bar: true),
+        alg-line("12", [Grąžinti geriausią įvykdomą sprendimą]),
+      )
+    ]
+  ]
 ] <algo>
-
-#todo[TODO: pridėti swap\*]
 
 #figure(
   caption: [HGS veikimas @vidal2022Hybrid]
-)[#image("img/1-s2.0-S030505482100349X-gr1_lrg.jpg", width: 75%)]
+)[#scale(60%)[#hgs_flowchart]]
 #todo[TODO: Išversti į lietuvių k.???]
-
-#br
 
 = Literatūros analizė
 
@@ -162,11 +181,11 @@ Palaikant neįvykdomus #angl[infeasible] ir įvykdomus #angl[feasible] sprendimu
 
 // GPU metodai dažniausiai orientuojasi į 2-opt, Swap ir susijusių operatorių spartinimą, tačiau daugelyje darbų optimizuojamas tik kelionės ilgio įvertinimas, o sudėtingesnių apribojimų apdorojimas lieka ribotas @lei2025Speedi, @abdelatti2020An_imp, @muniasamy2023Effect. Vis dėlto nemaža dalis pagreitinimų neturi viešo kodo ar detalių palyginimų su BKS, todėl jų pritaikomumas HGS kontekste (pvz., su Swap\* operatoriumi) išlieka atvira problema @vidal2022Hybrid.
 
-@lei2025Speedi lygiagretinimui lokalio paieškios algoritmą išreiškia tenzorių operatoriais, tai leidžia HGS vykdymą perkelti ant GPU. Taip pagreitintas lokalios paieškos operatorius.
+@lei2025Speedi lygiagretinimui vietinės paieškios algoritmą išreiškia tenzorių operatoriais, tai leidžia HGS vykdymą perkelti ant GPU. Taip pagreitintas vietinės paieškos operatorius.
 Tačiau @lei2025Speedi pasiūlytas metodas nėra pritaikomas HGS su swap\*.
-#qi[Dabartinė sprendimų reprezentacija per tensorius neleidžia lengvai įgyvendinti apkarpymo strategijų kaimynysčių sumažinimo technikų, kurie dažnai yra naudojami lokalios paieškos grįstais algoritmais.][the current design of the tensor representation of solutions doesn’t support easy implementation of pruning strategies and neighborhood reduction techniques that are often used in local search-based routing algorithms.]
+#qi[Dabartinė sprendimų reprezentacija per tensorius neleidžia lengvai įgyvendinti apkarpymo strategijų kaimynysčių sumažinimo technikų, kurie dažnai yra naudojami vietinės paieškos grįstais algoritmais.][the current design of the tensor representation of solutions doesn’t support easy implementation of pruning strategies and neighborhood reduction techniques that are often used in local search-based routing algorithms.]
 
-@stadtler2023parallel HGS pritaiko CVRPPD, perkelia tėvų pasirinkimo #angl[selection], kryžminimo #angl[crossover] ir taisymo #angl[repair] žingsnius į atskiras gijas. Kiekviena gija papildomai atlieka lokalią paiešką (_2-opt_, _relocate_, _swap_) pasitelkiant GPU, tačiau nepasitelkia _swap\*_ heuristika, kuri pagal @vidal2022Hybrid padeda surasti aukštesnės kokybės sprendimus.
+@stadtler2023parallel HGS pritaiko CVRPPD, perkelia tėvų pasirinkimo #angl[selection], kryžminimo #angl[crossover] ir taisymo #angl[repair] žingsnius į atskiras gijas. Kiekviena gija papildomai atlieka vietinę paiešką (_2-opt_, _relocate_, _swap_) pasitelkiant GPU, tačiau nepasitelkia _swap\*_ heuristika, kuri pagal @vidal2022Hybrid padeda surasti aukštesnės kokybės sprendimus.
 
 Priešintai nei dauguma implementacijų @muniasamy2023Effect naudoja grafų duomenų struktūras, panaudojami tik _2-opt_ ir arčiausio kaimyno heuristikos #angl[nearest-neighbor]. Šios heuristikos pritaikytos vykdymui GPU aplinkoje naudojant CUDA.
 
@@ -174,7 +193,7 @@ Priešintai nei dauguma implementacijų @muniasamy2023Effect naudoja grafų duom
   caption: [HGS lygiagretintas @stadtler2023parallel]
 )[#image("img/611509_1_En_8_Fig3_HTML.webp", width: 50%)]
 
-@yelmewad2021Parall pasitelkia GPU lygiagretinimui. Kiekvienam maršrutui skiriama atskira GPU gija, kuri vykdo lokalios paieškos žingsnį naudojant GPU. Šiuo metodu pilnas resursų išnaudojimas priklauso nuo to ar sukurtų maršrutų skaičius sutampa su gijų skaičiumi. Atvejai, kai lokalios paieškos žingsniai modifikuoja kitų maršrutų sprendimą, gijos įrašo savo sprendimą į atskirą masyvą, kuris vėliau yra redukuojamas į vieną sprendimą, pasirenkant geriausią sprendimą. Analogiškai, vėlesnėme žingsnyje kiekvienam taškui priskiriama gija. Kiekviena gija apskaičiuoja pagerėjimą ar pablogėjimą apsikeistus vietą maršrute su kitu tašku.
+@yelmewad2021Parall pasitelkia GPU lygiagretinimui. Kiekvienam maršrutui skiriama atskira GPU gija, kuri vykdo vietinės paieškos žingsnį naudojant GPU. Šiuo metodu pilnas resursų išnaudojimas priklauso nuo to ar sukurtų maršrutų skaičius sutampa su gijų skaičiumi. Atvejai, kai vietinės paieškos žingsniai modifikuoja kitų maršrutų sprendimą, gijos įrašo savo sprendimą į atskirą masyvą, kuris vėliau yra redukuojamas į vieną sprendimą, pasirenkant geriausią sprendimą. Analogiškai, vėlesnėme žingsnyje kiekvienam taškui priskiriama gija. Kiekviena gija apskaičiuoja pagerėjimą ar pablogėjimą apsikeistus vietą maršrute su kitu tašku.
 
 @jamshidi2025A_Para kombinuoja HGS su salų modeliu, aprarašytu @rezaei2024Explor, kur kiekviena gija, vykdo tą patį HGS algoritmą, pridedamas individų migracijos žingsnis, kuris leidžia keistis sprendimais tarp gijų.
 // TODO: pridėti migracijos aprašymą.
@@ -185,9 +204,55 @@ Priešintai nei dauguma implementacijų @muniasamy2023Effect naudoja grafų duom
 
 = Lygiagretinimas
 
-Daugiausiai laiko užima lokalios paieškos žingsnis @jamshidi2025A_Para #todo[TODO: pridėti savo matavimus]. Todėl siekiant sumažinti viso HGS algoritmo vykdymo laiką šį žingsnį yra labiausiai verta lygiagretinti.
+Paimta @vidal2022Hybrid HGS algoritmo implementacija#footnote[Nuolatinė repozitoriją nuoroda https://github.com/vidalt/HGS-CVRP/tree/1a927955cd2861a29d978f0d359d6e647db9319c], kuri naudojama kiap pagrindas lygiagretinimui.
 
-Kiekvienai gijai yra parenkami atliekamas kryžminimas. Tada kiekviena gija atlieka lokalios paieškos žingsnį. Vėliau, kai kiekviena gija atlieka šį žingsnį, individai yra pridedami į visų populiaciją.
+Daugiausiai laiko užima vietinės paieškos žingsnis @jamshidi2025A_Para, šio autoriaus atliktais matavimais vietinė paieška užima 85% vykdymo laiko. Todėl siekiant sumažinti viso HGS algoritmo vykdymo laiką šį žingsnį yra labiausiai verta lygiagretinti.
+
+Lygiagretinimas įgyvendintas kiekvienai gijai, atliekant vietinę paiešką. Lygiagretinta HGS-CVRP versija pavaizduota @algo_parallel. Nuosekliai veikiančioje sekcijoje parenkami skirtingi tėviniai individai ir , kryžminimo metu sukuriami individai kiekvienai gijai. Tada kiekviena gija lygiagrečiai atlieka vietinės paieškos žingsnį. Vėliau, kai kiekviena gija atlieka šį žingsnį, individai yra pridedami į visų populiaciją.
+
+#figure(
+  caption: [HGS algoritmo pseudokodas @vidal2012A_Hybr]
+)[
+  #let alg-line(num, body, indent: 0, bar: false) = {
+    let stroke = if bar { (left: 0.4pt + gray) } else { none }
+    grid(
+      columns: (auto, 1fr),
+      row-gutter: 0em,
+      align: top,
+    )[
+      #text(weight: "semibold")[#num]
+      #box(stroke: stroke, inset: (left: indent * 0.85em))#body
+    ]
+  }
+
+  #block(
+    stroke: black,
+    inset: 0.55em,
+    fill: luma(98%),
+    radius: 2pt,
+    spacing: 0.5em,
+  )[
+    #set par(leading: 0.4em, first-line-indent: (amount: 0cm))
+
+    #align(left)[
+      #stack(
+        spacing: 0.3em,
+        alg-line("1", [Sugeneruoti pradinę populiaciją ir pagerinti ją vietine paieška]),
+        alg-line("2", [*Kol* iteracijų be pagerėjimo skaičius mažesnis už ribą ir $t < T_max$ atlikti], bar: true),
+        alg-line("3", [Pasirinkti $N*2$#footnote[N -- gijų skaičius] tėvinių sprendimų (dvejetainis turnyras #angl[binary tournament])], indent: 1, bar: true),
+        alg-line("4", [Atlikti kryžminimą #angl[crossover] N kartų], indent: 1, bar: true),
+        alg-line("5", [(Kiekienoje gijoje) išmokyti naują individą], indent: 1, bar: true),
+        alg-line("6", [Įterpti išmokytą invdividą į atitinkamą subpopuliaciją], indent: 1, bar: true),
+        alg-line("7", [*Jeigu* individas neįvykdomas:], indent: 1, bar: true),
+        alg-line("8", [(Kiekvienoje gijoje) su 50% tikimybe bandyti sutaisyti individą ir įtraukti į atitinkamą subpopuliaciją], indent: 2, bar: true),
+        alg-line("9", [*Jeigu* pasiektas maksimalus aibės dydis:], indent: 1, bar: true),
+        alg-line("10", [pašalinti blogiausius ir neįvairius individus iš populiacijos], indent: 2, bar: true),
+        alg-line("11", [Patikslinti baudos parametrus #angl[penalty parameters]], indent: 1, bar: true),
+        alg-line("12", [Grąžinti geriausią įvykdomą sprendimą]),
+      )
+    ]
+  ]
+] <algo_parallel>
 
 #todo[TODO: praplėsti ir padaryti diagramą]
 
@@ -214,6 +279,11 @@ Kiekvienai gijai yra parenkami atliekamas kryžminimas. Tada kiekviena gija atli
 //   (Uchoa, CMT, and Golden) and #note[real-world application instances (LoggiBUD)].
 // ]
 
+#footnote[https://galgos.inf.puc-rio.br/cvrplib/index.php/en/instances, prieigos data: 2026-01-07]
+
+Parinkti duomneų rinkiniai:
+- Uchoa @uchoa2017 // CMT @CMT2017, Golden @Golden2017
+
 Dėl rezultatų palyginamumo pasirinkta naudoti @vidal2022Hybrid aprašytus duomenų rinkinius ir metodiką.
 #q[We monitor each algorithm’s progress up to a time limit of $𝑇_"max" = 𝑛 × 240∕100$ seconds, where 𝑛 represents the number of customers.
 Therefore, the smallest instance with 100 clients is run for 4 minutes,
@@ -237,7 +307,14 @@ $
 
 #todo[TODO: pateikti rezultatus]
 
-// #read_instance("X-n148-k46")
+#figure(
+  caption: [Sprendimo kokybė pagal gijų skaičių. Gap apskaičiuojamas pagal BKS, o x ašis rodo vykdymo laiką procentais.]
+)[#block(width: 25%)[#gap_threads_plot()]]
+
+#figure(
+  caption: [Sprendimo kokybės santykis tarp viengijio ir N gijų sprendimų (Gap(1 gija) / Gap(N gijų)) priklausomai nuo vykdymo laiko.]
+)[#block(width: 25%)[#gap_speedup_plot()]]
+
 
 Iš rezultatų matyti, kad užduočių kokybė t.y. COST nesumažėjo, tačiau vykdymo laikas sumažėjo X kartų iki Y gijų skaičiaus, daugiau didinant gijų skaičių vykdymo laikas vidutiniškai pakilo X kartų
 
@@ -253,6 +330,14 @@ Iš rezultatų matyti, kad užduočių kokybė t.y. COST nesumažėjo, tačiau v
 = Išvados
 
 #todo[TODO]
+
+= Priedai
+
+#show figure.where(kind: table): set block(breakable: true)
+#figure(
+  block(breakable: true, width: 115%)[#table1],
+  caption: [Mažiausios pasiektos sprendimų kainos ir Gap]
+)
 
 #pagebreak()
 #bibliography(title: [Šaltiniai], "bibliography.bib")

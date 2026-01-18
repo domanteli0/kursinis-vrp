@@ -1,5 +1,4 @@
 pdf:
-    d2 -l elk diagrams/HGS.d2 diagrams/HGS.svg
     typst compile main.typ --features html --font-path ./fonts
 
 html:

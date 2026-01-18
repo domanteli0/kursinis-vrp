@@ -26,8 +26,8 @@
   )
 
   // Configure page
-  context {
-    if target() == "paged" {
+  // context {
+  //   if target() == "paged" {
       set page(
         paper: "a4",
         margin: (
@@ -39,8 +39,8 @@
 
       set page(numbering: (page_num, ..ns) => { if page_num == 1 { "" } else { str(page_num) } })
       set page(number-align: right)
-    }
-  }
+  //   }
+  // }
 
   // Title page
   page(
