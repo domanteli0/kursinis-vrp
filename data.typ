@@ -101,6 +101,46 @@
   "X-n1001-k43",
 )
 
+#let cmt_instances = (
+  "CMT1",
+  "CMT2",
+  "CMT3",
+  "CMT4",
+  "CMT5",
+  "CMT6",
+  "CMT7",
+  "CMT8",
+  "CMT9",
+  "CMT10",
+  "CMT11",
+  "CMT12",
+  "CMT13",
+  "CMT14",
+)
+
+#let golden_instances = (
+  "Golden_1",
+  "Golden_2",
+  "Golden_3",
+  "Golden_4",
+  "Golden_5",
+  "Golden_6",
+  "Golden_7",
+  "Golden_8",
+  "Golden_9",
+  "Golden_10",
+  "Golden_11",
+  "Golden_12",
+  "Golden_13",
+  "Golden_14",
+  "Golden_15",
+  "Golden_16",
+  "Golden_17",
+  "Golden_18",
+  "Golden_19",
+  "Golden_20",
+)
+
 #let min_value = (values) => {
   if values.len() == 0 { 0 } else {
     values.slice(1).fold(values.at(0), (acc, item) => if item < acc { item } else { acc })
