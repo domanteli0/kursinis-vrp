@@ -24,7 +24,7 @@
   }
 }
 
-#let time_mark_positions = (10, 30, 50, 70, 90)
+#let time_mark_positions = (1, 2, 5, 10, 15, 20, 30, 50, 75, 100)
 
 #let thread_mark(thread) = {
   if thread == 1 { "o" }
@@ -108,13 +108,16 @@
   let non_empty_series = result.series.filter(s => s.points.len() > 0)
 
   plot.plot(
-    size: (12, 7),
-    x-min: 1,
-    x-max: 100,
-    x-tick-step: 10,
+    size: (11, 8),
+    x-min: 0.9,
+    x-max: 105,
+    x-ticks: time_mark_positions,
+    x-tick-step: none,
+    x-minor-tick-step: none,
     x-label: [Vykdymo laikas (%)],
-    y-min: result.gap_min,
-    y-max: result.gap_max,
+    x-mode: "log",
+    y-min: 0.125,
+    y-max: 2.74,
     y-mode: "log",
     y-base: 10,
     y-label: [Gap (%)],
@@ -191,11 +194,14 @@
 
   plot.plot(
     size: (12, 7),
-    x-min: 1,
-    x-max: 100,
-    x-tick-step: 10,
+    x-min: 0.9,
+    x-max: 105,
+    x-ticks: time_mark_positions,
+    x-tick-step: none,
+    x-minor-tick-step: none,
     x-label: [Vykdymo laikas (%)],
-    y-min: y_min,
+    x-mode: "log",
+    y-min: y_min - 0.1,
     y-max: y_max,
     y-label: [Gap santykis (1 gija / N gijų)],
     y-ticks: y_ticks,

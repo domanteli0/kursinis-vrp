@@ -91,22 +91,21 @@ siekiant sumažinti vykdymo laiką neprarandant ar net pagerinant sprendinių ko
 CVRP nagrinėjamas grafas $𝐺 = (𝑉, 𝐸)$, kuriame $v_0 in V$ žymi depą, kuris turi $m$ transporto priemonių, o likusios viršūnės ${v_1, ..., v_(|V|)}$ atitinka klientus, kuriuos reikia aplankyti. Kiekviena briauna $(i, j) in E$ reiškia galimybę keliauti tarp vietų $i$ ir $j$ su kaina $c_(i,j)$ -- atstumas tarp vietų $i$ ir $j$. CVRP reikia surasti sprendinį, kuriame panaudotos ne daugiau kaip $K$ transporto priemonių, prasidedančių ir pasibaigiančių depe, taip, kad kiekvienas klientas būtų aplankytas vieną kartą ir bendras klientų paklausos dydis bet kuriame maršrute neviršytų transporto priemonės talpos $Q$, o bendras transporto priemonių nuvažiuotas atstumas -- kaina @math_cost kiek įmanoma mažesnis.
 
 #figure(caption: "Sprendinio kainos apibrėžimas")[$
-  "Kaina" &= sum_(k=1)^(K) sum_(i=0)^(N) sum_(j=0)^(N) c_(i,j) * x_(i,j,k) \
-  c_(i,j) &= "astumas nuo kliento" i "iki kliento" j \
-  x_(i,j,k) &= 1 "Indikatorinė" "funkcija", "kuri" \
-  & "lygi" 1, "jei" "transporto" "priemonė" k (1 <= k <= K) "keliauja" "nuo" "kliento" i "iki" "kliento" j, \
-  & "lygi" 0 "priešingu" "atveju"
+  "Sprendinio kaina" &= &&sum_(k=1)^(K) sum_(i=0)^(|V|) sum_(j=0)^(|V|) c_(i,j) x_(i,j,k) \
+  c_(i,j) &= &&"astumas nuo kliento" i "iki kliento" j \
+  x_(i,j,k) &= &&1 "Indikatorinė" "funkcija", "kuri" \
+  & &&"lygi" 1, "jei" "transporto" "priemonė" k " " (1 <= k <= K)\
+  & &&"keliauja" "nuo" "kliento" i "iki" "kliento" j, \
+  & &&"lygi" 0 "priešingu" "atveju"
 $] <math_cost>
 
-Lyginant transporto maršrutų optimizavimo uždavinio sprendinius taip pat naudojamas
+Lyginant transporto maršrutų optimizavimo uždavinio sprendinius taip pat naudojamas tarpas #angl[gap], kuris nusako atstumą nuo geriausio sprendinio išreikštas procentais @math_gap.
 
 #figure(caption: "Tarpo apibrėžimas")[$
   "Tarpas" &= ((Z_s - Z_"BKS") / Z_"BKS") dot 100% \
   Z_s &= #[Pasirinkto algoritmo sprendinio kaina] \
   Z_"BKS" &= #[Geriausio sprendinio kaina]
 $] <math_gap>
-
-#figure(caption: [@jamshidi2025A_Para])[#image(width: 50%, "img/44196_2025_1059_Fig6_HTML (Edited).png")]
 
 = HGS algoritmo veikimas
 
@@ -194,12 +193,15 @@ Priešintai nei dauguma implementacijų @muniasamy2023Effect naudoja grafų duom
 
 @yelmewad2021Parall pasitelkia GPU lygiagretinimui. Kiekvienam maršrutui skiriama atskira GPU gija, kuri vykdo vietinės paieškos žingsnį naudojant GPU. Šiuo metodu pilnas resursų išnaudojimas priklauso nuo to ar sukurtų maršrutų skaičius sutampa su gijų skaičiumi. Atvejai, kai vietinės paieškos žingsniai modifikuoja kitų maršrutų sprendinį, gijos įrašo savo sprendinius į atskirą masyvą, kuris vėliau yra redukuojamas į vieną sprendinį, pasirenkant geriausią sprendinį. Analogiškai, vėlesnėme žingsnyje kiekvienam klientui priskiriama gija. Kiekviena gija apskaičiuoja pagerėjimą ar pablogėjimą apsikeistus vietą maršrute su kitu klientu.
 
-@jamshidi2025A_Para kombinuoja HGS su salų modeliu, aprarašytu @rezaei2024Explor, kur kiekviena gija, vykdo tą patį HGS algoritmą, pridedamas individų migracijos žingsnis, kuris leidžia keistis sprendiniais tarp gijų.
-// TODO: pridėti migracijos aprašymą.
+@jamshidi2025A_Para aprašo _PHGS_ #angl[Parallel Hybrid Genetic Search], kur kombinuoja HGS su salų modeliu, aprarašytu @rezaei2024Explor, kur kiekviena gija, vykdo tą patį HGS algoritmą, pridedamas individų migracijos žingsnis, kuris leidžia keistis sprendiniais tarp gijų.
 
 #figure(
   caption: [HGS su salų modeliu @jamshidi2025A_Para]
 )[#image("img/44196_2025_1059_Fig5_HTML.webp", width: 50%)]
+
+_PHGS_ rodo vos ne du kartus geresnius rezultatus galutiniame laiko momente.
+
+#figure(caption: [Palyginimas tarp vidutino tarpo (Y ašis) ir vykdymo laiko (X ašis) @jamshidi2025A_Para.])[#image(width: 50%, "img/44196_2025_1059_Fig6_HTML (Edited).png")] <jamshidi2025A_Para_gap_speed>
 
 = Lygiagretinimas
 
@@ -260,13 +262,19 @@ Lygiagretinimas įgyvendintas kiekvienai gijai, atliekant vietinę paiešką. Ly
 
 Dėl rezultatų palyginamumo pasirinkta naudoti @vidal2022Hybrid aprašytus duomenų rinkinius (@uchoa2017) ir metodiką.
 
-#q[We monitor each algorithm’s progress up to a time limit of $𝑇_"max" = 𝑛 × 240∕100$ seconds, where 𝑛 represents the number of customers.
+#qi()[@vidal2022Hybrid.][We monitor each algorithm’s progress up to a time limit of $𝑇_"max" = 𝑛 dot 240∕100$ seconds, where 𝑛 represents the number of customers.
 Therefore, the smallest instance with 100 clients is run for 4 minutes,
 whereas the largest instance containing 1000 clients is run for 40
 minutes. During each run, we record the best solution value after
 1%, 2%, 5%, 10%, 15%, 20%, 30%, 50%, 75%, and 100% of the
 time limit to measure the performance of the algorithms at different
-stages of the search. ]
+stages of the search.]
+
+ _HGS_ algoritmas sustoja tik, kai pasiekiamas iteracijų skaičius be pagerėjimo ar veikimo laikas viršija tuos nustatytus pagal parinkus parametrus. Parinkus pakankamai aukštus parametrus algoritmo veikimo laikas gali tęstis ilgiau negu dabartinis visatos amžius.
+
+Šiam eksperimentui iteracijų skaičius be pagerėjimo buvo parinktas begalinis iteracijų be pagreitėjimo skaičius ir $T_"max" = n 24/100$ tam, kad sutilpti į duotus MIF
+
+
 
 Palyginimui naudoti geriausių sprendinių rinkinys#footnote[https://galgos.inf.puc-rio.br/cvrplib/index.php/en/instances, prieigos data: 2026-01-07].
 
@@ -286,6 +294,10 @@ Lygiagretintos programos versija patalpinta "Codeberg" repozitorijoje#footnote[h
 
 
 Iš rezultatų matyti, kad užduočių kokybė t.y. COST nesumažėjo, tačiau vykdymo laikas sumažėjo X kartų iki Y gijų skaičiaus, daugiau didinant gijų skaičių vykdymo laikas vidutiniškai pakilo X kartų
+
+Palyginus su @jamshidi2025A_Para matomas didesnis pagreitėjimas su 16
+
+
 
 // #q()[An up-to-date survey on recent trends can be
 //   found in Vidal et al. (2020) [@vidal2020A_conc]]
