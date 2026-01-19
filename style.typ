@@ -22,7 +22,7 @@
   show figure.caption: it => {
     let num = it.counter.display(it.numbering)
     let label = if it.kind == table { "lentelė." } else { "pav." }
-    [#num #h(0.4em) #label #h(0.4em) #it.body #v(0.45em)]
+    [#num #h(0.4em) #label #h(0.4em) #it.body #v(0.6em)]
   }
 
   show figure.where(kind: table): set figure.caption(position: top)

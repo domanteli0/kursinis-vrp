@@ -6,6 +6,8 @@
 #import "data_gap.typ": gap_data
 #import "diagrams/gap_threads.typ": gap_speedup_plot_from, gap_threads_plot_from
 #import "diagrams/hgs_flowchart.typ": hgs_flowchart
+#import "diagrams/parallel_hgs_arch.typ": parallel_hgs
+#import "diagrams/island_model.typ": island_model
 #import "@preview/drafting:0.2.2": *
 #import "@preview/cetz:0.4.2": canvas, draw
 #import "@preview/cetz-plot:0.1.3": plot, chart
@@ -202,7 +204,11 @@ Tėvų atranka vykdoma dvejetainiu turnyru, kur paskaičiuojamas tinkamumas #ang
 #pagebreak()
 = Literatūros analizė
 
-// GPU metodai dažniausiai orientuojasi į 2-opt, Swap ir susijusių operatorių spartinimą, tačiau daugelyje darbų optimizuojamas tik kelionės ilgio įvertinimas, o sudėtingesnių apribojimų apdorojimas lieka ribotas @lei2025Speedi, @abdelatti2020An_imp, @muniasamy2023Effect. Vis dėlto nemaža dalis pagreitinimų neturi viešo kodo ar detalių palyginimų su BKS, todėl jų pritaikomumas HGS kontekste (pvz., su Swap\* operatoriumi) išlieka atvira problema @vidal2022Hybrid.
+// Vertinimo praktikoje akcentuojama palyginamumo problema. @uchoa2017 pasiūlė naują CVRP testų rinkinį su BKS, o @jastrzab2024Standa rekomenduoja aiškiai apibrėžti laiko matavimą, paleidimų skaičių ir pateikti vidurkius kartu su geriausiais rezultatais. Tokia standartizacija leidžia prasmingai lyginti lygiagretintų ir nuoseklių algoritmų efektyvumą.
+
+@abdelatti2020An_imp orientuojasi tik į _2-opt_ ir genetinės dalies spartinimą naudojant GPU, visi kiti operatoriai yra palinkti neimplementuoti ir nėra naudojami. #todo[praplėsti apie šį darbą, panašiai kaip @yelmewad2021Parall kaip lygiagretintas algortimas tik glausčiau].
+
+@yelmewad2021Parall pasitelkia GPU lygiagretinimui. Kiekvienam maršrutui skiriama atskira GPU gija, kuri vykdo vietinės paieškos žingsnį naudojant GPU. Šiuo metodu pilnas resursų išnaudojimas priklauso nuo to, ar sukurtų maršrutų skaičius sutampa su gijų skaičiumi. Atvejai, kai vietinės paieškos žingsniai modifikuoja kitų maršrutų sprendinį, gijos įrašo savo sprendinius į atskirą masyvą, kuris vėliau yra redukuojamas į vieną sprendinį, pasirenkant geriausią sprendinį. Analogiškai, vėlesniame žingsnyje kiekvienam klientui priskiriama gija. Kiekviena gija apskaičiuoja pagerėjimą ar pablogėjimą apsikeitus vietą maršrute su kitu klientu. #todo[praplėsti kokius operatoriai yra naudojami]
 
 @lei2025Speedi lygiagretinimui vietinės paieškos algoritmą išreiškia tenzorių operatoriais, tai leidžia HGS vykdymą perkelti ant GPU. Taip pagreitintas vietinės paieškos operatorius.
 Tačiau @lei2025Speedi pasiūlytas metodas nėra pritaikomas HGS su swap\*.
@@ -210,26 +216,23 @@ Tačiau @lei2025Speedi pasiūlytas metodas nėra pritaikomas HGS su swap\*.
 
 @stadtler2023parallel HGS pritaiko CVRPPD, perkelia tėvų pasirinkimo #angl[selection], kryžminimo #angl[crossover] ir taisymo #angl[repair] žingsnius į atskiras gijas. Kiekviena gija papildomai atlieka vietinę paiešką (_2-opt_, _relocate_, _swap_) pasitelkiant GPU, tačiau nepasitelkia _swap\*_ heuristika, kuri pagal @vidal2022Hybrid padeda surasti aukštesnės kokybės sprendinius.
 
+#figure(
+  caption: [Lygiagretintas HGS pagal @stadtler2023parallel],
+  scale(60%, reflow: true, parallel_hgs)
+)
+
 Priešingai nei dauguma implementacijų @muniasamy2023Effect naudoja grafų duomenų struktūras, panaudojami tik _2-opt_ ir arčiausio kaimyno heuristikos #angl[nearest-neighbor]. Šios heuristikos pritaikytos vykdymui GPU aplinkoje naudojant CUDA.
 
 #figure(
-  caption: [Lygiagretintas HGS pagal @stadtler2023parallel]
-)[#image("img/611509_1_En_8_Fig3_HTML.webp", width: 50%)]
-#todo[TODO: Perpiešti paveikslą lietuviškai, pridėti nuorodą į šaltinį.]
+  caption: [HGS su salų modeliu @jamshidi2025A_Para],
+  scale(60%, reflow: true, island_model)
+) <hgs_island_model>
 
-@yelmewad2021Parall pasitelkia GPU lygiagretinimui. Kiekvienam maršrutui skiriama atskira GPU gija, kuri vykdo vietinės paieškos žingsnį naudojant GPU. Šiuo metodu pilnas resursų išnaudojimas priklauso nuo to, ar sukurtų maršrutų skaičius sutampa su gijų skaičiumi. Atvejai, kai vietinės paieškos žingsniai modifikuoja kitų maršrutų sprendinį, gijos įrašo savo sprendinius į atskirą masyvą, kuris vėliau yra redukuojamas į vieną sprendinį, pasirenkant geriausią sprendinį. Analogiškai, vėlesniame žingsnyje kiekvienam klientui priskiriama gija. Kiekviena gija apskaičiuoja pagerėjimą ar pablogėjimą apsikeitus vietą maršrute su kitu klientu.
-
-@jamshidi2025A_Para aprašo _PHGS_ #angl[Parallel Hybrid Genetic Search], kur kombinuoja HGS su salų modeliu, aprašytu @rezaei2024Explor, kur kiekviena gija vykdo tą patį HGS algoritmą, pridedamas individų migracijos žingsnis, kuris leidžia keistis sprendiniais tarp gijų.
-
-#figure(
-  caption: [HGS su salų modeliu @jamshidi2025A_Para]
-)[#image("img/44196_2025_1059_Fig5_HTML.webp", width: 50%)]
-#todo[TODO: Perpiešti paveikslą lietuviškai, paliekant nuorodą į šaltinį.]
-
-_PHGS_ rodo vos ne du kartus geresnius rezultatus galutiniame laiko momente.
+@jamshidi2025A_Para aprašo _PHGS_ #angl[Parallel Hybrid Genetic Search], kur kombinuoja HGS su salų #angl[islands] modeliu, aprašytu @rezaei2024Explor. #lt_ame(<hgs_island_model>) pavyzdyje parodytas šio algoritmo veikimas. Kiekviena gija vykdo tą patį HGS algoritmą, pridedamas individų migracijos žingsnis, kuris leidžia keistis sprendiniais tarp gijų. _PHGS_ rodo vos ne du kartus geresnius rezultatus galutiniame laiko momente (žr #lt_a(<jamshidi2025A_Para_gap_speed>) pavyzdį).
 
 #figure(caption: [Palyginimas tarp vidutinio tarpo (Y ašis) ir vykdymo laiko (X ašis) @jamshidi2025A_Para.])[#image(width: 50%, "img/44196_2025_1059_Fig6_HTML (Edited).png")] <jamshidi2025A_Para_gap_speed>
-#todo[TODO: Perpiešti paveikslą lietuviškai, paliekant nuorodą į šaltinį.]
+
+Nemaža dalis dalis literatūros yra aprašiusi tik greitinimą ant GPU. Vis dėlto nemaža dalis pagreitinimų pritaikomumas HGS-CVRP (su _swap\*_ operatoriumi) išlieka atvira problema.
 
 #pagebreak()
 = Lygiagretinimas
