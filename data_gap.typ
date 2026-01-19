@@ -1,6 +1,39 @@
 #import "data.typ": gap_percent, max_value, min_value, read_bks_cost, read_costs, x_vrp_instances
 
 #let gap_floor = 0.02
+#let gap_time_marks = (1, 2, 5, 10, 15, 20, 30, 50, 75, 100)
+
+#let gap_at_time(points, time) = {
+  let match = points.filter(p => p.at(0) == time)
+  if match.len() == 0 { none } else { match.at(0).at(1) }
+}
+
+#let gap_threads_series(data) = data.series.filter(s => s.points.len() > 0)
+
+#let gap_speedup_series_from(data, times: none) = {
+  let series = gap_threads_series(data)
+  let base = series.filter(s => s.thread == 1).at(0, default: none)
+  let selected_times = if times != none {
+    times
+  } else if base == none {
+    ()
+  } else {
+    base.points.map(p => p.at(0))
+  }
+
+  series.filter(s => s.thread != 1).map(item => (
+    thread: item.thread,
+    points: selected_times.map(time => {
+      let base_gap = if base == none { none } else { gap_at_time(base.points, time) }
+      let thread_gap = gap_at_time(item.points, time)
+      if base_gap == none or thread_gap == none or thread_gap <= 0 {
+        none
+      } else {
+        (time, base_gap / thread_gap)
+      }
+    }).filter(point => point != none),
+  ))
+}
 
 #let normalize_gap(value) = {
   if value == none { none }

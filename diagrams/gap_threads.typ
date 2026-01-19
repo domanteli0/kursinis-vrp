@@ -1,6 +1,7 @@
 #import "@preview/cetz:0.4.2": canvas, draw
 #import "@preview/cetz-plot:0.1.3": plot
 #import "../data.typ": format_2, max_value
+#import "../data_gap.typ": gap_at_time, gap_speedup_series_from, gap_threads_series, gap_time_marks
 
 #let thread_label(thread) = {
   if thread == 1 { "1 gija" }
@@ -23,8 +24,6 @@
     (stroke: (paint: black, thickness: 1pt))
   }
 }
-
-#let time_mark_positions = (1, 2, 5, 10, 15, 20, 30, 50, 75, 100)
 
 #let thread_mark(thread) = {
   if thread == 1 { "o" }
@@ -81,11 +80,6 @@
   draw_mark_shape((0.5, 0.5), legend_mark_size, mark, style: (stroke: black, fill: white))
 }
 
-#let gap_at_time(points, time) = {
-  let match = points.filter(p => p.at(0) == time)
-  if match.len() == 0 { none } else { match.at(0).at(1) }
-}
-
 #let gap_threads_plot_from(data) = canvas({
   import draw: *
 
@@ -105,13 +99,13 @@
 
   let result = data
   let y_ticks = (0.02, 0.05, 0.1, 0.25, 0.5, 1, 2, 5, 10, 20)
-  let non_empty_series = result.series.filter(s => s.points.len() > 0)
+  let non_empty_series = gap_threads_series(result)
 
   plot.plot(
     size: (11, 8),
     x-min: 0.9,
     x-max: 105,
-    x-ticks: time_mark_positions,
+    x-ticks: gap_time_marks,
     x-tick-step: none,
     x-minor-tick-step: none,
     x-label: [Vykdymo laikas (%)],
@@ -132,11 +126,11 @@
         plot.add(item.points, line: "spline", label: none, style: thread_style(item.thread))
 
         let mark = thread_mark(item.thread)
-        for x in time_mark_positions {
-          let match = item.points.filter(p => p.at(0) == x)
-          if match.len() > 0 {
+        for x in gap_time_marks {
+          let gap = gap_at_time(item.points, x)
+          if gap != none {
             plot.add(
-              (match.at(0),),
+              ((x, gap),),
               mark: mark,
               mark-size: tick_mark_size,
               label: none,
@@ -169,21 +163,7 @@
 
   let result = data
 
-  let base = result.series.filter(s => s.thread == 1 and s.points.len() > 0).at(0, default: none)
-  let times = if base == none { () } else { base.points.map(p => p.at(0)) }
-
-  let series = result.series.filter(s => s.thread != 1 and s.points.len() > 0).map(item => (
-    thread: item.thread,
-    points: times.map(time => {
-      let base_gap = gap_at_time(base.points, time)
-      let thread_gap = gap_at_time(item.points, time)
-      if base_gap == none or thread_gap == none or thread_gap <= 0 {
-        none
-      } else {
-        (time, base_gap / thread_gap)
-      }
-    }).filter(point => point != none),
-  ))
+  let series = gap_speedup_series_from(result)
 
   let ratio_values = series.map(s => s.points.map(p => p.at(1))).flatten().filter(value => value != none)
   let y_min = 1
@@ -196,7 +176,7 @@
     size: (12, 7),
     x-min: 0.9,
     x-max: 105,
-    x-ticks: time_mark_positions,
+    x-ticks: gap_time_marks,
     x-tick-step: none,
     x-minor-tick-step: none,
     x-label: [Vykdymo laikas (%)],
@@ -215,11 +195,11 @@
         plot.add(item.points, line: "spline", label: none, style: thread_style(item.thread))
 
         let mark = thread_mark(item.thread)
-        for x in time_mark_positions {
-          let match = item.points.filter(p => p.at(0) == x)
-          if match.len() > 0 {
+        for x in gap_time_marks {
+          let ratio = gap_at_time(item.points, x)
+          if ratio != none {
             plot.add(
-              (match.at(0),),
+              ((x, ratio),),
               mark: mark,
               mark-size: tick_mark_size,
               label: none,

@@ -2,6 +2,7 @@
 #import "utils.typ": c, q, qi, tab, todo, mine, note, angl, angl_, br, lt_ame, lt_oje, lt_a
 #import "data.typ": golden_instances, cmt_instances, x_vrp_instances
 #import "table1.typ": *
+#import "table_gap.typ": table_gap_speedup_from, table_gap_threads_from
 #import "data_gap.typ": gap_data
 #import "diagrams/gap_threads.typ": gap_speedup_plot_from, gap_threads_plot_from
 #import "diagrams/hgs_flowchart.typ": hgs_flowchart
@@ -298,6 +299,8 @@ Palyginimui naudoti geriausių sprendinių rinkinys#footnote[https://galgos.inf.
 
 #let gap_result = gap_data()
 #let table1 = table_100_avg_from(gap_result)
+#let gap_threads_table = table_gap_threads_from(gap_result)
+#let gap_speedup_table = table_gap_speedup_from(gap_result)
 
 #figure(
   caption: [Sprendimo kokybė pagal gijų skaičių. Gap apskaičiuojamas pagal BKS, o x ašis rodo vykdymo laiką procentais.]
@@ -338,6 +341,20 @@ Palyginus su @jamshidi2025A_Para, 16 gijų atvejis rodo panašų pagerėjimą (~
 
 #pagebreak()
 = Priedai
+
+== Vidutinis gap pagal vykdymo laiką ir gijų skaičių
+
+#figure(
+  block(breakable: true, width: 118%)[#gap_threads_table],
+    caption: [Vidutinis gap (%) pagal vykdymo laiką ir gijų skaičių]
+)
+
+== Gap santykis tarp viengijės ir daugiagijės versijų
+
+#figure(
+  block(breakable: true, width: 118%)[#gap_speedup_table],
+    caption: [Gap santykis (1 gija / N gijų) pagal vykdymo laiką]
+)
 
 == Vidutinės pasiektos sprendimų kainos ir tarpas galutiniu laiko momentu
 
