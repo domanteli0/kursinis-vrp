@@ -177,9 +177,9 @@ Tėvų atranka vykdoma dvejetainiu turnyru, kur paskaičiuojamas tinkamumas #ang
 
     #align(left)[
       #stack(
-        spacing: 0.3em,
+        spacing: 0.5em,
         alg-line("1", [Sugeneruoti pradinę populiaciją ir pagerinti ją vietine paieška]),
-        alg-line("2", [*Kol* iteracijų be pagerėjimo skaičius mažesnis už ribą ir $t < T_max$ atlikti], bar: true),
+        alg-line("2", [*Kol* iteracijų be pagerėjimo skaičius ir vykdymo laikas neviršija limitų:], bar: true),
         alg-line("3", [Pasirinkti tėvinius individus (dvejetainis turnyras #angl[binary tournament])], indent: 1, bar: true),
         alg-line("4", [Atlikti kryžminimą #angl[crossover]], indent: 1, bar: true),
         alg-line("5", [Išmokyti naują individą (vietinė paieška)], indent: 1, bar: true),
@@ -213,7 +213,7 @@ Tačiau @lei2025Speedi pasiūlytas metodas nėra pritaikomas HGS su swap\*.
 Priešingai nei dauguma implementacijų @muniasamy2023Effect naudoja grafų duomenų struktūras, panaudojami tik _2-opt_ ir arčiausio kaimyno heuristikos #angl[nearest-neighbor]. Šios heuristikos pritaikytos vykdymui GPU aplinkoje naudojant CUDA.
 
 #figure(
-  caption: [HGS lygiagretintas @stadtler2023parallel]
+  caption: [Lygiagretintas HGS pagal @stadtler2023parallel]
 )[#image("img/611509_1_En_8_Fig3_HTML.webp", width: 50%)]
 #todo[TODO: Perpiešti paveikslą lietuviškai, pridėti nuorodą į šaltinį.]
 
@@ -236,13 +236,16 @@ _PHGS_ rodo vos ne du kartus geresnius rezultatus galutiniame laiko momente.
 
 Paimta @vidal2022Hybrid HGS algoritmo implementacija#footnote[Nuolatinė repozitorijos nuoroda https://github.com/vidalt/HGS-CVRP/tree/1a927955cd2861a29d978f0d359d6e647db9319c], kuri naudojama kaip pagrindas lygiagretinimui.
 
-
-Daugiausiai laiko užima vietinės paieškos žingsnis @jamshidi2025A_Para, šio autoriaus atliktais matavimais vietinė paieška užima 85% vykdymo laiko. Todėl siekiant sumažinti viso HGS algoritmo vykdymo laiką šį žingsnį yra labiausiai verta lygiagretinti.
+Daugiausiai laiko užima vietinės paieškos žingsnis @jamshidi2025A_Para, šio darbo autoriaus atliktais matavimais vietinė paieška užima 85% vykdymo laiko. Todėl siekiant sumažinti viso HGS algoritmo vykdymo laiką šį žingsnį yra labiausiai verta lygiagretinti.
 
 Lygiagretinimas įgyvendintas kiekvienai gijai, atliekant vietinę paiešką. Lygiagretinta HGS-CVRP versija pavaizduota @algo_parallel. Nuosekliai veikiančioje sekcijoje parenkami skirtingi tėviniai individai, kryžminimo metu sugeneruojami individai kiekvienai gijai.
-Kai kiekviena gija baigia lokalią paiešką, individai yra pridedami į bendrą populiaciją.
+Kai kiekviena gija baigia vietinę paiešką, individai yra pridedami į bendrą populiaciją.
 
-Toks lygiagretinimo būdas sumažina konfliktus dėl bendrų duomenų, nes gijos nekovoja dėl įrašymo į bendrą populiaciją įterpimo žingsnyje, tačiau pagreitėjimą riboja nuoseklūs žingsniai.
+Toks lygiagretinimo būdas sumažina konfliktus dėl bendrų duomenų, nes gijos nekovoja dėl įrašymo į bendrą populiaciją įterpimo žingsnyje, tačiau pagreitėjimą riboja nuoseklūs žingsniai. Papildomai, šis lygiagretinimo būdas leidžia išlaikyti swap\* operatorių, kuris nagrinėtose lygiagretintose HGS versijose buvo pašalintas #todo[paminėti kurios].
+
+Šis sprendimas taip pat leidžia išlaikyti HGS populiacijos valdymą vienoje vietoje ir yra paprastesnis nei GPU pagrįstas operatorių perrašymas ar salų modelio migracija @lei2025Speedi, @jamshidi2025A_Para.
+
+Kita vertus, kryžminimo, baudų parametrų tikslinimo bei populicaijos valdymo žingniai atliekami nuosekliai, todėl dalį laiko visos gijos, apart vienos, neturės darbo. Papildomai, prieš populiacijos valdymo žingsnį visos gijos privalo baigti vietinę paiešką, lėtai veikianti gija gali užtęsti vykdymo laiką.
 
 #figure(
   caption: [Lygiagretinto HGS-CVRP pseudokodas (grįstas pagal @vidal2012A_Hybr)]
@@ -270,9 +273,9 @@ Toks lygiagretinimo būdas sumažina konfliktus dėl bendrų duomenų, nes gijos
 
     #align(left)[
       #stack(
-        spacing: 0.3em,
+        spacing: 0.5em,
         alg-line("1", [Sugeneruoti pradinę populiaciją ir pagerinti ją vietine paieška]),
-        alg-line("2", [*Kol* iteracijų be pagerėjimo skaičius mažesnis už ribą ir $t < T_max$ atlikti], bar: true),
+        alg-line("2", [*Kol* iteracijų be pagerėjimo skaičius ir vykdymo laikas neviršija limitų:], bar: true),
         alg-line("3", [Pasirinkti $N#footnote[N -- gijų skaičius]*2$ tėvinius individus (dvejetainis turnyras #angl[binary tournament])], indent: 1, bar: true),
         alg-line("4", [Atlikti kryžminimą #angl[crossover] N kartų], indent: 1, bar: true),
         alg-line("5", [(Kiekvienoje gijoje) išmokyti naują individą], indent: 1, bar: true),
@@ -364,6 +367,10 @@ Palyginus su @jamshidi2025A_Para, 16 gijų atvejis rodo panašų pagerėjimą (~
 
 #todo[TODO]
 // Lygiagretinant HGS-CVRP vietinės paieškos etapą pavyko pagerinti sprendinių kokybę per tą patį laiko limitą: vidutinis gap 100% laiko taške sumažėjo nuo 0.42% iki 0.23% (16 gijų), o didžiausia grąža pasiekta iki 8 gijų. Gautas elgesys dera su literatūroje aprašytu PHGS modeliu, kuriame gijų skaičiaus didinimas gerina sprendinius, bet po tam tikro taško grąža mažėja @jamshidi2025A_Para. Pagrindiniai lygiagretinimo apribojimai išlieka nuoseklūs populiacijos valdymo žingsniai ir sinchronizacija, todėl tolesniems tyrimams tikslinga nagrinėti salų modelį arba asinchroninį populiacijos atnaujinimą.
+
+// Lygiagretinant HGS-CVRP vietinės paieškos etapą pavyko pagerinti sprendinių kokybę per tą patį laiko limitą: vidutinis gap 100% laiko taške sumažėjo nuo 0.42% iki 0.23% (16 gijų), o didžiausia grąža pasiekta iki 8 gijų. Pagerėjimas matomas ir ankstyvuose etapuose (10% laiko), todėl gijų didinimas padeda greičiau konverguoti.
+
+// Sprendinių kokybės gerėjimas turi mažėjančią grąžą, nes nuoseklūs populiacijos valdymo žingsniai ir gijų sinchronizacija riboja pagreitėjimą. Tolesniems tyrimams tikslinga nagrinėti salų modelį arba asinchroninį populiacijos atnaujinimą, taip pat GPU spartinimą ten, kur nepažeidžiami HGS kaimynystės ir apkarpymo mechanizmai @jamshidi2025A_Para, @lei2025Speedi.
 
 #pagebreak()
 = Priedai
