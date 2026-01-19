@@ -1,4 +1,4 @@
-#import "data.typ": format_2, gap_percent
+#import "../data.typ": format_2, gap_percent
 
 #let table_100_avg_from(data) = {
   let threads = data.threads

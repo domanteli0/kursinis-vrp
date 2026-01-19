@@ -1,5 +1,5 @@
-#import "data.typ": format_2
-#import "data_gap.typ": gap_at_time, gap_speedup_series_from, gap_threads_series, gap_time_marks
+#import "../data.typ": format_2
+#import "../data_gap.typ": gap_at_time, gap_speedup_series_from, gap_threads_series, gap_time_marks
 
 #let table_gap_threads_from(data) = {
   let series = gap_threads_series(data)

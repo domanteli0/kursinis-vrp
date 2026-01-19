@@ -1,8 +1,8 @@
 #import "style.typ": style
 #import "utils.typ": c, q, qi, tab, todo, mine, note, angl, angl_, br, lt_ame, lt_oje, lt_a
 #import "data.typ": golden_instances, cmt_instances, x_vrp_instances
-#import "table1.typ": *
-#import "table_gap.typ": table_gap_speedup_from, table_gap_threads_from
+#import "tables/table1.typ": *
+#import "tables/table_gap.typ": table_gap_speedup_from, table_gap_threads_from
 #import "data_gap.typ": gap_data
 #import "diagrams/gap_threads.typ": gap_speedup_plot_from, gap_threads_plot_from
 #import "diagrams/hgs_flowchart.typ": hgs_flowchart
