@@ -10,16 +10,10 @@
 
 #let gap_threads_series(data) = data.series.filter(s => s.points.len() > 0)
 
-#let gap_speedup_series_from(data, times: none) = {
+#let gap_speedup_series_from(data) = {
   let series = gap_threads_series(data)
-  let base = series.filter(s => s.thread == 1).at(0, default: none)
-  let selected_times = if times != none {
-    times
-  } else if base == none {
-    ()
-  } else {
-    base.points.map(p => p.at(0))
-  }
+  let base = series.filter(s => s.thread == 1).at(0, default: ())
+  let selected_times = base.points.map(p => p.at(0))
 
   series.filter(s => s.thread != 1).map(item => (
     thread: item.thread,

@@ -39,12 +39,14 @@
   @vidal2022Hybrid @yelmewad2021Parall
 ]
 
+= Santrumpos
+
 = Sąvokų apibrėžimai
 
 - Populiacija - Rinkinys individų.
 - Individas - Užduoties sprendinys t.y. rinkinys maršrutų.
 - HGS - Hibridinis genetinis paieškos algoritmas #angl[Hybrid Genetic Search].
-- VRP - Maršrutų optimizavimo uždavinys #angl[Vehicle Routing Problem].
+- VRP - Transporto maršrutų optimizavimo uždavinys #angl[Vehicle Routing Problem].
 - CVRP - #angl_[Capacitated Vehicle Routing Problem]. Kiekviena transporto priemonė turi maksimalią siuntų talpą.
 - VRPTW - #angl_[VRP with Time Windows].
 - GVRP - #angl_[Generalized VRP]. Klientai grupuojami į klusterius. Tik vienas klientas iš viso klusterio turi būti aplankytas.
@@ -54,6 +56,10 @@
 - PVRP - #angl_[Periodic VRP]. Pridedama laiko dimensija, sprendinys susidaro iš kelių maršrutų rinkinių atitinkančius dienas, kuriomis bus aplankomi klientai.
 - MDPVRP - #angl_[Multidepot Periodic VRP]. MDVRP ir PVRP kombinacija.
 - CVRPPD - #angl_[CVRP Pickup and Delivery]. CVRP ir VRPPD kombinacija.
+// - OX - Kryžminimo operatorius #angl[Order Crossover].
+- BKS - Geriausias žinomas sprendinys #angl[Best Known Solution].
+- GPU - Grafikos procesorius #angl[Graphics Processing Unit].
+- Įvykdomas sprendinys - Sprendinys, tenkinantis visus uždavinio apribojimus.
 
 #pagebreak()
 
@@ -77,7 +83,7 @@ siekiant sumažinti vykdymo laiką neprarandant ar net pagerinant sprendinių ko
 1. Išsirinkti duomenų rinkinį, pagal kurį galima būtų testuoti ir analizuoti sprendinius.
 2. Išanalizuoti, kaip veikia HGS algoritmas.
 3. Atrinkti paralelizuojamas dalis, kurias galima pakeisti lygiagrečiomis.
-4. Palyginti rezultatus su literatūroje aprašytais #todo[state-of-the-art] algoritmais.
+4. Palyginti rezultatus su literatūroje aprašytais pažangiausiais algoritmais.
 
 #pagebreak()
 
@@ -200,9 +206,7 @@ Tėvų atranka vykdoma dvejetainiu turnyru, kur paskaičiuojamas tinkamumas #ang
 
 @lei2025Speedi lygiagretinimui vietinės paieškos algoritmą išreiškia tenzorių operatoriais, tai leidžia HGS vykdymą perkelti ant GPU. Taip pagreitintas vietinės paieškos operatorius.
 Tačiau @lei2025Speedi pasiūlytas metodas nėra pritaikomas HGS su swap\*.
-#qi[Dabartinė sprendinių reprezentacija per tensorius neleidžia lengvai įgyvendinti apkarpymo strategijų kaimynysčių sumažinimo technikų, kurie dažnai yra naudojami vietinės paieškos grįstais algoritmais.][the current design of the tensor representation of solutions doesn’t support easy implementation of pruning strategies and neighborhood reduction techniques that are often used in local search-based routing algorithms.]
-
-#todo[TODO: Tiesioginėms citatoms pridėti puslapio numerius šaltiniuose (pvz., [Lei25, p. X]).]
+#qi[Dabartinė sprendinių reprezentacija per tensorius neleidžia lengvai įgyvendinti apkarpymo strategijų kaimynysčių sumažinimo technikų, kurie dažnai yra naudojami vietinės paieškos grįstais algoritmais @lei2025Speedi[33].][the current design of the tensor representation of solutions doesn’t support easy implementation of pruning strategies and neighborhood reduction techniques that are often used in local search-based routing algorithms.]
 
 @stadtler2023parallel HGS pritaiko CVRPPD, perkelia tėvų pasirinkimo #angl[selection], kryžminimo #angl[crossover] ir taisymo #angl[repair] žingsnius į atskiras gijas. Kiekviena gija papildomai atlieka vietinę paiešką (_2-opt_, _relocate_, _swap_) pasitelkiant GPU, tačiau nepasitelkia _swap\*_ heuristika, kuri pagal @vidal2022Hybrid padeda surasti aukštesnės kokybės sprendinius.
 
@@ -297,7 +301,7 @@ Todėl mažiausias atvejis su 100 klientais vykdomas 4 minutes,
 o didžiausias atvejis su 1000 klientų vykdomas 40
 minučių. Kiekvieno veikimo metu mes užregistruojame geriausią sprendimo vertę po 1%, 2%, 5%, 10%, 15%, 20%, 30%, 50%, 75% ir 100%
 laiko ribos, kad galėtume įvertinti algoritmų našumą skirtinguose
-paieškos etapuose @vidal2022Hybrid.][We monitor each algorithm’s progress up to a time limit of $𝑇_"max" = 𝑛 dot 240∕100$ seconds, where 𝑛 represents the number of customers.
+paieškos etapuose @vidal2022Hybrid[6].][We monitor each algorithm’s progress up to a time limit of $𝑇_"max" = 𝑛 dot 240∕100$ seconds, where 𝑛 represents the number of customers.
 Therefore, the smallest instance with 100 clients is run for 4 minutes,
 whereas the largest instance containing 1000 clients is run for 40
 minutes. During each run, we record the best solution value after

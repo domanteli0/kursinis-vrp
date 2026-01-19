@@ -5,7 +5,7 @@
   let series = gap_threads_series(data)
   let threads = series.map(s => s.thread)
 
-  let rows = gap_time_marks.map(time => (
+  let rows = range(0, 101).map(time => (
     time: time,
     values: series.map(s => gap_at_time(s.points, time)),
   ))
@@ -20,7 +20,7 @@
       ..threads.map(t => table.cell()[#(
         if t == 1 { [1 gija#footnote[Naudota originali realizacija]] } else { str(t) + " gijos" }
       )]),
-      ..threads.map(_ => [Gap (%)]),
+      ..threads.map(_ => [Tarpas (%)]),
     ),
     ..rows.map(row => (
       table.cell(breakable: false)[#str(row.time)],
@@ -30,10 +30,10 @@
 }
 
 #let table_gap_speedup_from(data) = {
-  let series = gap_speedup_series_from(data, times: gap_time_marks)
+  let series = gap_speedup_series_from(data)
   let threads = series.map(s => s.thread)
 
-  let rows = gap_time_marks.map(time => (
+  let rows = range(0, 101).map(time => (
     time: time,
     values: threads.map(thread => {
       let item = series.filter(s => s.thread == thread).at(0, default: none)
