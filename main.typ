@@ -28,11 +28,23 @@
 // #show figure: i-figured.show-figure
 // #show math.equation: i-figured.show-equation
 
-= Terminai
+// Bibliografijos rikiavimui pagal identifikatorius.
+#hide[
+  @abdelatti2020An_imp @adamo2024A_revi @dantzig1959The_Tr @dimacs2022vrp
+  @jamshidi2025A_Para @jastrzab2024Standa @jiang2022fhcsolver @kool2022hybrid
+  @lei2025Speedi @latorre2025A_hybr @latorre2025An_appHybr @muniasamy2023Effect
+  @ortools @petropoulos2023Operat @rezaei2024Explor @stadtler2023parallel
+  @uchoa2017 @vidal2012A_Hybr @vidal2014A_unif
+  @vidal2016Large_ @vidal2021Arc_Ro @VIDAL2016 @vidal2017Node__
+  @vidal2022Hybrid @yelmewad2021Parall
+]
+
+= Sąvokų apibrėžimai
 
 - Populiacija - Rinkinys individų.
 - Individas - Užduoties sprendinys t.y. rinkinys maršrutų.
-- VRP - Martšrutų optimizavimo uždavinys #angl[Vechicle Routing Problem].
+- HGS - Hibridinis genetinis paieškos algoritmas #angl[Hybrid Genetic Search].
+- VRP - Maršrutų optimizavimo uždavinys #angl[Vehicle Routing Problem].
 - CVRP - #angl_[Capacitated Vehicle Routing Problem]. Kiekviena transporto priemonė turi maksimalią siuntų talpą.
 - VRPTW - #angl_[VRP with Time Windows].
 - GVRP - #angl_[Generalized VRP]. Klientai grupuojami į klusterius. Tik vienas klientas iš viso klusterio turi būti aplankytas.
@@ -60,12 +72,12 @@ Hibridinis genetinės paieškos algoritmas #angl[Hybrid Genetic Search -- HGS] -
 Šio *darbo tikslas* -- išlygiagretinti hibridinio genetinio paieškos algoritmą, skirto transporto maršrutų optimizavimo uždaviniams spręsti,
 siekiant sumažinti vykdymo laiką neprarandant ar net pagerinant sprendinių kokybę.
 
-*Uždavinai:*
+*Uždaviniai:*
 
-1. Išsirinkti duomenų rinkinį pagal, kurį galima būtų testuoti/analizuoti sprendinius.
-2. Išanalizuoti, kaip veikia HGS algoritmas
-3. Atrinkti paralelizuojamas dalis, ar dalis, kurias galima galima pakeisti paralelizuojamomis.
-4. Palyginti rezultatus su literatūroje aprašytais #todo[state-of-the-art] algoritmais
+1. Išsirinkti duomenų rinkinį, pagal kurį galima būtų testuoti ir analizuoti sprendinius.
+2. Išanalizuoti, kaip veikia HGS algoritmas.
+3. Atrinkti paralelizuojamas dalis, kurias galima pakeisti lygiagrečiomis.
+4. Palyginti rezultatus su literatūroje aprašytais #todo[state-of-the-art] algoritmais.
 
 #pagebreak()
 
@@ -118,6 +130,7 @@ $
   Z_"BKS" &= #[Geriausio sprendinio kaina]
 $ <math_gap>
 
+#pagebreak()
 = HGS algoritmo veikimas
 
 Pirma aprašytas #c(<vidal2012A_Hybr>) skirtas spręsti MDPVRP. Patobulintas per daugelį iteracijų: @vidal2014A_unif, @vidal2016Large_, @vidal2017Node__, @vidal2021Arc_Ro, @vidal2022Hybrid ir pritaikytas CVRP.
@@ -130,7 +143,7 @@ HGS-CVRP sprendiniai koduojami kaip klientų permutacija (angl. _giant tour_). K
 
 Vietinėje paieškoje taikomos _relocate_, _swap_, _2-opt_, _2-opt\*_, bei _swap\*_ algoritmai. Taikant vietinę paiešką, klientai lyginami su kitais artimiausiais klientais, kad būtų išvengta pilno $O(n^4)$ vykdymo laiko @vidal2022Hybrid.
 
-Tėvų atranka vykdoma dvejetainiu turnyru, kur paskaičiuojama #todo[fitness] t.y. sprendinio kainos ir įvairovės (broken-pairs atstumo) suma ir išrenkami geriausi #todo[fitness] turintys individai; populiacija palaikoma kaip įvykdomų ir neįvykdomų subpopuliacijų rinkinys, o baudos koeficientai adaptuojami, kad būtų išlaikytas įvykdomų ir neįvykdomų sprendinių santykis @vidal2022Hybrid, @vidal2012A_Hybr. Palaikant neįvykdomus #angl[infeasible] ir įvykdomus #angl[feasible] sprendinius, išlaikoma populiacijos įvairovė #angl[diversity], kuri leidžia išvengti lokalios minimos #angl[local minima] iteruojant per sprendinius.
+Tėvų atranka vykdoma dvejetainiu turnyru, kur paskaičiuojamas tinkamumas #angl[fitness] t. y. sprendinio kainos ir įvairovės (broken-pairs atstumo) suma ir išrenkami didžiausią tinkamumą turintys individai; populiacija palaikoma kaip įvykdomų ir neįvykdomų subpopuliacijų rinkinys, o baudos koeficientai adaptuojami, kad būtų išlaikytas įvykdomų ir neįvykdomų sprendinių santykis @vidal2022Hybrid, @vidal2012A_Hybr. Palaikant neįvykdomus #angl[infeasible] ir įvykdomus #angl[feasible] sprendinius, išlaikoma populiacijos įvairovė #angl[diversity], kuri leidžia išvengti lokalios minimos #angl[local minima] iteruojant per sprendinius.
 
 #figure(
   caption: [HGS algoritmo pseudokodas @vidal2012A_Hybr]
@@ -180,34 +193,41 @@ Tėvų atranka vykdoma dvejetainiu turnyru, kur paskaičiuojama #todo[fitness] t
   caption: [HGS veikimas @vidal2022Hybrid]
 )[#scale(60%)[#hgs_flowchart]]
 
+#pagebreak()
 = Literatūros analizė
 
 // GPU metodai dažniausiai orientuojasi į 2-opt, Swap ir susijusių operatorių spartinimą, tačiau daugelyje darbų optimizuojamas tik kelionės ilgio įvertinimas, o sudėtingesnių apribojimų apdorojimas lieka ribotas @lei2025Speedi, @abdelatti2020An_imp, @muniasamy2023Effect. Vis dėlto nemaža dalis pagreitinimų neturi viešo kodo ar detalių palyginimų su BKS, todėl jų pritaikomumas HGS kontekste (pvz., su Swap\* operatoriumi) išlieka atvira problema @vidal2022Hybrid.
 
-@lei2025Speedi lygiagretinimui vietinės paieškios algoritmą išreiškia tenzorių operatoriais, tai leidžia HGS vykdymą perkelti ant GPU. Taip pagreitintas vietinės paieškos operatorius.
+@lei2025Speedi lygiagretinimui vietinės paieškos algoritmą išreiškia tenzorių operatoriais, tai leidžia HGS vykdymą perkelti ant GPU. Taip pagreitintas vietinės paieškos operatorius.
 Tačiau @lei2025Speedi pasiūlytas metodas nėra pritaikomas HGS su swap\*.
 #qi[Dabartinė sprendinių reprezentacija per tensorius neleidžia lengvai įgyvendinti apkarpymo strategijų kaimynysčių sumažinimo technikų, kurie dažnai yra naudojami vietinės paieškos grįstais algoritmais.][the current design of the tensor representation of solutions doesn’t support easy implementation of pruning strategies and neighborhood reduction techniques that are often used in local search-based routing algorithms.]
 
+#todo[TODO: Tiesioginėms citatoms pridėti puslapio numerius šaltiniuose (pvz., [Lei25, p. X]).]
+
 @stadtler2023parallel HGS pritaiko CVRPPD, perkelia tėvų pasirinkimo #angl[selection], kryžminimo #angl[crossover] ir taisymo #angl[repair] žingsnius į atskiras gijas. Kiekviena gija papildomai atlieka vietinę paiešką (_2-opt_, _relocate_, _swap_) pasitelkiant GPU, tačiau nepasitelkia _swap\*_ heuristika, kuri pagal @vidal2022Hybrid padeda surasti aukštesnės kokybės sprendinius.
 
-Priešintai nei dauguma implementacijų @muniasamy2023Effect naudoja grafų duomenų struktūras, panaudojami tik _2-opt_ ir arčiausio kaimyno heuristikos #angl[nearest-neighbor]. Šios heuristikos pritaikytos vykdymui GPU aplinkoje naudojant CUDA.
+Priešingai nei dauguma implementacijų @muniasamy2023Effect naudoja grafų duomenų struktūras, panaudojami tik _2-opt_ ir arčiausio kaimyno heuristikos #angl[nearest-neighbor]. Šios heuristikos pritaikytos vykdymui GPU aplinkoje naudojant CUDA.
 
 #figure(
   caption: [HGS lygiagretintas @stadtler2023parallel]
 )[#image("img/611509_1_En_8_Fig3_HTML.webp", width: 50%)]
+#todo[TODO: Perpiešti paveikslą lietuviškai, pridėti nuorodą į šaltinį.]
 
-@yelmewad2021Parall pasitelkia GPU lygiagretinimui. Kiekvienam maršrutui skiriama atskira GPU gija, kuri vykdo vietinės paieškos žingsnį naudojant GPU. Šiuo metodu pilnas resursų išnaudojimas priklauso nuo to ar sukurtų maršrutų skaičius sutampa su gijų skaičiumi. Atvejai, kai vietinės paieškos žingsniai modifikuoja kitų maršrutų sprendinį, gijos įrašo savo sprendinius į atskirą masyvą, kuris vėliau yra redukuojamas į vieną sprendinį, pasirenkant geriausią sprendinį. Analogiškai, vėlesnėme žingsnyje kiekvienam klientui priskiriama gija. Kiekviena gija apskaičiuoja pagerėjimą ar pablogėjimą apsikeistus vietą maršrute su kitu klientu.
+@yelmewad2021Parall pasitelkia GPU lygiagretinimui. Kiekvienam maršrutui skiriama atskira GPU gija, kuri vykdo vietinės paieškos žingsnį naudojant GPU. Šiuo metodu pilnas resursų išnaudojimas priklauso nuo to, ar sukurtų maršrutų skaičius sutampa su gijų skaičiumi. Atvejai, kai vietinės paieškos žingsniai modifikuoja kitų maršrutų sprendinį, gijos įrašo savo sprendinius į atskirą masyvą, kuris vėliau yra redukuojamas į vieną sprendinį, pasirenkant geriausią sprendinį. Analogiškai, vėlesniame žingsnyje kiekvienam klientui priskiriama gija. Kiekviena gija apskaičiuoja pagerėjimą ar pablogėjimą apsikeitus vietą maršrute su kitu klientu.
 
-@jamshidi2025A_Para aprašo _PHGS_ #angl[Parallel Hybrid Genetic Search], kur kombinuoja HGS su salų modeliu, aprarašytu @rezaei2024Explor, kur kiekviena gija, vykdo tą patį HGS algoritmą, pridedamas individų migracijos žingsnis, kuris leidžia keistis sprendiniais tarp gijų.
+@jamshidi2025A_Para aprašo _PHGS_ #angl[Parallel Hybrid Genetic Search], kur kombinuoja HGS su salų modeliu, aprašytu @rezaei2024Explor, kur kiekviena gija vykdo tą patį HGS algoritmą, pridedamas individų migracijos žingsnis, kuris leidžia keistis sprendiniais tarp gijų.
 
 #figure(
   caption: [HGS su salų modeliu @jamshidi2025A_Para]
 )[#image("img/44196_2025_1059_Fig5_HTML.webp", width: 50%)]
+#todo[TODO: Perpiešti paveikslą lietuviškai, paliekant nuorodą į šaltinį.]
 
 _PHGS_ rodo vos ne du kartus geresnius rezultatus galutiniame laiko momente.
 
 #figure(caption: [Palyginimas tarp vidutinio tarpo (Y ašis) ir vykdymo laiko (X ašis) @jamshidi2025A_Para.])[#image(width: 50%, "img/44196_2025_1059_Fig6_HTML (Edited).png")] <jamshidi2025A_Para_gap_speed>
+#todo[TODO: Perpiešti paveikslą lietuviškai, paliekant nuorodą į šaltinį.]
 
+#pagebreak()
 = Lygiagretinimas
 
 Paimta @vidal2022Hybrid HGS algoritmo implementacija#footnote[Nuolatinė repozitorijos nuoroda https://github.com/vidalt/HGS-CVRP/tree/1a927955cd2861a29d978f0d359d6e647db9319c], kuri naudojama kaip pagrindas lygiagretinimui.
@@ -216,11 +236,9 @@ Paimta @vidal2022Hybrid HGS algoritmo implementacija#footnote[Nuolatinė repozit
 Daugiausiai laiko užima vietinės paieškos žingsnis @jamshidi2025A_Para, šio autoriaus atliktais matavimais vietinė paieška užima 85% vykdymo laiko. Todėl siekiant sumažinti viso HGS algoritmo vykdymo laiką šį žingsnį yra labiausiai verta lygiagretinti.
 
 Lygiagretinimas įgyvendintas kiekvienai gijai, atliekant vietinę paiešką. Lygiagretinta HGS-CVRP versija pavaizduota @algo_parallel. Nuosekliai veikiančioje sekcijoje parenkami skirtingi tėviniai individai, kryžminimo metu sugeneruojami individai kiekvienai gijai.
-Kai kiekviena gija baigia lokalią paiešką, individai yra pridedami į visų populiaciją.
+Kai kiekviena gija baigia lokalią paiešką, individai yra pridedami į bendrą populiaciją.
 
-#todo[TODO].
-Toks lygiagretinimo būdas leidžia sumažinti konfliktus dėl bendrų duomenų:
-- gijoms nereikia kovoti dėl populicajos duomenų įterpimo žingsnyje.
+Toks lygiagretinimo būdas sumažina konfliktus dėl bendrų duomenų, nes gijos nekovoja dėl įrašymo į bendrą populiaciją įterpimo žingsnyje, tačiau pagreitėjimą riboja nuoseklūs žingsniai.
 
 #figure(
   caption: [Lygiagretinto HGS-CVRP pseudokodas (grįstas pagal @vidal2012A_Hybr)]
@@ -266,11 +284,12 @@ Toks lygiagretinimo būdas leidžia sumažinti konfliktus dėl bendrų duomenų:
   ]
 ] <algo_parallel>
 
+#pagebreak()
 = Lygiagretintos ir nuoseklios programos palyginimas
 
 == Metodika
 
-_HGS_ ir kiti iteratyvūs algoritmai sustoja tik, kai pasiekiamas tam tikrus kriterijus. HGS atveju tai iteracijų skaičius be pagerėjimo arba veikimo laikas. Kadangi šie parametrai gali būti laisvai parinkti, pasirinkus pakankamai aukštas ribas algoritmo veikimo laikas gali tęstis ilgiau negu dabartinis visatos amžius.
+_HGS_ ir kiti iteratyvūs algoritmai sustoja tik, kai pasiekiamas tam tikras kriterijus. HGS atveju tai iteracijų skaičius be pagerėjimo arba veikimo laikas. Kadangi šie parametrai gali būti laisvai parinkti, pasirinkus pakankamai aukštas ribas algoritmo veikimo laikas gali tęstis ilgiau negu dabartinis visatos amžius.
 
 Dėl rezultatų palyginamumo pasirinkta naudoti @vidal2022Hybrid aprašytus duomenų rinkinius (@uchoa2017) ir metodiką:
 #qi()[Mes stebime kiekvieno algoritmo pažangą iki laiko ribos $𝑇_"max" = 𝑛 dot 240∕100$ sekundžių, kur $n$ reiškia klientų skaičių.
@@ -290,8 +309,8 @@ Vykdimo duomenys surinkti paleidžiant lygiagretintą ir palyginimui originalią
 Šiam eksperimentui iteracijų skaičius be pagerėjimo laikytas begaliniu, o $T_"max" = n dot 24/100$, t.y. 10 kartų mažesnis negu @vidal2022Hybrid, kad būtų sutilpta į MIF STSC resursų limitus. Rezultatuose naudojami 5 HGS paleidimų kartų sprendinių vykdymo laiko ir kainos vidurkiai.
 Lygiagretintos programos versija patalpinta "Codeberg" repozitorijoje#footnote[https://codeberg.org/Dom/HGS-CVRP/src/commit/411e391ffefac9a308d28e280194d65004d8332c].
 
-Lyginant lygiagrečią ir nuoseklią versijas naudojamas sieninio laikrodžio laikas #angl[wall-clock], vietoje CPU-laiko, nes daugiagijės versijos CPU-laiko mavavimas parodytų kiekvieno procesoriaus vykdymo laikų sumą.
-// TODO: Toks pasirinkimas atitinka standartizuotos validacijos rekomendacijas @jastrzab2024Standa.
+Lyginant lygiagrečią ir nuoseklią versijas naudojamas sieninio laikrodžio laikas #angl[wall-clock], vietoje CPU-laiko, nes daugiagijės versijos CPU-laiko matavimas parodytų kiekvieno procesoriaus vykdymo laikų sumą.
+// Toks pasirinkimas atitinka standartizuotos validacijos rekomendacijas @jastrzab2024Standa.
 
 Palyginimui naudoti geriausių sprendinių rinkinys#footnote[https://galgos.inf.puc-rio.br/cvrplib/index.php/en/instances, prieigos data: 2026-01-07].
 
@@ -308,6 +327,8 @@ Palyginimui naudoti geriausių sprendinių rinkinys#footnote[https://galgos.inf.
 )[#scale(85%)[#gap_threads_plot_from(gap_result)]]
 
 Iš matavimų matyti, kad didinant gijų skaičių sprendinio kokybė (gap) pagerėja per tą patį laiką. Galutiniame laiko momente (Uchoa 2017 X-n rinkinys) vidutinis gap sumažėja nuo 0.42% (1 gija) iki 0.23% (16 gijų), o 8 gijų atveju siekia 0.25%.
+
+Detalesnės rezultatų lentelės pateiktos 1–3 prieduose (žr. #ref(<priedas-gap-threads>), #ref(<priedas-gap-speedup>), #ref(<priedas-costs>)).
 
 #figure(
   caption: [Sprendimo kokybės santykis tarp viengijio ir N gijų sprendimų (Gap(1 gija) / Gap(N gijų)) priklausomai nuo vykdymo laiko.]
@@ -338,35 +359,39 @@ Palyginus su @jamshidi2025A_Para, 16 gijų atvejis rodo panašų pagerėjimą (~
 == Išvados
 
 #todo[TODO]
-
 // Lygiagretinant HGS-CVRP vietinės paieškos etapą pavyko pagerinti sprendinių kokybę per tą patį laiko limitą: vidutinis gap 100% laiko taške sumažėjo nuo 0.42% iki 0.23% (16 gijų), o didžiausia grąža pasiekta iki 8 gijų. Gautas elgesys dera su literatūroje aprašytu PHGS modeliu, kuriame gijų skaičiaus didinimas gerina sprendinius, bet po tam tikro taško grąža mažėja @jamshidi2025A_Para. Pagrindiniai lygiagretinimo apribojimai išlieka nuoseklūs populiacijos valdymo žingsniai ir sinchronizacija, todėl tolesniems tyrimams tikslinga nagrinėti salų modelį arba asinchroninį populiacijos atnaujinimą.
 
 #pagebreak()
 = Priedai
 
-== Vidutinis gap pagal vykdymo laiką ir gijų skaičių
+#set heading(numbering: "1.")
+#counter(heading).update(0)
+#set text(size: 10pt)
+#show figure.where(kind: table): set block(breakable: true)
+
+= Priedas. Vidutinis gap pagal vykdymo laiką ir gijų skaičių <priedas-gap-threads>
 
 #figure(
   block(breakable: true, width: 118%)[#gap_threads_table],
     caption: [Vidutinis gap (%) pagal vykdymo laiką ir gijų skaičių]
 )
 
-== Gap santykis tarp viengijės ir daugiagijės versijų
+= Priedas. Gap santykis tarp viengijės ir daugiagijės versijų <priedas-gap-speedup>
 
 #figure(
   block(breakable: true, width: 118%)[#gap_speedup_table],
     caption: [Gap santykis (1 gija / N gijų) pagal vykdymo laiką]
 )
 
-== Vidutinės pasiektos sprendimų kainos ir tarpas galutiniu laiko momentu
-
-#show figure.where(kind: table): set block(breakable: true)
+= Priedas. Vidutinės pasiektos sprendimų kainos ir tarpas galutiniu laiko momentu <priedas-costs>
 #figure(
   block(breakable: true, width: 118%)[#table1],
     caption: [Vidutinės pasiektos sprendimų kainos ir tarpas galutiniu laiko momentu]
 )
 
 #pagebreak()
+#set heading(numbering: none)
+#set text(size: 12pt)
 #bibliography(title: [Šaltiniai], "bibliography.bib")
 
 // = The bad list
