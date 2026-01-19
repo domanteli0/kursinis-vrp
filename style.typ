@@ -12,12 +12,20 @@
   body
 ) = {
   set text(lang: "LT", font: "palemonas", size: 14pt)
-  set par(leading: 0.75em, first-line-indent: (amount: 1cm, all: true))
+  set par(leading: 0.865em, first-line-indent: (amount: 1cm, all: true))
   set cite(style: "alphanumeric")
   show link: it => {
     set text(rgb("#0b00d5"))
     underline(it)
   }
+
+  show figure.caption: it => {
+    let num = it.counter.display(it.numbering)
+    let label = if it.kind == table { "lentelė." } else { "pav." }
+    [#num #h(0.4em) #label #h(0.4em) #it.body #v(0.45em)]
+  }
+
+  show figure.where(kind: table): set figure.caption(position: top)
 
   // Set document properties
   set document(
@@ -80,6 +88,11 @@
       #v(2em)
     ]
   )
+
+  show heading: it => {
+    it
+    v(0.8em)
+  }
 
   // Table of contents
   outline(
