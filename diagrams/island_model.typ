@@ -91,17 +91,17 @@
 
     box(
       (x_center, 0),
-      [Initialize island\ parameters],
+      text(size: 14pt)[Inicializuoti salų\ parametrus],
       name: <init>,
       fill: init_fill,
       width: 52mm,
       height: 16mm,
     )
 
-    label_node((x1, 1), [Island 1])
-    label_node((x2, 1), [Island 2])
-    label_node((x3, 1), [Island n-1])
-    label_node((x4, 1), [Island n])
+    label_node((x1, 1), [Sala 1])
+    label_node((x2, 1), [Sala 2])
+    label_node((x3, 1), [Sala n-1])
+    label_node((x4, 1), [Sala n])
 
     box((x1, 2), [HGS], name: <hgs1>, fill: hgs_fill)
     box((x2, 2), [HGS], name: <hgs2>, fill: hgs_fill)
@@ -110,47 +110,47 @@
 
     box(
       (x1, 4),
-      [Migration\ manager],
+      [Migracijos\ valdiklis],
       name: <mig1>,
       fill: mig_fill,
       width: 32mm,
       height: 18mm,
     )
-    edge((<exchange.east>, 98.8%, <exchange.west>), "->")
+    edge((<exchange.east>, 93.5%, <exchange.west>), "->")
 
     box(
       (x2, 4),
-      [Migration\ manager],
+      [Migracijos\ valdiklis],
       name: <mig2>,
       fill: mig_fill,
       width: 32mm,
       height: 18mm,
     )
-    edge((<exchange.east>, 67.7%, <exchange.west>), "->")
+    edge((<exchange.east>, 64.7%, <exchange.west>), "->")
 
     box(
       (x3, 4),
-      [Migration\ manager],
+      [Migracijos\ valdiklis],
       name: <mig3>,
       fill: mig_fill,
       width: 32mm,
       height: 18mm,
     )
-    edge((<exchange.east>, 32.3%, <exchange.west>), "->")
+    edge((<exchange.east>, 35.3%, <exchange.west>), "->")
 
     box(
       (x4, 4),
-      [Migration\ manager],
+      [Migracijos\ valdiklis],
       name: <mig4>,
       fill: mig_fill,
       width: 32mm,
       height: 18mm,
     )
-    edge((<exchange.east>, 1.2%, <exchange.west>), "->")
+    edge((<exchange.east>, 6.15%, <exchange.west>), "->")
 
     node(
       (x1, 8),
-      align(center, [Stop?]),
+      align(center, text(size: 9pt)[Vykdymas\ baigtas?]),
       name: <stop1>,
       shape: diamond,
       fill: stop_fill,
@@ -160,7 +160,7 @@
     )
     node(
       (x2, 8),
-      align(center, [Stop?]),
+      align(center, text(size: 9pt)[Vykdymas\ baigtas?]),
       name: <stop2>,
       shape: diamond,
       fill: stop_fill,
@@ -170,7 +170,7 @@
     )
     node(
       (x3, 8),
-      align(center, [Stop?]),
+      align(center, text(size: 9pt)[Vykdymas\ baigtas?]),
       name: <stop3>,
       shape: diamond,
       fill: stop_fill,
@@ -180,7 +180,7 @@
     )
     node(
       (x4, 8),
-      align(center, [Stop?]),
+      align(center, text(size: 9pt)[Vykdymas\ baigtas?]),
       name: <stop4>,
       shape: diamond,
       fill: stop_fill,
@@ -190,7 +190,7 @@
     )
 
     node(
-      [Collect best solutions and\ output the best one],
+      [Surinkti geriausius sprendinius ir\ grąžinti geriausią],
       name: <output>,
       enclose: ((x1 - 1, 10), (x4 + 1, 10)),
       fill: output_fill,
@@ -215,30 +215,31 @@
     // edge(<exchange>, <stop3>, "->")
     // edge(<exchange>, <stop4>, "->")
 
-    edge(<stop1>, (rel: (0.5, 0)), "dd", "->", label: [Yes], label-pos: 0.1, label-side: right)
-    edge(<stop2>, (rel: (0.5, 0)), "dd", "->", label: [Yes], label-pos: 0.1, label-side: right)
-    edge(<stop3>, (rel: (0.5, 0)), "dd", "->", label: [Yes], label-pos: 0.1, label-side: right)
-    edge(<stop4>, (rel: (0.75, 0)), "dd", "->", label: [Yes], label-pos: 0.1, label-side: right)
+    edge(<stop1>, (rel: (0.5, 0)), "dd", "->", label: [Taip], label-pos: 0.65, label-side: right)
+    edge(<stop2>, (rel: (0.5, 0)), "dd", "->", label: [Taip], label-pos: 0.65, label-side: right)
+    edge(<stop3>, (rel: (0.5, 0)), "dd", "->", label: [Taip], label-pos: 0.65, label-side: right)
+    edge(<stop4>, (rel: (0.75, 0)), "dd", "->", label: [Taip], label-pos: 0.65, label-side: right)
 
-    edge(<stop1>, (rel: (-0.7, 0)),  "uuuuuu", <hgs1>, "-->", label: [No], label-pos: -0.25, label-sep: 1em, label-side: right)
-    edge(<stop2>, (rel: (-0.44, 0)), "uuuuuu", <hgs2>, "-->", label: [No], label-pos: -0.25, label-sep: 1em, label-side: right)
-    edge(<stop3>, (rel: (-0.4, 0)),  "uuuuuu", <hgs3>, "-->", label: [No], label-pos: -0.25, label-sep: 1em, label-side: right)
-    edge(<stop4>, (rel: (-0.44, 0)), "uuuuuu", <hgs4>, "-->", label: [No], label-pos: -0.25, label-sep: 1em, label-side: right)
+    edge(<stop1>, (rel: (-0.7, 0)),  "uuuuuu", <hgs1>, "-->", label: [Ne], label-pos: -0.3, label-sep: 1em, label-side: right)
+    edge(<stop2>, (rel: (-0.47, 0)), "uuuuuu", <hgs2>, "-->", label: [Ne], label-pos: -0.4, label-sep: 1em, label-side: right)
+    edge(<stop3>, (rel: (-0.47, 0)),  "uuuuuu", <hgs3>, "-->", label: [Ne], label-pos: -0.5, label-sep: 1em, label-side: right)
+    edge(<stop4>, (rel: (-0.45, 0)), "uuuuuu", <hgs4>, "-->", label: [Ne], label-pos: -0.6, label-sep: 1em, label-side: right)
 
     node(
-      [Information exchange between islands based on\ migration policy],
+      [Sprendinių apsikeitimas tarp salų \ pagal migracijos planą],
       name: <exchange>,
-      enclose: ((x1, 6), (x4, 6)),
+      enclose: ((x1 - 0.25, 6), (x4 + 0.25, 6)),
       stroke: (paint: green.darken(20%), thickness: 1pt, dash: (2pt, 2pt)),
       fill: exchange_fill,
       corner-radius: 4pt,
       inset: 4pt,
       layer: 1,
     )
-    edge((<exchange.east>, 1.2%, <exchange.west>), "dd", "->")
-    edge((<exchange.east>, 32.3%, <exchange.west>), "dd", "->")
-    edge((<exchange.east>, 67.7%, <exchange.west>), "dd", "->")
-    edge((<exchange.east>, 98.8%, <exchange.west>), "dd", "->")
+
+    edge((<exchange.east>, 6.5%, <exchange.west>), "dd", "->")
+    edge((<exchange.east>, 35.3%, <exchange.west>), "dd", "->")
+    edge((<exchange.east>, 64.7%, <exchange.west>), "dd", "->")
+    edge((<exchange.east>, 93.5%, <exchange.west>), "dd", "->")
   }
 )
 

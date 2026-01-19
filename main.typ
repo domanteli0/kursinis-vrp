@@ -212,20 +212,20 @@ Dar vienas svarbus elementas yra populiacijos valdymas. Tai individų iš įvykd
 
 // Vertinimo praktikoje akcentuojama palyginamumo problema. @uchoa2017 pasiūlė naują CVRP testų rinkinį su BKS, o @jastrzab2024Standa rekomenduoja aiškiai apibrėžti laiko matavimą, paleidimų skaičių ir pateikti vidurkius kartu su geriausiais rezultatais. Tokia standartizacija leidžia prasmingai lyginti lygiagretintų ir nuoseklių algoritmų efektyvumą.
 
-@abdelatti2020An_imp orientuojasi tik į _2-opt_ ir genetinės dalies spartinimą naudojant GPU, visi kiti operatoriai yra palinkti neimplementuoti ir nėra naudojami. #todo[praplėsti apie šį darbą, panašiai kaip @yelmewad2021Parall kaip lygiagretintas algortimas tik glausčiau].
+@abdelatti2020An_imp siūlo genetinį algoritmą, kuris pilnai vykdomas GPU (CUDA): GPU branduoliai atlieka pradinę populiacijos generaciją, kaštų skaičiavimą, kryžminimą, mutaciją ir _2-opt_ vietinę paiešką. Sprendinių kokybei gerinti taikomos _2-opt_ ir artimiausio kaimyno heuristikos, o autoriai pateikia CPU ir GPU versijų palyginimą bei parodo, kad _2-opt_ reikšmingai mažina tarpą, nors didina vykdymo laiką.
 
-@yelmewad2021Parall pasitelkia GPU lygiagretinimui. Kiekvienam maršrutui skiriama atskira GPU gija, kuri vykdo vietinės paieškos žingsnį naudojant GPU. Šiuo metodu pilnas resursų išnaudojimas priklauso nuo to, ar sukurtų maršrutų skaičius sutampa su gijų skaičiumi. Atvejai, kai vietinės paieškos žingsniai modifikuoja kitų maršrutų sprendinį, gijos įrašo savo sprendinius į atskirą masyvą, kuris vėliau yra redukuojamas į vieną sprendinį, pasirenkant geriausią sprendinį. Analogiškai, vėlesniame žingsnyje kiekvienam klientui priskiriama gija. Kiekviena gija apskaičiuoja pagerėjimą ar pablogėjimą apsikeitus vietą maršrute su kitu klientu. #todo[praplėsti kokius operatoriai yra naudojami]
+@yelmewad2021Parall pasitelkia GPU lygiagretinimui. Kiekvienam maršrutui skiriama atskira GPU gija, kuri vykdo vietinės paieškos žingsnį naudojant GPU. Šiuo metodu pilnas resursų išnaudojimas priklauso nuo to, ar sukurtų maršrutų skaičius sutampa su gijų skaičiumi. Atvejai, kai vietinės paieškos žingsniai modifikuoja kitų maršrutų sprendinį, gijos įrašo savo sprendinius į atskirą masyvą, kuris vėliau yra redukuojamas į vieną sprendinį, pasirenkant geriausią sprendinį. Analogiškai, vėlesniame žingsnyje kiekvienam klientui priskiriama gija. Kiekviena gija apskaičiuoja pagerėjimą ar pablogėjimą apsikeitus vietą maršrute su kitu klientu. Vietinė paieška apima _swap_ ir _relocate_ (tarp maršrutų) bei _2-opt_, _or-opt_, _3-opt_ (maršruto viduje) heuristikas, o pradinis sprendinys konstruojamas artimiausio kaimyno metodu.
 
 @lei2025Speedi lygiagretinimui vietinės paieškos algoritmą išreiškia tenzorių operatoriais, tai leidžia HGS vykdymą perkelti ant GPU. Taip pagreitintas vietinės paieškos operatorius.
 Tačiau @lei2025Speedi pasiūlytas metodas nėra pritaikomas HGS su swap\*.
 #qi[Dabartinė sprendinių reprezentacija per tensorius neleidžia lengvai įgyvendinti apkarpymo strategijų kaimynysčių sumažinimo technikų, kurie dažnai yra naudojami vietinės paieškos grįstais algoritmais @lei2025Speedi[33].][the current design of the tensor representation of solutions doesn’t support easy implementation of pruning strategies and neighborhood reduction techniques that are often used in local search-based routing algorithms.]
 
-@stadtler2023parallel HGS pritaiko CVRPPD, perkelia tėvų pasirinkimo #angl[selection], kryžminimo #angl[crossover] ir taisymo #angl[repair] žingsnius į atskiras gijas. Kiekviena gija papildomai atlieka vietinę paiešką (_2-opt_, _relocate_, _swap_) pasitelkiant GPU, tačiau nepasitelkia _swap\*_ heuristika, kuri pagal @vidal2022Hybrid padeda surasti aukštesnės kokybės sprendinius.
-
 #figure(
   caption: [Lygiagretintas HGS pagal @stadtler2023parallel],
   scale(60%, reflow: true, parallel_hgs)
 )
+
+@stadtler2023parallel HGS pritaiko CVRPPD, perkelia tėvų pasirinkimo #angl[selection], kryžminimo #angl[crossover] ir taisymo #angl[repair] žingsnius į atskiras gijas. Kiekviena gija papildomai atlieka vietinę paiešką (_2-opt_, _relocate_, _swap_) pasitelkiant GPU, tačiau nepasitelkia _swap\*_ heuristika, kuri pagal @vidal2022Hybrid padeda surasti aukštesnės kokybės sprendinius.
 
 Priešingai nei dauguma implementacijų @muniasamy2023Effect naudoja grafų duomenų struktūras, panaudojami tik _2-opt_ ir arčiausio kaimyno heuristikos #angl[nearest-neighbor]. Šios heuristikos pritaikytos vykdymui GPU aplinkoje naudojant CUDA.
 
@@ -252,7 +252,7 @@ Daugiausiai laiko užima vietinės paieškos žingsnis @jamshidi2025A_Para, šio
 Lygiagretinimas įgyvendintas kiekvienai gijai, atliekant vietinę paiešką. Lygiagretinta HGS-CVRP versija pavaizduota @algo_parallel. Nuosekliai veikiančioje sekcijoje parenkami skirtingi tėviniai individai, kryžminimo metu sugeneruojami individai kiekvienai gijai.
 Kai kiekviena gija baigia vietinę paiešką, individai yra pridedami į bendrą populiaciją.
 
-Toks lygiagretinimo būdas sumažina konfliktus dėl bendrų duomenų, nes gijos nekovoja dėl įrašymo į bendrą populiaciją įterpimo žingsnyje, tačiau pagreitėjimą riboja nuoseklūs žingsniai. Papildomai, šis lygiagretinimo būdas leidžia išlaikyti swap\* operatorių, kuris nagrinėtose lygiagretintose HGS versijose buvo pašalintas #todo[paminėti kurios].
+Toks lygiagretinimo būdas sumažina konfliktus dėl bendrų duomenų, nes gijos nekovoja dėl įrašymo į bendrą populiaciją įterpimo žingsnyje, tačiau pagreitėjimą riboja nuoseklūs žingsniai. Papildomai, šis lygiagretinimo būdas leidžia išlaikyti swap\* operatorių, kuris nagrinėtose lygiagretintose HGS versijose buvo pašalintas @stadtler2023parallel ir @jamshidi2025A_Para.
 
 Šis sprendimas taip pat leidžia išlaikyti HGS populiacijos valdymą vienoje vietoje ir yra paprastesnis nei GPU pagrįstas operatorių perrašymas ar salų modelio migracija @lei2025Speedi, @jamshidi2025A_Para.
 

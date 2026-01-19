@@ -41,6 +41,17 @@
   footnote(original)
 }
 
-#let lt_ame(label) = context { [#str(counter(math.equation).at(label).at(0))-ame] }
-#let lt_oje(label) = context { [#str(counter(math.equation).at(label).at(0))-oje] }
-#let lt_a(label) = context { [#str(counter(math.equation).at(label).at(0))-a] }
+#let ref_number(label) = {
+  let elem = query(label).at(0)
+  if elem.func() == figure {
+    elem.counter.at(label).at(0)
+  } else if elem.func() == math.equation {
+    counter(math.equation).at(label).at(0)
+  } else {
+    counter(figure).at(label).at(0)
+  }
+}
+
+#let lt_ame(label) = context { [#str(ref_number(label))-ame] }
+#let lt_oje(label) = context { [#str(ref_number(label))-oje] }
+#let lt_a(label) = context { [#str(ref_number(label))-a] }

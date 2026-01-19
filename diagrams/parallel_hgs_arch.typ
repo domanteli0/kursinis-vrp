@@ -45,12 +45,12 @@
     let node_fill = rgb("#2b8fcb")
     let main_fill = rgb("#a0192c")
 
-    box((0, 1), text(fill: white)[Kernel\ 1], name: <k1>, fill: kernel_fill, stroke: 1pt + gpu_dark, width: 18mm, height: 12mm, radius: 3pt)
+    box((0, 1), text(fill: white)[Branduolys\ 1], name: <k1>, fill: kernel_fill, stroke: 1pt + gpu_dark, width: 26mm, height: 12mm, radius: 3pt)
     text_node((0.75, 1), [...])
-    box((1.5, 1), text(fill: white)[Kernel\ 9], name: <k2>, fill: kernel_fill, stroke: 1pt + gpu_dark, width: 18mm, height: 12mm, radius: 3pt)
-    box((3, 1), text(fill: white)[Kernel\ 1], name: <k3>, fill: kernel_fill, stroke: 1pt + gpu_dark, width: 18mm, height: 12mm, radius: 3pt)
+    box((1.5, 1), text(fill: white)[Branduolys\ 9], name: <k2>, fill: kernel_fill, stroke: 1pt + gpu_dark, width: 26mm, height: 12mm, radius: 3pt)
+    box((3, 1), text(fill: white)[Branduolys\ 1], name: <k3>, fill: kernel_fill, stroke: 1pt + gpu_dark, width: 26mm, height: 12mm, radius: 3pt)
     text_node((3.75, 1), [...])
-    box((4.6, 1), text(fill: white)[Kernel\ 9], name: <k4>, fill: kernel_fill, stroke: 1pt + gpu_dark, width: 18mm, height: 12mm, radius: 3pt)
+    box((4.6, 1), text(fill: white)[Branduolys\ 9], name: <k4>, fill: kernel_fill, stroke: 1pt + gpu_dark, width: 26mm, height: 12mm, radius: 3pt)
 
     box((2.3, 0.25), text(fill: white)[GPU], name: <gpu_top_label>, fill: gpu_fill, stroke: 1pt + gpu_dark, width: 16mm, height: 7mm, radius: 3pt)
     node(
@@ -63,25 +63,25 @@
       inset: 6pt,
     )
 
-    box((0, 3), [Thread\ 1], name: <t1>, fill: thread_fill, width: 20mm, height: 12mm)
-    box((1.5, 3), [Thread\ 2], name: <t2>, fill: thread_fill, width: 20mm, height: 12mm)
-    box((3, 3), [Thread\ 3], name: <t3>, fill: thread_fill, width: 20mm, height: 12mm)
+    box((0, 3), [Gija\ 1], name: <t1>, fill: thread_fill, width: 20mm, height: 12mm)
+    box((1.5, 3), [Gija\ 2], name: <t2>, fill: thread_fill, width: 20mm, height: 12mm)
+    box((3, 3), [Gija\ 3], name: <t3>, fill: thread_fill, width: 20mm, height: 12mm)
 
-    box((0, 5), text(fill: white)[Node\ 1], name: <n1>, fill: node_fill, width: 22mm, height: 13mm)
-    box((3, 5), text(fill: white)[Node\ 2], name: <n2>, fill: node_fill, width: 22mm, height: 13mm)
+    box((0, 5), text(fill: white)[Mazgas\ 1], name: <n1>, fill: node_fill, width: 22mm, height: 13mm)
+    box((3, 5), text(fill: white)[Mazgas\ 2], name: <n2>, fill: node_fill, width: 22mm, height: 13mm)
 
-    box((0, 7), text(fill: white)[Main\ Node], name: <main>, fill: main_fill, width: 26mm, height: 16mm)
-    box((2, 7), text(fill: white)[Node\ 3], name: <n3>, fill: node_fill, width: 22mm, height: 13mm)
+    box((0, 7), text(fill: white)[Pagrindinis\ mazgas], name: <main>, fill: main_fill, width: 26mm, height: 16mm)
+    box((2, 7), text(fill: white)[Mazgas\ 3], name: <n3>, fill: node_fill, width: 22mm, height: 13mm)
 
-    box((0, 9), text(fill: white)[Node\ X], name: <nx>, fill: node_fill, width: 22mm, height: 13mm)
+    box((0, 9), text(fill: white)[Mazgas\ X], name: <nx>, fill: node_fill, width: 22mm, height: 13mm)
 
-    box((4, 7), [Thread\ 4], name: <t4a>, fill: thread_fill, width: 20mm, height: 12mm)
-    box((3, 9), [Thread\ 4], name: <t4b>, fill: thread_fill, width: 20mm, height: 12mm)
+    box((3.5, 7), [Gija\ 4], name: <t4a>, fill: thread_fill, width: 20mm, height: 12mm)
+    box((2.5, 9), [Gija\ 4], name: <t4b>, fill: thread_fill, width: 20mm, height: 12mm)
 
-    box((6, 7), text(fill: white)[Kernel\ 1], name: <mk1>, fill: kernel_fill, stroke: 1pt + gpu_dark, width: 18mm, height: 12mm, radius: 3pt)
-    text_node((7, 7), [...])
-    box((8, 7), text(fill: white)[Kernel\ 9], name: <mk2>, fill: kernel_fill, stroke: 1pt + gpu_dark, width: 18mm, height: 12mm, radius: 3pt)
-    box((7, 6.3), text(fill: white)[GPU], name: <gpu_mid_label>, fill: gpu_fill, stroke: 1pt + gpu_dark, width: 16mm, height: 7mm, radius: 3pt)
+    box((5.5, 7), text(fill: white)[Branduolys\ 1], name: <mk1>, fill: kernel_fill, stroke: 1pt + gpu_dark, width: 26mm, height: 12mm, radius: 3pt)
+    text_node((6.5, 7), [...])
+    box((7.5, 7), text(fill: white)[Branduolys\ 9], name: <mk2>, fill: kernel_fill, stroke: 1pt + gpu_dark, width: 26mm, height: 12mm, radius: 3pt)
+    box((6.5, 6.3), text(fill: white)[GPU], name: <gpu_mid_label>, fill: gpu_fill, stroke: 1pt + gpu_dark, width: 16mm, height: 7mm, radius: 3pt)
     node(
       [],
       name: <gpu_mid>,
@@ -92,9 +92,9 @@
       inset: 6pt,
     )
 
-    box((5, 9), text(fill: white)[Kernel\ 1], name: <bk1>, fill: kernel_fill, stroke: 1pt + gpu_dark, width: 18mm, height: 12mm, radius: 3pt)
+    box((5, 9), text(fill: white)[Branduolys\ 1], name: <bk1>, fill: kernel_fill, stroke: 1pt + gpu_dark, width: 26mm, height: 12mm, radius: 3pt)
     text_node((6, 9), [...])
-    box((7, 9), text(fill: white)[Kernel\ 9], name: <bk2>, fill: kernel_fill, stroke: 1pt + gpu_dark, width: 18mm, height: 12mm, radius: 3pt)
+    box((7, 9), text(fill: white)[Branduolys\ 9], name: <bk2>, fill: kernel_fill, stroke: 1pt + gpu_dark, width: 26mm, height: 12mm, radius: 3pt)
     box((6, 8.25), text(fill: white)[GPU], name: <gpu_bot_label>, fill: gpu_fill, stroke: 1pt + gpu_dark, width: 16mm, height: 7mm, radius: 3pt)
     node(
       [],
@@ -127,3 +127,5 @@
     edge(<t4b>, <bk1>, "<->")
   }
 )
+
+#parallel_hgs
