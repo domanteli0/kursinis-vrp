@@ -141,17 +141,23 @@ $ <math_gap>
 #pagebreak()
 = HGS algoritmo veikimas
 
-Pirma aprašytas #c(<vidal2012A_Hybr>) skirtas spręsti MDPVRP. Patobulintas per daugelį iteracijų: @vidal2014A_unif, @vidal2016Large_, @vidal2017Node__, @vidal2021Arc_Ro, @vidal2022Hybrid ir pritaikytas CVRP.
+Pirma aprašytas #c(<vidal2012A_Hybr>) skirtas spręsti MDPVRP. Patobulintas per daugelį iteracijų: @vidal2014A_unif, @vidal2016Large_, @vidal2017Node__, @vidal2021Arc_Ro, @vidal2022Hybrid ir pritaikytas CVRP. Pastarasis variantas vadinamas HGS-CVRP.
 
-Genetiniai algoritmai imituoja evoliucijos procesą. Populiacija yra aibė, kurią sudaro individai (t.y. užduoties sprendiniai). Šie algoritmai naudoja įvairius kryžminimo operatorius, kurie iš kelių individų populiacijoje sukuria naują, mutuotą individą ir prideda prie populiacijos. Prastos kokybės ir panašūs individai (sprendiniai) vykdimo eigoje yra pašalinami iš populiacijos.
+Genetiniai algoritmai imituoja evoliucijos procesą. Populiacija yra aibė, kurią sudaro individai (t.y. užduoties sprendiniai). Šie algoritmai naudoja įvairius kryžminimo operatorius, kurie iš kelių individų populiacijoje sukuria naują, mutuotą individą ir prideda prie populiacijos (#lt_ame(<hgs_flowchart>) pavyzdyje 1, 2 ir 4 žingstis). Prastos kokybės ir panašūs individai (sprendiniai) vykdimo eigoje yra pašalinami iš populiacijos.
 
-Genetinis hibridinis paieškos algoritmas prie genetinio komponento prideda pagerinimo žingsnį (vietinę paiešką #angl[local search]), kuri po kryžminimo žingsnio yra pritaikoma naujam individui, kad pagerinti gautą individo kokybę.
+Genetinis hibridinis paieškos algoritmas prie genetinio komponento prideda pagerinimo žingsnį -- vietinę paiešką #angl[local search], kuri po kryžminimo žingsnio yra pritaikoma naujam individui, kad pagerinti gautą individo kokybę (#lt_ame(<hgs_flowchart>) pavyzdyje 3 žingstis).
+Vietinei paieškai pasiteklti _relocate_, _swap_, _2-opt_, _2-opt\*_ ir _swap\*_ algoritmai.
 
-HGS-CVRP sprendiniai koduojami kaip klientų permutacija (angl. _giant tour_). Kryžminimui taikomas "OX" operatorius, o po jo maršrutų ribos atstatomos naudojant "Split" algoritmą, kuris CVRP atveju gali būti realizuotas per $O(n)$ @vidal2022Hybrid, @VIDAL2016.
+#figure(
+  caption: [HGS veikimas @vidal2022Hybrid],
+  scale(80%, reflow: true, hgs_flowchart)
+) <hgs_flowchart>
 
-Vietinėje paieškoje taikomos _relocate_, _swap_, _2-opt_, _2-opt\*_, bei _swap\*_ algoritmai. Taikant vietinę paiešką, klientai lyginami su kitais artimiausiais klientais, kad būtų išvengta pilno $O(n^4)$ vykdymo laiko @vidal2022Hybrid.
+// Kryžminimui taikomas "OX", o maršrutai atkuriami "Split" algoritmu, kurio $O(n)$ realizacija leidžia greitai vertinti naujus palikuonis. Tai sumažina rekonstrukcijos kainą ir leidžia daugiau laiko skirti paieškai @vidal2012A_Hybr, @VIDAL2016, @vidal2022Hybrid.
 
-Tėvų atranka vykdoma dvejetainiu turnyru, kur paskaičiuojamas tinkamumas #angl[fitness] t. y. sprendinio kainos ir įvairovės (broken-pairs atstumo) suma ir išrenkami didžiausią tinkamumą turintys individai; populiacija palaikoma kaip įvykdomų ir neįvykdomų subpopuliacijų rinkinys, o baudos koeficientai adaptuojami, kad būtų išlaikytas įvykdomų ir neįvykdomų sprendinių santykis @vidal2022Hybrid, @vidal2012A_Hybr. Palaikant neįvykdomus #angl[infeasible] ir įvykdomus #angl[feasible] sprendinius, išlaikoma populiacijos įvairovė #angl[diversity], kuri leidžia išvengti lokalios minimos #angl[local minima] iteruojant per sprendinius.
+Tėvų atranka vykdoma dvejetainiu turnyru, kur paskaičiuojamas tinkamumas #angl[fitness] t. y. sprendinio kainos ir įvairovės (_broken-pairs_ atstumo) suma ir išrenkami didžiausią tinkamumą turintys individai; populiacija palaikoma kaip įvykdomų ir neįvykdomų subpopuliacijų rinkinys, o baudos parametrai tikslinami, kad būtų išlaikytas įvykdomų ir neįvykdomų sprendinių santykis @vidal2022Hybrid, @vidal2012A_Hybr. Palaikant neįvykdomus #angl[infeasible] ir įvykdomus #angl[feasible] sprendinius, išlaikoma populiacijos įvairovė #angl[diversity], kuri leidžia išvengti lokalios minimos #angl[local minima] iteruojant per sprendinius.
+
+Dar vienas svarbus elementas yra populiacijos valdymas. Tai individų iš įvykdomų ir neįvykdomų sprendinių subpopuliacijų blogiausių (t.y. didžiausios kainos ir panašūß individai) pašalinimas kas numatytą iteracijų skaičių pagal baudos parametrus, kurie patys yra tikslinami genetinio algoritmo eigos metu, tai palaiko įvairovę ir mažina sprendinių kainą @vidal2012A_Hybr, @vidal2022Hybrid.
 
 #figure(
   caption: [HGS algoritmo pseudokodas @vidal2012A_Hybr]
@@ -228,9 +234,11 @@ Priešingai nei dauguma implementacijų @muniasamy2023Effect naudoja grafų duom
   scale(60%, reflow: true, island_model)
 ) <hgs_island_model>
 
-@jamshidi2025A_Para aprašo _PHGS_ #angl[Parallel Hybrid Genetic Search], kur kombinuoja HGS su salų #angl[islands] modeliu, aprašytu @rezaei2024Explor. #lt_ame(<hgs_island_model>) pavyzdyje parodytas šio algoritmo veikimas. Kiekviena gija vykdo tą patį HGS algoritmą, pridedamas individų migracijos žingsnis, kuris leidžia keistis sprendiniais tarp gijų. _PHGS_ rodo vos ne du kartus geresnius rezultatus galutiniame laiko momente (žr #lt_a(<jamshidi2025A_Para_gap_speed>) pavyzdį).
+@jamshidi2025A_Para aprašo _PHGS_ #angl[Parallel Hybrid Genetic Search], kur kombinuoja HGS su salų #angl[islands] modeliu, aprašytu @rezaei2024Explor. #lt_ame(<hgs_island_model>) pavyzdyje parodytas šio algoritmo veikimas. Kiekviena gija vykdo tą patį HGS algoritmą, pridedamas individų migracijos žingsnis, kuris leidžia keistis sprendiniais tarp gijų. _PHGS_ rodo vos ne du kartus geresnius rezultatus galutiniame laiko momente (žr. #lt_a(<jamshidi2025A_Para_gap_speed>) pavyzdį).
 
-#figure(caption: [Palyginimas tarp vidutinio tarpo (Y ašis) ir vykdymo laiko (X ašis) @jamshidi2025A_Para.])[#image(width: 50%, "img/44196_2025_1059_Fig6_HTML (Edited).png")] <jamshidi2025A_Para_gap_speed>
+#figure(
+  caption: [Palyginimas tarp vidutinio tarpo (Y ašis) ir vykdymo laiko (X ašis) @jamshidi2025A_Para.]
+)[#image(width: 50%, "img/44196_2025_1059_Fig6_HTML (Edited).png")] <jamshidi2025A_Para_gap_speed>
 
 Nemaža dalis dalis literatūros yra aprašiusi tik greitinimą ant GPU. Vis dėlto nemaža dalis pagreitinimų pritaikomumas HGS-CVRP (su _swap\*_ operatoriumi) išlieka atvira problema.
 
