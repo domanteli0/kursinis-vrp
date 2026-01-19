@@ -69,6 +69,7 @@ siekiant sumažinti vykdymo laiką neprarandant ar net pagerinant sprendinių ko
 
 #pagebreak()
 
+#set heading(numbering: "1.")
 = Transporto maršrutų optimizavimo uždaviniai
 
 == Tikslūs ir apytiksliai metodai
@@ -324,6 +325,7 @@ Palyginus su @jamshidi2025A_Para, 16 gijų atvejis rodo panašų pagerėjimą (~
 //   ]
 
 #pagebreak()
+#set heading(numbering: none)
 = Rezultatai ir išvados
 
 == Rezultatai
