@@ -1,5 +1,5 @@
 #import "@preview/fletcher:0.5.8" as f: diagram, node, edge
-#set text(font: "New Computer Modern")
+#set text(font: "palemonas")
 
 #let box(
   pos,

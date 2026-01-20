@@ -216,3 +216,71 @@
     },
   )
 })
+
+#let amdahl_speedup(thread, parallel_fraction) = {
+  1 / ((1 - parallel_fraction) + parallel_fraction / thread)
+}
+
+#let amdahl_speedup_plot(parallel_fraction: 0.86, threads: (1, 2, 4, 8, 16)) = canvas({
+  import draw: *
+
+  set-style(
+    axes: (stroke: .5pt, tick: (stroke: .5pt)),
+    legend: (
+      stroke: none,
+      orientation: ltr,
+      item: (spacing: .3, preview: (width: .6, height: .6, margin: .15)),
+      scale: 80%,
+    ),
+  )
+
+  let series_threads = threads.filter(thread => thread != 1)
+  let speedups = series_threads.map(thread => amdahl_speedup(thread, parallel_fraction))
+
+  let y_min = 1
+  let y_max_data = if speedups.len() == 0 { 2 } else { max_value(speedups) * 1.1 }
+  let y_max = if y_max_data <= y_min { y_min + 1 } else { y_max_data }
+  let y_ticks = range(1, calc.ceil(y_max) + 1)
+
+  plot.plot(
+    size: (12, 7),
+    x-min: 0.9,
+    x-max: 105,
+    x-ticks: gap_time_marks,
+    x-tick-step: none,
+    x-minor-tick-step: none,
+    x-label: [Vykdymo laikas (%)],
+    x-mode: "log",
+    y-min: y_min - 0.1,
+    y-max: y_max,
+    y-label: [Teorinis greitėjimas $S_p$],
+    y-ticks: y_ticks,
+    y-tick-step: none,
+    y-minor-tick-step: none,
+    y-format: format_2,
+    y-grid: "major",
+    legend: "north",
+    {
+      for thread in series_threads {
+        let speedup = amdahl_speedup(thread, parallel_fraction)
+        plot.add(((1, speedup), (100, speedup)), line: "linear", label: none, style: thread_style(thread))
+
+        let mark = thread_mark(thread)
+        for x in gap_time_marks {
+          plot.add(
+            ((x, speedup),),
+            mark: mark,
+            mark-size: tick_mark_size,
+            label: none,
+            style: (stroke: none),
+            mark-style: (stroke: black, fill: white),
+          )
+        }
+      }
+
+      for thread in series_threads {
+        plot.add-legend(thread_label(thread), preview: legend_preview(thread))
+      }
+    },
+  )
+})

@@ -1,6 +1,6 @@
 #import "@preview/fletcher:0.5.8" as f: diagram, node, edge
 #import f.shapes: house, hexagon
-#set text(font: "New Computer Modern")
+#set text(font: "palemonas")
 
 // #let blob(pos, label, tint: white, ..args) = node(
 // 	pos, align(center, label),

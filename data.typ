@@ -1,4 +1,4 @@
-#let x_vrp_instances = (
+#let small_x_vrp_instances = (
   "X-n101-k25",
   "X-n106-k14",
   "X-n110-k13",
@@ -34,6 +34,9 @@
   "X-n251-k28",
   "X-n256-k16",
   "X-n261-k13",
+)
+
+#let medium_x_vrp_instances = (
   "X-n266-k58",
   "X-n270-k35",
   "X-n275-k28",
@@ -69,6 +72,9 @@
   "X-n491-k59",
   "X-n502-k39",
   "X-n513-k21",
+)
+
+#let large_x_vrp_instances = (
   "X-n524-k153",
   "X-n536-k96",
   "X-n548-k50",
@@ -100,6 +106,12 @@
   "X-n979-k58",
   "X-n1001-k43",
 )
+
+#let x_vrp_instances = (
+  small_x_vrp_instances,
+  medium_x_vrp_instances,
+  large_x_vrp_instances,
+).flatten()
 
 #let cmt_instances = (
   "CMT1",
