@@ -24,7 +24,7 @@
       ..threads.map(t => table.cell(colspan: 2)[#(
         if t == 1 { [1 gija#footnote[Naudota originali realizacija]] } else { str(t) + " gijos" }
       )]),
-      ..threads.map(_ => ([Avg], [Gap])).flatten(),
+      ..threads.map(_ => ([Avg], [Spraga])).flatten(),
     ),
     ..rows.map(row => (
       table.cell(breakable: false)[#row.instance_name],

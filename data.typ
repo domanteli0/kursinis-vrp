@@ -303,6 +303,19 @@
   }
 }
 
+#let read_times = (file, invalid_above: none) => {
+  let rows = csv(file, delimiter: ";").slice(1)
+
+  assert(rows.len() == 100, message: str(file) + " does not have 100 rows")
+
+  let times = rows.map(row => float(row.at(3)))
+  if invalid_above == none {
+    times
+  } else {
+    times.map(time => if time >= invalid_above { none } else { time })
+  }
+}
+
 #let min_value_valid = (values) => {
   let filtered = values.filter(value => value != none)
   if filtered.len() == 0 { none } else { min_value(filtered) }
@@ -350,7 +363,7 @@
     table.header(
       table.cell(rowspan: 2)[Instance],
       ..threads.map(t => table.cell(colspan: 2)[#(if t == 1 { [1 gija#footnote[Naudota originali realizacija]] } else { str(t) + " gijos" })]),
-      ..threads.map(_ => ([Avg], [Gap])).flatten(),
+      ..threads.map(_ => ([Avg], [Spraga])).flatten(),
     ),
     ..rows.map(row => {
       let bks = read_bks_cost(row.instance_name)

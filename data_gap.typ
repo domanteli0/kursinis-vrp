@@ -2,6 +2,7 @@
 
 #let gap_floor = 0.02
 #let gap_time_marks = (1, 2, 5, 10, 15, 20, 30, 50, 75, 100)
+#let thread_time_marks = (1, 2, 4, 8, 16)
 
 #let gap_at_time(points, time) = {
   let match = points.filter(p => p.at(0) == time)
