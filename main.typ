@@ -232,8 +232,7 @@ Dar vienas svarbus elementas yra populiacijos valdymas. Tai individų iš įvykd
 
 Vertinimo praktikoje akcentuojama palyginamumo problema. @uchoa2017 pasiūlė naują CVRP testų rinkinį su BKS, o @jastrzab2024Standa rekomenduoja aiškiai apibrėžti laiko matavimą, paleidimų skaičių ir pateikti vidurkius kartu su geriausiais rezultatais. Tokia standartizacija leidžia prasmingai lyginti lygiagretintų ir nuoseklių algoritmų efektyvumą.
 
-Algoritmų lyginimui VRP literatūroje plačiai naudojami standartizuoti testų rinkiniai su geriausiais žinomais sprendiniais (BKS). Vienas iš plačiausiai taikomų yra Uchoa 2017 CVRP rinkinys @uchoa2017, kuriame pateiktos klientų koordinatės, paklausos ir talpos apribojimai, todėl galima lyginti sprendinių kokybę tarp skirtingų algoritmų ir platformų.
-Šiame uždavinių rinkinyje apima platų klientų skaičiaus intervalą, todėl leidžia įvertinti algoritmo elgesį didėjant problemos dydžiui.
+Algoritmų lyginimui VRP literatūroje plačiai naudojami standartizuoti testų rinkiniai su geriausiais žinomais sprendiniais (BKS). Vienas iš plačiausiai taikomų yra Uchoa 2017 CVRP rinkinys @uchoa2017, kuriame pateiktos klientų koordinatės, paklausos ir talpos apribojimai, todėl galima lyginti sprendinių kokybę tarp skirtingų algoritmų ir platformų. Šis uždavinių rinkinys apima platų klientų skaičiaus intervalą, todėl leidžia įvertinti algoritmo elgesį didėjant problemos dydžiui.
 
 Kadangi metaheuristikos yra stochastinės, rezultatų vertinimui paprastai naudojami vidurkiai ir geriausi pasiekti sprendiniai iš kelių paleidimų. Spraga nuo BKS išlieka svarbiausia kokybės metrika, tačiau lyginant lygiagretintas ir nuoseklias versijas svarbu vertinti ne tik galutinę spragą, bet ir spragos kitimą per laiką.
 
@@ -241,43 +240,41 @@ Rekomenduojama aiškiai apibrėžti laiko limitus, paleidimų skaičių ir apara
 
 == Lygiagretinimo kryptys
 
-Lygiagretinimo darbai VRP srityje dažniausiai skirstomi į dvi kryptis: GPU pagrįstą skaičiavimą ir daugiagijes CPU implementacijas. GPU sprendimai leidžia masiškai lygiagretinti kaimynystes, tačiau dažnai reikalauja supaprastinti sprendinio reprezentaciją ir mažina operatorių įvairovę. CPU daugiagijės schemos paprastai išlaiko originalų algoritmo rinkinį, bet jų greitėjimą riboja sinchronizacija ir nuoseklūs populiacijos valdymo etapai.
+Lygiagretinimo darbai VRP srityje pagrinde skirstomi į dvi kryptis: GPU pagrįstą skaičiavimą ir daugiagijes CPU implementacijas. GPU sprendimai leidžia masiškai lygiagretinti kaimynystes, tačiau dažnai reikalauja supaprastinti sprendinio reprezentaciją ir mažina operatorių įvairovę. CPU daugiagijės schemos paprastai išlaiko originalų operatorių rinkinį, bet jų greitėjimą riboja sinchronizacija ir nuoseklūs populiacijos valdymo etapai.
 
 @abdelatti2020An_imp siūlo genetinį algoritmą, kuris pilnai vykdomas GPU (CUDA): GPU branduoliai atlieka pradinę populiacijos generaciją, kaštų skaičiavimą, kryžminimą, mutaciją ir _2-opt_ vietinę paiešką. Sprendinių kokybei gerinti taikomos _2-opt_ ir artimiausio kaimyno heuristikos, o autoriai pateikia CPU ir GPU versijų palyginimą bei parodo, kad _2-opt_ reikšmingai mažina spragą, nors didina vykdymo laiką.
 
-@yelmewad2021Parall pasitelkia GPU lygiagretinimui. Kiekvienam maršrutui skiriama atskira GPU gija, kuri vykdo vietinės paieškos žingsnį naudojant GPU. Šiuo metodu visiškas išteklių išnaudojimas priklauso nuo to, ar sukurtų maršrutų skaičius sutampa su gijų skaičiumi. Atvejai, kai vietinės paieškos žingsniai modifikuoja kitų maršrutų sprendinį, gijos įrašo savo sprendinius į atskirą masyvą, kuris vėliau yra redukuojamas į vieną sprendinį, pasirenkant geriausią sprendinį. Analogiškai, vėlesniame žingsnyje kiekvienam klientui priskiriama gija. Kiekviena gija apskaičiuoja pagerėjimą ar pablogėjimą apsikeitus vietomis maršrute su kitu klientu. Vietinė paieška apima _swap_ ir _relocate_ (tarp maršrutų) bei _2-opt_, _or-opt_, _3-opt_ (maršruto viduje) heuristikas, o pradinis sprendinys konstruojamas artimiausio kaimyno metodu.
+@yelmewad2021Parall pasitelkia GPU lygiagretinimui. Kiekvienam maršrutui skiriama atskira GPU gija, kuri vykdo vietinės paieškos žingsnį naudojant GPU. Šiuo metodu visiškas išteklių išnaudojimas priklauso nuo to, ar sukurtų maršrutų skaičius sutampa su gijų skaičiumi. Kai vietinės paieškos žingsniai modifikuoja kitų maršrutų sprendinį, gijos įrašo savo sprendinius į atskirą masyvą, kuris vėliau redukuojamas į vieną sprendinį, pasirenkant geriausią. Vėlesniame žingsnyje kiekvienam klientui priskiriama gija: ji apskaičiuoja pagerėjimą ar pablogėjimą apsikeitus vietomis maršrute su kitu klientu. Vietinė paieška apima _swap_ ir _relocate_ (tarp maršrutų) bei _2-opt_, _or-opt_, _3-opt_ (maršruto viduje) heuristikas, o pradinis sprendinys konstruojamas artimiausio kaimyno metodu.
 
-@lei2025Speedi lygiagretinimui vietinės paieškos algoritmą išreiškia tenzorių operatoriais, tai leidžia HGS vykdymą perkelti ant GPU. Taip pagreitintas vietinės paieškos operatorius.
-Tačiau @lei2025Speedi pasiūlytas metodas nėra pritaikomas HGS su _swap\*_.
-#qi[Dabartinė sprendinių reprezentacija per tensorius neleidžia lengvai įgyvendinti apkarpymo strategijų ir kaimynysčių sumažinimo technikų, kurios dažnai naudojamos vietinės paieškos grįstais algoritmais @lei2025Speedi[33].][the current design of the tensor representation of solutions doesn’t support easy implementation of pruning strategies and neighborhood reduction techniques that are often used in local search-based routing algorithms.]
+@lei2025Speedi lygiagretinimui vietinės paieškos algoritmą išreiškia tenzorių operatoriais, o tai leidžia HGS vykdymą perkelti ant GPU. Taip pagreitintas vietinės paieškos operatorius. Tačiau @lei2025Speedi pasiūlytas metodas nėra pritaikomas HGS su _swap\*_.
+#qi[Dabartinė sprendinių reprezentacija per tensorius neleidžia lengvai įgyvendinti apkarpymo strategijų ir kaimynysčių sumažinimo technikų, kurios dažnai naudojamos vietinės paieškos grįstais algoritmais @lei2025Speedi[33].][The current design of the tensor representation of solutions doesn’t support easy implementation of pruning strategies and neighborhood reduction techniques that are often used in local search-based routing algorithms.]
 
-@pandian2023Effect siūlo ParMDS metodą, kuris jungia MST/DFS pagrįstą konstravimą, lokalią paiešką ir atsitiktinumą, o spartinimui naudoja "OpenMP". Autoriai lygina su GPU pagrįstomis genetinėmis realizacijomis ir pateikia didelį greitėjimą, tačiau jų metodas nėra HGS ir siekia greitai gauti priimtiną sprendinį, o ne maksimalios kokybės sprendinį. Tai rodo, kad bendrojo pobūdžio CPU lygiagretinimas gali pranokti GPU realizacijas, bet metodų tikslai ir kokybės metrika skiriasi.
+@pandian2023Effect siūlo ParMDS metodą, kuris jungia MST/DFS pagrįstą konstravimą, lokalią paiešką ir atsitiktinumą, o spartinimui naudoja „OpenMP“. Autoriai pateikia didelį greitėjimą, tačiau jų metodas nėra HGS ir siekia greitai gauti priimtiną sprendinį, o ne maksimalios kokybės sprendinį. Tai rodo, kad bendro pobūdžio CPU lygiagretinimas gali pranokti GPU realizacijas laiko prasme, bet metodų tikslai ir kokybės metrika skiriasi.
 
-CPU pagrįsti lygiagretinimai dažniausiai remiasi užduočių lygmens paralelizavimu, kai vienu metu apdorojami keli palikuonys arba keli nepriklausomi HGS paleidimai. Tokie sprendimai riboti, nes populiacijos valdymas ir baudos parametrų reguliavimas išlieka nuoseklūs.
+CPU pagrįsti lygiagretinimai dažniausiai remiasi užduočių lygmens paralelizavimu, kai vienu metu apdorojami keli palikuonys arba vykdomi keli nepriklausomi HGS paleidimai. Tokie sprendimai riboti, nes populiacijos valdymas ir baudos parametrų reguliavimas išlieka nuoseklūs.
 
 #figure(
   caption: [Lygiagretintas HGS pagal @stadtler2023parallel],
   scale(50%, reflow: true, parallel_hgs)
 )
 
-@stadtler2023parallel HGS pritaiko CVRPPD, perkelia tėvų pasirinkimo #angl[selection], kryžminimo #angl[crossover] ir taisymo #angl[repair] žingsnius į atskiras gijas. Kiekviena gija papildomai atlieka vietinę paiešką (_2-opt_, _relocate_, _swap_) pasitelkiant GPU, tačiau nepasitelkia _swap\*_ heuristika, kuri pagal @vidal2022Hybrid padeda surasti aukštesnės kokybės sprendinius.
+@stadtler2023parallel HGS pritaiko CVRPPD, perkelia tėvų pasirinkimo #angl[selection], kryžminimo #angl[crossover] ir taisymo #angl[repair] žingsnius į atskiras gijas. Kiekviena gija papildomai atlieka vietinę paiešką (_2-opt_, _relocate_, _swap_) pasitelkiant GPU, tačiau nepasitelkia _swap\*_ heuristikos, kuri pagal @vidal2022Hybrid padeda surasti aukštesnės kokybės sprendinius.
 
 // Ši schema rodo, kad dalinis operatorių perkėlimas į GPU gali pagreitinti vietinę paiešką, tačiau bendras greitėjimas vis dar priklauso nuo nuoseklių populiacijos valdymo etapų. Dėl to spartinimas dažniausiai mažėja didinant gijų skaičių ir pasiekus tam tikrą lygį pradeda grąžinti mažėjančią naudą.
-
-Priešingai nei dauguma implementacijų @muniasamy2023Effect naudoja grafų duomenų struktūras, panaudojami tik _2-opt_ ir arčiausio kaimyno heuristikos #angl[nearest-neighbor]. Šios heuristikos pritaikytos vykdymui GPU aplinkoje naudojant CUDA.
+Priešingai nei dauguma implementacijų, @muniasamy2023Effect naudoja grafų duomenų struktūras; panaudojami tik _2-opt_ ir arčiausio kaimyno heuristikos #angl[nearest-neighbor]. Šios heuristikos pritaikytos vykdymui GPU aplinkoje naudojant CUDA.
 
 #figure(
   caption: [HGS su salų modeliu @jamshidi2025A_Para],
   scale(50%, reflow: true, island_model)
 ) <hgs_island_model>
 
-@jamshidi2025A_Para aprašo _PHGS_ #angl[Parallel Hybrid Genetic Search], kur kombinuoja HGS su salų #angl[islands] modeliu, aprašytu @rezaei2024Explor. #lt_ame(<hgs_island_model>) pavyzdyje parodytas šio algoritmo veikimas. Kiekviena gija vykdo tą patį HGS algoritmą, pridedamas individų migracijos žingsnis, kuris leidžia keistis sprendiniais tarp gijų. // _PHGS_ rodo vos ne du kartus geresnius rezultatus galutiniame laiko momente (žr. #lt_a(<jamshidi2025A_Para_gap_speed>) pavyzdį).
+@jamshidi2025A_Para aprašo _PHGS_ #angl[Parallel Hybrid Genetic Search], kur kombinuoja HGS su salų #angl[islands] modeliu, aprašytu @rezaei2024Explor. #lt_ame(<hgs_island_model>) pavyzdyje parodytas algoritmo veikimas: kiekviena gija vykdo tą patį HGS, o migracijos žingsnis leidžia periodiškai keistis sprendiniais tarp gijų.
 
 // #figure(
 //   caption: [Palyginimas tarp vidutinio tarpo (Y ašis) ir vykdymo laiko (X ašis) @jamshidi2025A_Para.]
 // )[#image(width: 50%, "img/44196_2025_1059_Fig6_HTML (Edited).png")] <jamshidi2025A_Para_gap_speed>
 
-@PyVRPwouda2024 pristato "PyVRP" paketą, kuris įgyvendina HGS algoritmą, o našumo kritines dalis realizuoja C++ kalba. Autoriai rodo, kad tokia architektūra leidžia pasiekti mažas spragas CVRP, nors lygiagretinimas nėra pagrindinis jų tikslas. Tai pabrėžia, kad našumą galima gerinti ir per efektyvią realizaciją.
+@PyVRPwouda2024 pristato „PyVRP“ paketą, kuris įgyvendina HGS algoritmą, o našumo kritines dalis realizuoja C++ kalba. Autoriai rodo, kad tokia architektūra leidžia pasiekti mažas spragas CVRP, nors lygiagretinimas nėra pagrindinis jų tikslas. Tai pabrėžia, kad našumą galima gerinti ir per efektyvią realizaciją.
 
 Nemaža dalis literatūros yra aprašiusi tik greitinimą ant GPU. Vis dėlto nemažos dalies pagreitinimų pritaikomumas HGS-CVRP (su _swap\*_ operatoriumi) išlieka atvira problema.
 
@@ -429,35 +426,37 @@ Lyginant lygiagrečią ir nuoseklią versijas naudojamas realus laikas #angl[wal
 
 
 #let x_gap_result = gap_data(instances: x_vrp_instances)
-// #let golden_gap_result = gap_data(instances: golden_instances)
 #let table_100ths_x = table_100_avg_from(x_gap_result)
-// #let table_100ths_golden = table_100_avg_from(golden_gap_result)
 #let gap_threads_table = table_gap_threads_from(x_gap_result)
 #let gap_speedup_table = table_gap_speedup_from(x_gap_result)
-// #let gap_threads_table = table_gap_threads_from(x_gap_result)
-// #let gap_speedup_table = table_gap_speedup_from(x_gap_result)
+#let x_speedups = calculate_all_speedups(x_vrp_instances)
 
+// Function to plot average speedup
 #grid(
   columns: 2,
   gutter: 2em,
-  figure(
-    caption: [Vidutinė sprendinių spraga pagal gijų skaičių per vykdymo laiką (Uchoa 2017 X-n rinkinys)]
-  )[#scale(60%, reflow: true)[#gap_threads_plot_from(x_gap_result)]],
-  figure(
-    caption: [Vidutinės sprendinių spragos santykis tarp viengijio ir N gijų sprendimų (Uchoa 2017 X-n rinkinys)]
-  )[#scale(65%, reflow: true)[#gap_speedup_plot_from(x_gap_result) #v(1em)]]
+  [#figure(
+    caption: [Vidutinė sprendinių spraga pagal gijų skaičių per vykdymo laiką (Uchoa 2017 X-n rinkinys)],
+    scale(60%, reflow: true)[#gap_threads_plot_from(x_gap_result)]
+  ) <gap_over_time_plot>],
+  [#figure(
+    caption: [Vidutinis pagreitėjimas, pasiektas skirtingu gijų skaičiumi. (Uchoa 2017 X-n rinkinys)],
+    scale(60%, reflow: true, plot_average_speedup(x_speedups)),
+  ) <speedup-plot>]
 )
+
+// #table_speedup_all_instances(x_speedups)
 
 Vidutinių spragų kreivė parodo, kad lygiagreti versija sparčiau mažina spragą ne tik galutiniame taške, bet ir ankstyvuose etapuose. Santykio grafikas, pateiktas šalia, įrodo, jog grąža didėja greitai iki 8 gijų, o vėlesnėse stadijose stagnuoja – analogiškas prisotinimas aptariamas @pandian2023Effect ir @stadtler2023parallel, kai sinchronizacijos kaštai ima dominuoti. 16 gijų atveju galutinis santykis apie 1.8 artimas @jamshidi2025A_Para rezultatams, tačiau tiesioginis palyginimas ribotas dėl skirtingų $T_"max"$ ir aparatinės įrangos.
 
-Pagreitėjimą galima estimuoti pagal Amdalo taisyklę:
+Pagreitėjimą galima matuoti ir pagal Amdalo taisyklę:
 $ S_p = 1 / ((1 - f) + f / p) \
   #[kur $f$ - lygiagretinomos dalies vykdymo laikas prieš pagreitėjimą]
 $
 
 Kadangi spraga yra per vykdymo laiką kintantis dydis, matavimui parenkamas atsitiktinis dydis. Naudojantis tuo faktu, kad visos spragos daugiagyjų matavimų mažesnės arba lygios viengijoms, lygiagretinto HGS-CVRP pagreitėjimui galima naudoti vienos gijos spragą $S_1$ santykiniu laiko momentu 100%.
 
-#let amdahl_parallel_fraction = 0.86
+#let amdahl_parallel_fraction = 0.91
 #let amdahl_from_thread_no = p => 1/((1 - amdahl_parallel_fraction) + amdahl_parallel_fraction / p)
 #figure(
   caption: [Teorinis pagreitėjimas pagal Amdalo taisyklę],
@@ -471,31 +470,6 @@ Kadangi spraga yra per vykdymo laiką kintantis dydis, matavimui parenkamas atsi
     [#str(amdahl_from_thread_no(16)).slice(0, 5)],
   )
 ) <amdalh_theory_table>
-
-#let raw_data = read_raw_instance(x_vrp_instances.at(0))
-#let time_to_match = time_to_match_from_raw(raw_data)
-
-#figure(
-  caption: [Vykdymo šimtainė, per kurią pasiekiama vienos gijos sprendinio kaina],
-  table(
-    columns: (auto, auto, auto, auto, auto),
-    // table.header(
-      [_Gijos_],
-      [2],
-      [4],
-      [8],
-      [16],
-    // ),
-    [_Vykdymo laikas (%)_],
-    ..time_to_match.map(entry => {
-      if entry.time_step == none {
-        "N/A"
-      } else {
-        str(entry.time_step)
-      }
-    })
-  )
-)
 
 // // Pagreitėjimo duomenys:
 // #let x_time_to_target = time_to_target_data(instances: x_vrp_instances)
@@ -572,6 +546,13 @@ Kadangi spraga yra per vykdymo laiką kintantis dydis, matavimui parenkamas atsi
   block(breakable: true, width: 118%)[#table_100ths_x],
     caption: [Vidutinės pasiektos sprendimų kainos ir spraga galutiniu laiko momentu]
 )
+
+// = Priedas. Pagreitėjimo analizė
+
+// #figure(
+//   block(breakable: true, width: 118%)[#table_speedup_all_instances(x_speedups)],
+//   caption: [Pagreitėjimas kiekvienam uždaviniui.]
+// ) <speedup-table>
 
 #pagebreak()
 #set heading(numbering: none)

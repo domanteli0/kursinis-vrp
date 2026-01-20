@@ -186,7 +186,62 @@
 #let POWERS = range(0, 5).map(it => calc.pow(2, it))
 #let TIMESERIES = range(0, 101)
 
-  let combinations = powers.map(pow => (pow, attempts))
+#let read_raw_instance(instance_name) = {
+  let combinations = POWERS.map(pow => (pow: pow, attempts: ATTEMPTS))
+
+  let files = combinations
+    .map(comb => comb.attempts.map(attempt => (pow: comb.pow, attempt: attempt)))
+    .flatten()
+    .map(comb =>
+      (
+        pow: comb.pow,
+        attempt: comb.attempt,
+        file: "sols/data/" + instance_name + ".t_" + str(comb.pow)
+          + ".seed-" + str(comb.attempt) + ".sol.100ths.csv"
+      )
+    )
+
+  let read_percent = (file, percent) => {
+    if percent == 0 {
+      return (cost: calc.inf, time: 0.0)
+    }
+
+    let rows = csv(file, delimiter: ";").slice(1)
+
+    assert(rows.len() == 100, message: str(file) + " does not have 100 rows")
+
+    let columns = rows.at(percent - 1, default: ())
+
+    (
+      cost: float(columns.at(2)),
+      time: float(columns.at(3)),
+    )
+  }
+
+  let avg_for_time = (pow, time) => {
+    let pow_files = files.filter(file => file.pow == pow)
+    let samples = pow_files.map(file => read_percent(file.file, time))
+    let count = samples.len()
+
+    (
+      instance_name: instance_name,
+      threads: pow,
+      time_avg: samples.map(sample => sample.time).sum() / count,
+      time_min: calc.min(samples.map(sample => sample.time)),
+      time_max: calc.max(samples.map(sample => sample.time)),
+      cost_avg: samples.map(sample => sample.cost).sum() / count,
+      cost_min: min_value(samples.map(sample => sample.cost)),
+      cost_max: max_value(samples.map(sample => sample.cost)),
+    )
+  }
+
+  POWERS.map(pow => {
+    TIMESERIES.map(time => avg_for_time(pow, time))
+  })
+}
+
+#let read_instance(instance_name) = {
+  let combinations = POWERS.map(pow => (pow, ATTEMPTS))
 
   let files = combinations
     .map(comb => comb.at(1).map(attempt => (pow: comb.at(0), attempt: attempt)))
@@ -219,17 +274,18 @@
     let count = samples.len()
 
     (
+      threads: pow,
       time_avg: samples.map(sample => sample.time).sum() / count,
-      time_min: min_value(samples.map(sample => sample.time)),
-      time_max: max_value(samples.map(sample => sample.time)),
+      time_min: calc.min()(samples.map(sample => sample.time)),
+      time_max: calc.max(samples.map(sample => sample.time)),
       cost_avg: samples.map(sample => sample.cost).sum() / count,
       cost_min: min_value(samples.map(sample => sample.cost)),
       cost_max: max_value(samples.map(sample => sample.cost)),
     )
   }
 
-  let results = powers.map(pow => {
-    let stats = percents.map(percent => avg_for_percent(pow, percent))
+  let results = POWERS.map(pow => {
+    let stats = PERCENTS.map(percent => avg_for_percent(pow, percent))
 
     (
       instance_name: instance_name,
@@ -386,4 +442,30 @@
       )
     }).flatten(),
   )
+}
+
+// TODO: FIND AT CLOSEST TIME MOMENT
+// FIND AT CLOSEST TIME MOMENT
+
+#let time_to_match_from_raw(raw_data) = {
+  let t1_series = raw_data.at(0)
+  let target_cost = t1_series.at(100).cost_avg
+
+  let series_to_results(series) = {
+    let result_index = none
+    for i in range(0, series.len()) {
+      let entry = series.at(i)
+      if entry.cost_avg <= target_cost {
+        result_index = i
+        break
+      }
+    }
+    if result_index == none {
+      (time_step: none, cost: none)
+    } else {
+      (time_step: result_index, cost: series.at(result_index).cost_avg)
+    }
+  }
+
+  raw_data.slice(1).map(series => series_to_results(series))
 }
