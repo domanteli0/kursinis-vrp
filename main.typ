@@ -6,6 +6,8 @@
 #import "tables/table1.typ": table_100_avg_from
 #import "tables/table_params.typ": table_experiment_params
 #import "tables/table_gap.typ": *
+#import "tables/speedup.typ": *
+#import "diagrams/speedup.typ": *
 #import "diagrams/gap_threads.typ": gap_speedup_plot_from, gap_threads_plot_from, amdahl_speedup_plot
 // #import "tables/table_parallel_compare.typ": table_parallel_compare
 #import "diagrams/hgs_flowchart.typ": hgs_flowchart
@@ -132,7 +134,8 @@ $
   & &&"keliauja" "nuo" "kliento" i "iki" "kliento" j, \
   & &&"lygi" 0 "priešingu" "atveju"
 $ <math_cost>
-Lyginant transporto maršrutų optimizavimo uždavinio sprendinius naudojama spraga #angl[gap], nusakanti atstumą procentais nuo geriausio sprendinio @math_gap.
+
+Lyginant transporto maršrutų optimizavimo uždavinio sprendinius naudojama spraga #angl[gap], nusakanti atstumą procentais nuo geriausio sprendinio #angl[Best Known Solution - BKS] @math_gap.
 
 $
   "Spraga" &= ((Z_s - Z_"BKS") / Z_"BKS") dot 100% \
@@ -147,7 +150,19 @@ HGS algoritmas pirma skirtas MDPVRP spręsti @vidal2012A_Hybr. Algoritmas patobu
 
 Genetiniai algoritmai imituoja evoliucijos procesą. Populiacija yra aibė, kurią sudaro individai (t. y. užduoties sprendiniai). Šie algoritmai kombinuoja (dar vadinama kryžminimu) individidus, kad sukurti naują individą palikuonį #angl[offspring], jį mutuoja ir prideda prie visų individų aibės -- populicijos. Kad genetinio algoritmo eiga pernelyg nesuletėtų, prasčiausi individai yra pašalinami iš populiacijos.
 
-HGS atveju kryžminimo operacija sukuria vieną maršrutą, kuris vėliau efektyviai sukarpomas į kelis maršrutus pasitelkiant _Split_ kaimynystės ir prideda prie populiacijos (#lt_ame(<hgs_flowchart>) pavyzdyje 1-as žingsnis). Prastos kokybės #todo[TODO: matematinis fitness apibrėžimas] individai HGS algoritme tie, kurie yra panašūs vienas kitam individai arba tie, kurių atstumas yra ilgiausias.
+HGS pradinę populiaciją sukuria taikant greitas konstravimo heuristikas  #todo[kokias?].
+Kryžminimo operacija sukuria vieną ilgą maršrutą, kuris vėliau efektyviai sukarpomas į kelis maršrutus pasitelkiant _Split_ kaimynystės ir prideda prie populiacijos (#lt_ame(<hgs_flowchart>) pavyzdyje 1-as žingsnis).
+
+Tėvų atranka palikuoniui vykdoma dvejetainiu turnyru #angl[binary tournament], kur paskaičiuojamas tinkamumas #angl[fitness], t. y. sprendinio kainos ir įvairovės (_broken-pairs_ atstumo) suma, ir išrenkami didžiausią tinkamumą turintys individai. , Geros kokybės #todo[TODO: matematinis fitness apibrėžimas] individai HGS algoritme tie, kurie yra panašūs vienas kitam individai arba tie, kurių atstumas yra ilgiausias.
+
+HGS populiacija yra sudaryta iš įvykdomų ir neįvykdomų subpopuliacijų.
+Palaikant neįvykdomus #angl[infeasible] ir įvykdomus #angl[feasible] individus, išlaikoma populiacijos įvairovė #angl[diversity], kuri leidžia išvengti lokalaus minimumo #angl[local minima] beieškant geriausio individo.
+#todo[double check: kas yra neįvykdomas individas?]
+
+// $f_P (S) = f_P^phi.alt (S) + (1 - (n^"ELITE")/(| cal(P) |)) f_P^"DIV" (S) $
+// $$
+
+// $ δ(S1​,S2​)=∣{(i,j)∣(i,j) "yra individe" S_1, "bet nėra individe" S_2}∣+∣{(i,j)∣(i,j) "yra individe" S_2, "bet nėra" S_1}∣ $
 
 HGS prie genetinio komponento prideda pagerinimo žingsnį (dar vadinama mokymo ar taisymo žingsniu) – vietinę paiešką #angl[local search], kuri po kryžminimo žingsnio pritaikoma naujam individui, siekiant pagerinti gauto individo kokybę (#lt_ame(<hgs_flowchart>) pavyzdyje 3 žingsnis).
 
@@ -162,18 +177,9 @@ _Swap\*_ kaimynystėje du klientai iš skirtingų maršrutų išimami ir kiekvie
   scale(65%, reflow: true, hgs_flowchart)
 ) <hgs_flowchart>
 
-Pradinė populiacija HGS algoritme sukuriama taikant greitas konstravimo heuristikas.
+Jeigu po vietinės paieškos individas yra neįvykdomas, algoritmas jį, su 50% tikimybe, bando taisyti (t. y. vėl taikyti vietinę paišką) ir, priklausomai nuo rezultatų, individias yra įterpiamas į atitinkamą subpopuliaciją. Šis mechanizmas taip sutaupo CPU išteklius bei išlaiko didesnę įvairovę.
 
-Tėvų atranka vykdoma dvejetainiu turnyru #angl[binary tournament], kur paskaičiuojamas tinkamumas #angl[fitness], t. y. sprendinio kainos ir įvairovės (_broken-pairs_ atstumo) suma ir išrenkami didžiausią tinkamumą turintys individai; populiacija palaikoma kaip įvykdomų ir neįvykdomų subpopuliacijų rinkinys, o baudos parametrai tikslinami, kad būtų išlaikytas įvykdomų ir neįvykdomų sprendinių santykis @vidal2022Hybrid, @vidal2012A_Hybr. Palaikant neįvykdomus #angl[infeasible] ir įvykdomus #angl[feasible] sprendinius, išlaikoma populiacijos įvairovė #angl[diversity], kuri leidžia išvengti lokalaus minimo #angl[local minima] iteruojant per sprendinius.
-
-// $f_P (S) = f_P^phi.alt (S) + (1 - (n^"ELITE")/(| cal(P) |)) f_P^"DIV" (S) $
-// $$
-
-// $ δ(S1​,S2​)=∣{(i,j)∣(i,j) "yra individe" S_1, "bet nėra individe" S_2}∣+∣{(i,j)∣(i,j) "yra individe" S_2, "bet nėra" S_1}∣ $
-
-Jeigu sugeneruojamas neįvykdomas sprendinys, algoritmas gali pabandyti jį sutaisyti ir, priklausomai nuo rezultatų, įtraukti į atitinkamą subpopuliaciją. Šis mechanizmas leidžia išlaikyti balansą tarp paieškos intensyvinimo ir diversifikacijos.
-
-Dar vienas svarbus elementas yra populiacijos valdymas. Tai individų iš įvykdomų ir neįvykdomų sprendinių subpopuliacijų mažiasią tinkamumą turintys individai (t. y. didžiausios kainos ir panašių individų) pašalinimi kas numatytą iteracijų skaičių pagal baudos parametrus, kurie patys yra tikslinami genetinio algoritmo eigos metu; tai palaiko įvairovę ir mažina sprendinių kainą @vidal2012A_Hybr, @vidal2022Hybrid.
+Dar vienas svarbus elementas yra populiacijos valdymas. Tai individų iš įvykdomų ir neįvykdomų sprendinių subpopuliacijų mažiausią tinkamumą turintys individai (t. y. didžiausios kainos ir panašių individų) pašalinimi kas numatytą iteracijų skaičių pagal baudos parametrus, kurie patys yra tikslinami genetinio algoritmo eigos metu; tai palaiko įvairovę ir mažina sprendinių kainą @vidal2012A_Hybr, @vidal2022Hybrid.
 
 #figure(
   caption: [HGS algoritmo pseudokodas @vidal2012A_Hybr]
@@ -211,7 +217,7 @@ Dar vienas svarbus elementas yra populiacijos valdymas. Tai individų iš įvykd
         alg-line("7", [*Jeigu* individas neįvykdomas:], indent: 1, bar: true),
         alg-line("8", [Su 50% tikimybe bandyti sutaisyti individą ir įtraukti į atitinkamą subpopuliaciją], indent: 2, bar: true),
         alg-line("9", [*Jeigu* pasiektas maksimalus aibės dydis:], indent: 1, bar: true),
-        alg-line("10", [pašalinti blogiausius ir neįvairius individus iš populiacijos], indent: 2, bar: true),
+        alg-line("10", [Pašalinti blogiausius ir neįvairius individus iš populiacijos], indent: 2, bar: true),
         alg-line("11", [Patikslinti baudos parametrus #angl[penalty parameters]], indent: 1, bar: true),
         alg-line("12", [Grąžinti geriausią įvykdomą individą]),
       )
