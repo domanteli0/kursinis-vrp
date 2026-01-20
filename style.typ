@@ -12,7 +12,7 @@
   body
 ) = {
   set text(lang: "LT", font: "palemonas", size: 14pt)
-  set par(leading: 0.865em, first-line-indent: (amount: 1cm, all: true))
+  set par(leading: 0.865em, spacing: 0.865em, first-line-indent: (amount: 1cm, all: true))
   set cite(style: "alphanumeric")
   show link: it => {
     set text(rgb("#0b00d5"))

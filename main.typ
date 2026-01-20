@@ -76,6 +76,8 @@
 
 = Įvadas
 
+#todo[add dataset names in figure captions]
+
 VRP -- Transporto maršrutų optimizavimo uždavinys #angl[Vehicle Routing Problem] yra uždavinys,
 kurio tikslas yra surasti kuo optimaliausią maršrutų rinkinį @math_cost. Optimaliai parinkti maršrutai gali lemti kiek klientų įmanoma aplankyti per nustatytą laiką, sumažinti transporto kaštus.
 Pirmą kartą ši problema aprašyta @dantzig1959The_Tr, kur autorius aprašė algoritmą, kuris suranda optimalius maršrutus tarp kuro depo ir degalinių.
@@ -155,31 +157,16 @@ $ <math_gap>
 
 Pirma aprašytas #c(<vidal2012A_Hybr>) skirtas spręsti MDPVRP. Patobulintas per daugelį iteracijų: @vidal2014A_unif, @vidal2016Large_, @vidal2017Node__, @vidal2021Arc_Ro, @vidal2022Hybrid ir pritaikytas CVRP. Pastarasis variantas vadinamas HGS-CVRP.
 
-Genetiniai algoritmai imituoja evoliucijos procesą. Populiacija yra aibė, kurią sudaro individai (t.y. užduoties sprendiniai). Šie algoritmai naudoja įvairius kryžminimo operatorius, kurie iš kelių individų populiacijoje sukuria naują, mutuotą individą ir prideda prie populiacijos (#lt_ame(<hgs_flowchart>) pavyzdyje 1, 2 ir 4 žingstis). Prastos kokybės ir panašūs individai (sprendiniai) vykdimo eigoje yra pašalinami iš populiacijos.
+Genetiniai algoritmai imituoja evoliucijos procesą. Populiacija yra aibė, kurią sudaro individai (t.y. užduoties sprendiniai). Šie algoritmai naudoja įvairius kryžminimo operatorius, kurie iš kelių individų populiacijoje sukuria naują, mutuotą individą ir prideda prie populiacijos (#lt_ame(<hgs_flowchart>) pavyzdyje 1, 2 ir 4 žingsniai). Prastos kokybės ir panašūs individai (sprendiniai) vykdimo eigoje yra pašalinami iš populiacijos.
 
 Genetinis hibridinis paieškos algoritmas prie genetinio komponento prideda pagerinimo žingsnį -- vietinę paiešką #angl[local search], kuri po kryžminimo žingsnio yra pritaikoma naujam individui, kad pagerinti gautą individo kokybę (#lt_ame(<hgs_flowchart>) pavyzdyje 3 žingstis).
-Vietinei paieškai pasiteklti _relocate_, _swap_, _2-opt_, _2-opt\*_ ir _swap\*_ algoritmai.
 
-// #todo[TODO]
-// Trumpai apie Swap\* (Vidal 2022, HGS-CVRP):
-
-//   - Idėja: parenkami du klientai (v) ir (v') iš skirtingų maršrutų (r) ir (r'); abu išimami ir kiekvienas įterpiamas į bet kurią kito maršruto poziciją. Tai yra didesnė kaimynystė nei klasikinis Swap, nes įterpimo pozicijos nėra
-//     fiksuotos.
-//   - Dydis labai didelis (straipsnis mini (\Theta(n^4)) galimų judesių), bet pateikiama teorema: geriausias įterpimas yra arba “į vietą” išimto kliento, arba vienoje iš 3 geriausių iš anksto apskaičiuotų įterpimo pozicijų. Todėl
-//     kiekvienai maršrutų porai iš anksto randamos top‑3 pozicijos ir tik tada tikrinamos poros (v, v') → gaunama sub‑kvadratinė paieška ir realiai panašus laikas kaip Swap/Relocate/2‑Opt\*.
-
-//   Apie pagreitėjimą / poveikį HGS:
-
-//   - Straipsnis teigia, kad HGS‑CVRP (su Swap\*) pasiekia tą pačią sprendinių kokybę kaip HGS‑2012 per dalį laiko ir konvergencijos grafikuose lenkia HGS‑2012 visais laiko momentais (1–100% laiko limito).
-//   - Analizėje Swap\* sudaro ≤32% vietinės paieškos CPU laiko, bet duoda ~15% visų patobulinimų ir ypač padeda vėlyvose paieškos stadijose.
-//   - Konkretaus vieno “x kartų greičiau” skaičiaus tekstas nenurodo; greitėjimas demonstruojamas konvergencijos grafikuose ir teiginiu “fraction of computational time”.
+Vietinei paieškai pasitelkiami _relocate_, _swap_, _2-opt_, _2-opt\*_ ir _swap\*_ kaimynystės. Kaimynystė #angl[neighborhood] -- tai sprendinių rinkinys, kurį galima gauti iš dabartinio sprendinio atlikus vieną lokalų pakeitimą (pvz., perkelti klientą, sukeisti du klientus ar apversti maršruto atkarpą). Vietinė paieška tikrina tokius kaimyninius sprendinius ir renkasi geresnį už dabartinį. _Swap\*_ kaimynystėje du klientai iš skirtingų maršrutų išimami ir kiekvienas įterpiamas į bet kurią kito maršruto poziciją; nors galimų judesių labai daug, geriausiam judesiui pakanka tikrinti įterpimą į vietą arba vieną iš trijų geriausių iš anksto įvertintų pozicijų, todėl kaimynystė tiriama efektyviai @vidal2022Hybrid.
 
 #figure(
   caption: [HGS veikimas @vidal2022Hybrid],
   scale(65%, reflow: true, hgs_flowchart)
 ) <hgs_flowchart>
-
-// Kryžminimui taikomas "OX", o maršrutai atkuriami "Split" algoritmu, kurio $O(n)$ realizacija leidžia greitai vertinti naujus palikuonis. Tai sumažina rekonstrukcijos kainą ir leidžia daugiau laiko skirti paieškai @vidal2012A_Hybr, @VIDAL2016, @vidal2022Hybrid.
 
 Tėvų atranka vykdoma dvejetainiu turnyru, kur paskaičiuojamas tinkamumas #angl[fitness] t. y. sprendinio kainos ir įvairovės (_broken-pairs_ atstumo) suma ir išrenkami didžiausią tinkamumą turintys individai; populiacija palaikoma kaip įvykdomų ir neįvykdomų subpopuliacijų rinkinys, o baudos parametrai tikslinami, kad būtų išlaikytas įvykdomų ir neįvykdomų sprendinių santykis @vidal2022Hybrid, @vidal2012A_Hybr. Palaikant neįvykdomus #angl[infeasible] ir įvykdomus #angl[feasible] sprendinius, išlaikoma populiacijos įvairovė #angl[diversity], kuri leidžia išvengti lokalios minimos #angl[local minima] iteruojant per sprendinius.
 
@@ -232,7 +219,7 @@ Dar vienas svarbus elementas yra populiacijos valdymas. Tai individų iš įvykd
 #pagebreak()
 = Literatūros analizė
 
-// Vertinimo praktikoje akcentuojama palyginamumo problema. @uchoa2017 pasiūlė naują CVRP testų rinkinį su BKS, o @jastrzab2024Standa rekomenduoja aiškiai apibrėžti laiko matavimą, paleidimų skaičių ir pateikti vidurkius kartu su geriausiais rezultatais. Tokia standartizacija leidžia prasmingai lyginti lygiagretintų ir nuoseklių algoritmų efektyvumą.
+Vertinimo praktikoje akcentuojama palyginamumo problema. @uchoa2017 pasiūlė naują CVRP testų rinkinį su BKS, o @jastrzab2024Standa rekomenduoja aiškiai apibrėžti laiko matavimą, paleidimų skaičių ir pateikti vidurkius kartu su geriausiais rezultatais. Tokia standartizacija leidžia prasmingai lyginti lygiagretintų ir nuoseklių algoritmų efektyvumą.
 
 @abdelatti2020An_imp siūlo genetinį algoritmą, kuris pilnai vykdomas GPU (CUDA): GPU branduoliai atlieka pradinę populiacijos generaciją, kaštų skaičiavimą, kryžminimą, mutaciją ir _2-opt_ vietinę paiešką. Sprendinių kokybei gerinti taikomos _2-opt_ ir artimiausio kaimyno heuristikos, o autoriai pateikia CPU ir GPU versijų palyginimą bei parodo, kad _2-opt_ reikšmingai mažina spragą, nors didina vykdymo laiką.
 
@@ -271,22 +258,18 @@ Paimta @vidal2022Hybrid HGS algoritmo implementacija#footnote[Nuolatinė repozit
 
 Daugiausiai laiko užima vietinės paieškos žingsnis @jamshidi2025A_Para, šio darbo autoriaus atliktais matavimais vietinė paieška užima 85% vykdymo laiko. Todėl siekiant sumažinti viso HGS algoritmo vykdymo laiką šį žingsnį yra labiausiai verta lygiagretinti.
 
-Lygiagretinimas realizuotas "OpenMP" pagrindu. Kiekvienoje iteracijoje nuosekliai veikiančioje algoritmo dalyje parenkami $2N$ tėviniai individai ir iš jų sugeneruojami $N$ palikuonių, o vietinė paieška vykdoma lygiagrečiai -- kiekviena gija apdoroja po vieną palikuonį.
+HGS-CVRP (su _swap\*_ kaimynyste) pasiekia tą pačią sprendinių kokybę kaip HGS-2012 per dalį skaičiavimo laiko ir jį lenkia bet kuriame laiko taške. _Swap\*_ paieška sudaro iki 32% vietinės paieškos CPU laiko, bet duoda apie 15% visų patobulinimų, todėl lygiagretinant svarbu šią kaimynystę išlaikyti @vidal2022Hybrid. Daugelis lygiagretinimo bandymų dėl implementacijos sudėtingumo nenaudoja šios kaimynystės @stadtler2023parallel @jamshidi2025A_Para #todo[TODO: add others].
 
+Lygiagretinimas realizuotas "OpenMP" pagrindu. Kiekvienoje iteracijoje nuosekliai veikiančioje algoritmo dalyje parenkami $2N$ tėviniai individai ir iš jų sugeneruojami $N$ palikuonių, o vietinė paieška vykdoma lygiagrečiai -- kiekviena gija apdoroja po vieną palikuonį.
 Sinchronizacija vyksta per "OpenMP" barjerus: po lygiagrečios vietinės paieškos ir taisymo etapų visos nuoseklios algoritmo sekcijos vykdymas blokuojams ligi tol kol visos gijos baigia mokymo etapą. Nauji individai nuosekliai įterpiami į bendrą populiaciją.
 
 Toks lygiagretinimo būdas išvengia sinchronizacijos kaštų dėl bendrų duomenų rašymo prieigos prie bendrų duomenų. @parallel_hgs_memory pavyzdys pavaizduoja kaip kiekvienas algoritmo žingsnis modifikuoja bendrus duomenis.
-
-Papildomai, šis lygiagretinimo būdas leidžia išlaikyti swap\* operatorių, kuris kitose lygiagretintose HGS versijose buvo pašalintas @stadtler2023parallel @jamshidi2025A_Para.
-
-Šis sprendimas taip pat leidžia išlaikyti HGS populiacijos valdymą vienoje vietoje ir yra paprastesnis nei GPU pagrįstas operatorių perrašymas ar salų modelio migracija @lei2025Speedi, @jamshidi2025A_Para.
+Papildomai, šis lygiagretinimo būdas leidžia išlaikyti swap\* kaimynestę. Šis sprendimas taip pat leidžia išlaikyti HGS populiacijos valdymą vienoje vietoje ir yra paprastesnis nei GPU pagrįstas operatorių perrašymas ar salų modelio migracija.
 
 #figure(
   caption: "Bendros atminties rašymo etapai",
   scale(20%, reflow: true, image("img/parallel_memory.png"))
 ) <parallel_hgs_memory>
-
-// Atsitiktinumui naudojami du lygmenys: bendras `std::minstd_rand` generatorius (su `ap.seed`) naudojamas tėvų atrankai, kryžminimui ir taisymo sprendimui, o vietinei paieškai kiekviena gija turi savo generatorių su sėkla `ap.seed + 1 + thread_id`. Pastarasis naudojamas `std::shuffle` tvarkai ir granular kaimynystės permiksavimui, todėl su fiksuotu `seed` ir gijų skaičiumi gaunamas atkuriamas elgesys.
 
 Vis dėlto greitaveiką riboja nuoseklūs žingsniai. kryžminimo, baudų parametrų tikslinimo bei populicaijos valdymo žingniai atliekami nuosekliai, todėl dalį laiko visos gijos, apart vienos, neatlieką jokių veiksmų. Papildomai, prieš populiacijos valdymo žingsnį visos gijos privalo baigti vietinę paiešką, lėtai veikianti gija gali užtęsti visos iteracijos vykdymo laiką.
 
@@ -333,14 +316,6 @@ Vis dėlto greitaveiką riboja nuoseklūs žingsniai. kryžminimo, baudų parame
 //     ]
 //   ]
 // ] <algo_parallel>
-
-
-// Atminties priskyrimo ir skaitymo etapai pavaizduoti #lt_ame(<parallel_hgs_memory>) paveiksle. `Genetic::run` pradžioje vieną kartą sukuriami `LocalSearch[i]` ir `LocalSearchContext[i]` objektai, o vietinės paieškos ir taisymo etapuose gijos skaito savo kontekstus ir rašo į atskirus rezultatų masyvus; bendros populiacijos atnaujinimas vyksta tik nuosekliai.
-
-// #figure(
-//   caption: [Lygiagretinto HGS-CVRP atminties priskyrimas ir skaitymo etapai],
-//   scale(80%, reflow: true, parallel_hgs_memory)
-// ) <parallel_hgs_memory>
 
 #pagebreak()
 = Lygiagretintos ir nuoseklios programos palyginimas
@@ -391,31 +366,33 @@ Palyginimui naudoti geriausių sprendinių rinkinys#footnote[https://galgos.inf.
 
 // Šiame darbe taikinys $g^*$ parenkamas kiekvienam uždaviniui kaip viengijės versijos vidutinė spraga  100% laiko taške. Tuomet $T_1(g^*) = T_"max"$, o $T_p(g^*)$ yra pirmas momentas, kai $p$ gijų vidutinė spraga pasiekia tą pačią ribą.
 
-
 == Rezultatai
 
-#let gap_result = gap_data()
-#let table1 = table_100_avg_from(gap_result)
-#let gap_threads_table = table_gap_threads_from(gap_result)
-#let gap_speedup_table = table_gap_speedup_from(gap_result)
+#let x_gap_result = gap_data(instances: x_vrp_instances)
+// #let golden_gap_result = gap_data(instances: golden_instances)
+#let table_100ths_x = table_100_avg_from(x_gap_result)
+// #let table_100ths_golden = table_100_avg_from(golden_gap_result)
+#let gap_threads_table = table_gap_threads_from(x_gap_result)
+#let gap_speedup_table = table_gap_speedup_from(x_gap_result)
+// #let gap_threads_table = table_gap_threads_from(x_gap_result)
+// #let gap_speedup_table = table_gap_speedup_from(x_gap_result)
 
 #grid(
   columns: 2,
   gutter: 2em,
   figure(
     caption: [Vidutinė sprendinių spraga pagal gijų skaičių. Spraga apskaičiuojama pagal BKS, o x ašis rodo vykdymo laiką procentais.]
-  )[#scale(60%, reflow: true)[#gap_threads_plot_from(gap_result)]],
+  )[#scale(60%, reflow: true)[#gap_threads_plot_from(x_gap_result)]],
   figure(
     caption: [Sprendimo kokybės santykis tarp viengijio ir N gijų sprendimų (1 gijos spraga / N gijos spraga) priklausomai nuo vykdymo laiko.]
-  )[#scale(65%, reflow: true)[#gap_speedup_plot_from(gap_result) #v(1em)]]
-
+  )[#scale(65%, reflow: true)[#gap_speedup_plot_from(x_gap_result) #v(1em)]]
 )
 
 Su vis didesniu gijų skaičiumi vidutinė sprendinių spraga yra mažesnė ypač . Galutiniame laiko momente (Uchoa 2017 X-n rinkinys @uchoa2017) vidutinė spraga sumažėja nuo 0.42% (1 gija) iki 0.23% (16 gijų), o 8 gijų atveju siekia 0.25%.
 
 // Ankstyvuose paieškos etapuose pagerėjimas taip pat nuoseklus: po 10% laiko vidutinis tarpas sumažėja nuo 1.21% (1 gija) iki 0.81% (8 gijų) ir 0.79% (16 gijų), o po 50% laiko -- nuo 0.58% iki 0.35% ir 0.32%. Tai rodo, kad lygiagreti vietinė paieška greičiau pasiekia geresnę sprendinių kokybę.
 
-// Detalesnės rezultatų lentelės pateiktos prieduose (žr. #ref(<priedas-gap-threads>), #ref(<priedas-gap-speedup>), #ref(<priedas-speedup-quantiles>), #ref(<priedas-costs>)).
+// Detalesnės rezultatų lentelės pateiktos prieduose (žr. #ref(<priedas-gap-threads>), #ref(<priedas-gap-speedup>), #ref(<priedas-speedup-quantiles>), #ref(<priedas-costs-x>)).
 
 
 Santykio grafikas rodo didėjančią naudą bėgant laikui: 1/8 santykis siekia ~1.50 po 10% laiko ir ~1.68 pabaigoje, o 1/16 atitinkamai ~1.54 ir ~1.83. Vis dėlto skirtumas tarp 8 ir 16 gijų pabaigoje yra tik apie 0.02 procentinio punkto, todėl grąža mažėja didinant gijų skaičių.
@@ -516,11 +493,16 @@ Palyginus su @jamshidi2025A_Para, 16 gijų atvejis rodo panašų pagerėjimą (~
 //     caption: [Greitėjimo ir efektyvumo kvantiliai (P25, P50, P75) pagal $g^*$ slenksčius]
 // )
 
-= Priedas. Vidutinės pasiektos sprendimų kainos ir tarpas galutiniu laiko momentu <priedas-costs>
+= Priedas. Vidutinės pasiektos sprendimų kainos ir tarpas galutiniu laiko momentu <priedas-costs-x>
 #figure(
-  block(breakable: true, width: 118%)[#table1],
+  block(breakable: true, width: 118%)[#table_100ths_x],
     caption: [Vidutinės pasiektos sprendimų kainos ir tarpas galutiniu laiko momentu]
 )
+
+// #figure(
+//   block(breakable: true, width: 118%)[#table_100ths_golden],
+//     caption: [Vidutinės pasiektos sprendimų kainos ir tarpas galutiniu laiko momentu]
+// )
 
 #pagebreak()
 #set heading(numbering: none)
