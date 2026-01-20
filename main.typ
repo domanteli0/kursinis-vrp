@@ -50,6 +50,7 @@
 
 = Santrumpos
 
+Kaimynystė #angl[neighborhood] – sprendinių rinkinys, kurį galima gauti iš dabartinio sprendinio atlikus vieną lokalų pakeitimą (pvz., perkelti klientą, sukeisti du klientus ar apversti maršruto atkarpą).
 - HGS – Hibridinis genetinis paieškos algoritmas #angl[Hybrid Genetic Search].
 - VRP – Transporto maršrutų optimizavimo uždavinys #angl[Vehicle Routing Problem].
 - CVRP – #angl_[Capacitated Vehicle Routing Problem]. Kiekviena transporto priemonė turi maksimalią siuntų talpą.
@@ -108,7 +109,7 @@ Tuo tarpu metaheuristiniai algoritmai šioje uždavinių klasėje išsiskiria ef
 == VRP variacijos
 
 Egzistuoja ir VRP variacijos (CVRP, VRPTW, MDPVRP, PVRP ir kt.).
-Jos įveda papildomus apribojimus, (pavyzdžiui: maršrutų ilgiui, transporto priemonių panaudojimo laikui ir talpai) arba prideda papildomas sąlygas:
+Jos įveda papildomus apribojimus, pavyzdžiui: maršrutų ilgiui, transporto priemonių panaudojimo laikui ir talpai, arba prideda papildomas sąlygas:
 - naudojamos transporto priemonės turi limituotą talpą (CVRP);
 - visi klientai gali būti aplankyti tik specifinėmis darbo valandomis (VRPTW);
 - keli depai, iš kurių galima pradėti maršrutą (MDVRP);
@@ -118,7 +119,7 @@ Jos įveda papildomus apribojimus, (pavyzdžiui: maršrutų ilgiui, transporto p
 
 == CVRP
 
-CVRP nagrinėjamas grafas $𝐺 = (𝑉, 𝐸)$, kuriame $v_0 in V$ žymi depą, kuris turi $m$ transporto priemonių, o likusios viršūnės ${v_1, ..., v_(|V|)}$ atitinka klientus, kuriuos reikia aplankyti. Kiekviena briauna $(i, j) in E$ reiškia galimybę keliauti tarp vietų $i$ ir $j$ su kaina $c_(i,j)$ -- euklidinis atstumas tarp vietų $i$ ir $j$. CVRP reikia surasti sprendinį, kuriame panaudotos ne daugiau kaip $K$ transporto priemonių, prasidedančių ir pasibaigiančių depe, taip, kad kiekvienas klientas būtų aplankytas vieną kartą ir bendras klientų paklausos dydis bet kuriame maršrute neviršytų transporto priemonės talpos $Q$, o bendras transporto priemonių nuvažiuotas atstumas -- kaina (žr. #lt_a(<math_cost>) lygtį) kiek įmanoma mažesnis.
+CVRP nagrinėjamas grafas $G = (V, E)$, kuriame $v_0 in V$ žymi depą, kuris turi $m$ transporto priemonių, o likusios viršūnės ${v_1, ..., v_(|V|)}$ atitinka klientus, kuriuos reikia aplankyti. Kiekviena briauna $(i, j) in E$ reiškia galimybę keliauti tarp vietų $i$ ir $j$ su kaina $c_(i,j)$ – euklidinis atstumas tarp vietų $i$ ir $j$. CVRP reikia surasti sprendinį, kuriame panaudotos ne daugiau kaip $K$ transporto priemonių, prasidedančių ir pasibaigiančių depe, taip, kad kiekvienas klientas būtų aplankytas vieną kartą ir bendras klientų paklausos dydis bet kuriame maršrute neviršytų transporto priemonės talpos $Q$, o bendras transporto priemonių nuvažiuotas atstumas – kaina (žr. #ref(<math_cost>)) – būtų kiek įmanoma mažesnis.
 
 $
   c_(i, j) = sqrt((x_i - x_j)^2 + (y_i - y_j)^2) \
@@ -131,8 +132,7 @@ $
   & &&"keliauja" "nuo" "kliento" i "iki" "kliento" j, \
   & &&"lygi" 0 "priešingu" "atveju"
 $ <math_cost>
-
-Lyginant transporto maršrutų optimizavimo uždavinio sprendinius taip pat naudojama spraga #angl[gap], kuri nusako atstumą nuo geriausio sprendinio, išreikštą procentais @math_gap.
+Lyginant transporto maršrutų optimizavimo uždavinio sprendinius naudojama spraga #angl[gap], nusakanti atstumą procentais nuo geriausio sprendinio @math_gap.
 
 $
   "Spraga" &= ((Z_s - Z_"BKS") / Z_"BKS") dot 100% \
@@ -143,19 +143,19 @@ $ <math_gap>
 #pagebreak()
 = HGS algoritmo veikimas
 
-Pirmą kartą aprašytas #c(<vidal2012A_Hybr>) skirtas spręsti MDPVRP. Patobulintas per daugelį iteracijų: @vidal2014A_unif, @vidal2016Large_, @vidal2017Node__, @vidal2021Arc_Ro, @vidal2022Hybrid ir pritaikytas CVRP. Pastarasis variantas vadinamas HGS-CVRP.
+HGS algoritmas pirma skirtas MDPVRP spręsti @vidal2012A_Hybr. Algoritmas patobulintas per daugelį iteracijų @vidal2014A_unif, @vidal2016Large_, @vidal2017Node__, @vidal2021Arc_Ro, @vidal2022Hybrid, ir pritaikytas CVRP. Pastarasis variantas vadinamas HGS-CVRP, o pirmasis HGS-2012.
 
-Genetiniai algoritmai imituoja evoliucijos procesą. Populiacija yra aibė, kurią sudaro individai (t. y. užduoties sprendiniai). Šie algoritmai naudoja įvairius kryžminimo operatorius, kurie iš kelių individų populiacijoje sukuria naują, mutuotą individą ir prideda prie populiacijos (#lt_ame(<hgs_flowchart>) pavyzdyje 1, 2 ir 4 žingsniai). Prastos kokybės ir panašūs individai (sprendiniai) vykdimo eigoje yra pašalinami iš populiacijos.
+Genetiniai algoritmai imituoja evoliucijos procesą. Populiacija yra aibė, kurią sudaro individai (t. y. užduoties sprendiniai). Šie algoritmai kombinuoja (dar vadinama kryžminimu) individidus, kad sukurti naują individą palikuonį #angl[offspring], jį mutuoja ir prideda prie visų individų aibės -- populicijos. Kad genetinio algoritmo eiga pernelyg nesuletėtų, prasčiausi individai yra pašalinami iš populiacijos.
 
-Genetinis hibridinis paieškos algoritmas prie genetinio komponento prideda pagerinimo žingsnį -- vietinę paiešką #angl[local search], kuri po kryžminimo žingsnio yra pritaikoma naujam individui, siekiant pagerinti gauto individo kokybę (#lt_ame(<hgs_flowchart>) pavyzdyje 3 žingsnis).
+HGS atveju kryžminimo operacija sukuria vieną maršrutą, kuris vėliau efektyviai sukarpomas į kelis maršrutus pasitelkiant _Split_ kaimynystės ir prideda prie populiacijos (#lt_ame(<hgs_flowchart>) pavyzdyje 1-as žingsnis). Prastos kokybės #todo[TODO: matematinis fitness apibrėžimas] individai HGS algoritme tie, kurie yra panašūs vienas kitam individai arba tie, kurių atstumas yra ilgiausias.
 
-Kryžminimo operacija iš esmės sukuria vieną maršrutą, kuris vėliau yra efektyviai sukarpomas į kelis maršrutus pasitelkiant #angl[split] algoritmą.
+HGS prie genetinio komponento prideda pagerinimo žingsnį (dar vadinama mokymo ar taisymo žingsniu) – vietinę paiešką #angl[local search], kuri po kryžminimo žingsnio pritaikoma naujam individui, siekiant pagerinti gauto individo kokybę (#lt_ame(<hgs_flowchart>) pavyzdyje 3 žingsnis).
 
-//
-// Vietinė paieška vykdoma iteratyviai taikant kelias kaimynystes, kol nebelieka gerinančių judesių. Operatoriai kaip _relocate_ ir _swap_ leidžia keisti klientų vietas tarp maršrutų, o _2-opt_ ir _2-opt\*_ koreguoja maršruto vidinę struktūrą. _Swap\*_ yra brangiausia, bet dažnai duodanti didžiausią pagerėjimą kaimynystė.
+Vietinė paieška vykdoma iteratyviai taikant kelias kaimynystes, kol nebelieka gerinančių judesių. Kaimynystės _relocate_ ir _swap_ leidžia keisti klientų vietas tarp maršrutų, o _2-opt_ ir _2-opt\*_ koreguoja maršruto vidinę struktūrą. _Swap\*_ yra brangiausia, bet dažnai duodanti didžiausią pagerėjimą kaimynystė. Esminis patobulinimas leidžiantis HGS-CVRP pasiekti vienus iš aukščiau rezultatų yra _Swap\*_ kaimynystės pridėjimas prie prieštai naudojamų kaimynysčių.
 
-Vietinei paieškai pasitelkiami _relocate_, _swap_, _2-opt_, _2-opt\*_ ir _swap\*_ kaimynystės. Kaimynystė #angl[neighborhood] -- tai sprendinių rinkinys, kurį galima gauti iš dabartinio sprendinio atlikus vieną lokalų pakeitimą (pvz., perkelti klientą, sukeisti du klientus ar apversti maršruto atkarpą). Vietinė paieška tikrina tokius kaimyninius sprendinius ir renkasi geresnį už dabartinį. _Swap\*_ kaimynystėje du klientai iš skirtingų maršrutų išimami ir kiekvienas įterpiamas į bet kurią kito maršruto poziciją; nors galimų judesių labai daug, geriausiam judesiui pakanka tikrinti įterpimą į vietą arba vieną iš trijų geriausių iš anksto įvertintų pozicijų, todėl kaimynystė tiriama efektyviai. Toks apribojimas sumažina vietinės paieškos sudėtingumą nuo kvadratinio iki maždaug linijinio pagal klientų skaičių, kartu išlaikant pakankamai gerą sprendinių kokybę. @vidal2022Hybrid. Jeigu po vietinės paieškos individas yra neįvykdomas, su 50% tikimybe taikoma taisymo procedūra t. y. pakartotinė vietinė paieška.
+#note[Domanto idėja, galima pridėti paveiksliukų kaip veikia šios kaimynystės]
 
+_Swap\*_ kaimynystėje du klientai iš skirtingų maršrutų išimami ir kiekvienas įterpiamas į bet kurią kito maršruto poziciją; nors galimų judesių labai daug, geriausiam judesiui pakanka tikrinti įterpimą į tą pačią vietą arba į vieną iš trijų geriausių iš anksto įvertintų pozicijų, todėl kaimynystė tiriama efektyviai. Toks apribojimas sumažina vietinės paieškos sudėtingumą nuo kvadratinio iki maždaug linijinio pagal klientų skaičių, kartu išlaikant pakankamai gerą sprendinių kokybę @vidal2022Hybrid. Jeigu po vietinės paieškos individas yra neįvykdomas, su 50% tikimybe taikoma taisymo procedūra (pakartotinė vietinė paieška).
 
 #figure(
   caption: [HGS veikimas @vidal2022Hybrid],
