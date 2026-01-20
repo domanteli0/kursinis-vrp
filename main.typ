@@ -17,6 +17,7 @@
 #import "diagrams/time_target_speedup.typ": speedup_plot_from, efficiency_plot_from
 // #import "diagrams/parallel_hgs_thread_flow.typ": parallel_hgs_thread_flow
 #import "@preview/drafting:0.2.2": *
+#import "@preview/lovelace:0.3.0": *
 #import "@preview/cetz:0.4.2": canvas, draw
 #import "@preview/cetz-plot:0.1.3": plot, chart
 #import "@preview/i-figured:0.2.4"
@@ -182,59 +183,33 @@ Jeigu po vietinės paieškos individas yra neįvykdomas, algoritmas jį, su 50% 
 Dar vienas svarbus elementas yra populiacijos valdymas. Tai individų iš įvykdomų ir neįvykdomų sprendinių subpopuliacijų mažiausią tinkamumą turintys individai (t. y. didžiausios kainos ir panašių individų) pašalinimi kas numatytą iteracijų skaičių pagal baudos parametrus, kurie patys yra tikslinami genetinio algoritmo eigos metu; tai palaiko įvairovę ir mažina sprendinių kainą @vidal2012A_Hybr, @vidal2022Hybrid.
 
 #figure(
-  caption: [HGS algoritmo pseudokodas @vidal2012A_Hybr]
-)[
-  #let alg-line(num, body, indent: 0, bar: false) = {
-    let stroke = if bar { (left: 0.4pt + gray) } else { none }
-    grid(
-      columns: (auto, 1fr),
-      row-gutter: 0em,
-      align: top,
-    )[
-      #text(weight: "semibold")[#num]
-      #box(stroke: stroke, inset: (left: indent * 0.85em))#body
-    ]
-  }
-
-  #block(
-    stroke: black,
-    inset: 0.55em,
-    fill: luma(98%),
-    radius: 2pt,
-    spacing: 0.5em,
-  )[
-    #set par(leading: 0.4em, first-line-indent: (amount: 0cm))
-
-    #align(left)[
-      #stack(
-        spacing: 0.75em,
-        alg-line("1", [Sugeneruoti pradinę populiaciją ir pagerinti ją vietine paieška]),
-        alg-line("2", [*Kol* iteracijų be pagerėjimo skaičius ir vykdymo laikas neviršija limitų:], bar: true),
-        alg-line("3", [Pasirinkti tėvinius individus (dvejetainis turnyras #angl[binary tournament])], indent: 1, bar: true),
-        alg-line("4", [Atlikti kryžminimą #angl[crossover]], indent: 1, bar: true),
-        alg-line("5", [Išmokyti naują individą (vietinė paieška)], indent: 1, bar: true),
-        alg-line("6", [Įterpti išmokytą individą į atitinkamą subpopuliaciją], indent: 1, bar: true),
-        alg-line("7", [*Jeigu* individas neįvykdomas:], indent: 1, bar: true),
-        alg-line("8", [Su 50% tikimybe bandyti sutaisyti individą ir įtraukti į atitinkamą subpopuliaciją], indent: 2, bar: true),
-        alg-line("9", [*Jeigu* pasiektas maksimalus aibės dydis:], indent: 1, bar: true),
-        alg-line("10", [Pašalinti blogiausius ir neįvairius individus iš populiacijos], indent: 2, bar: true),
-        alg-line("11", [Patikslinti baudos parametrus #angl[penalty parameters]], indent: 1, bar: true),
-        alg-line("12", [Grąžinti geriausią įvykdomą individą]),
-      )
-    ]
+  caption: [HGS algoritmo pseudokodas @vidal2012A_Hybr],
+  pseudocode-list(bookbooks: true)[
+  + Sugeneruoti pradinę populiaciją ir pagerinti ją vietine paieška
+  + *Kol* iteracijų be pagerėjimo skaičius ir vykdymo laikas neviršija limitų:
+    + Pasirinkti tėvinius individus (dvejetainis turnyras #angl[binary tournament])
+    + Atlikti kryžminimą #angl[crossover]
+    + Išmokyti naują individą (vietinė paieška)
+    +Įterpti išmokytą individą į atitinkamą subpopuliaciją
+    + *Jeigu* individas neįvykdomas:
+      + Su 50% tikimybe bandyti sutaisyti individą ir įtraukti į atitinkamą subpopuliaciją
+    + *Jeigu* pasiektas maksimalus populiacijos dydis
+      + Pašalinti blogiausius ir neįvairius individus iš populiacijos
+    + Patikslinti baudos parametrus #angl[penalty parameters]
+  + Grąžinti geriausią įvykdomą individą
   ]
-] <algo>
+) <algo>
 
 #pagebreak()
 = Literatūros analizė
 
 == Testų rinkiniai ir vertinimo metrikos
 
-Vertinimo praktikoje akcentuojama palyginamumo problema. @uchoa2017 pasiūlė naują CVRP testų rinkinį su BKS, o @jastrzab2024Standa rekomenduoja aiškiai apibrėžti laiko matavimą, paleidimų skaičių ir pateikti vidurkius kartu su geriausiais rezultatais. Tokia standartizacija leidžia prasmingai lyginti lygiagretintų ir nuoseklių algoritmų efektyvumą.
+// Vertinimo praktikoje akcentuojama palyginamumo problema. @uchoa2017 pasiūlė naują CVRP testinių duomenų rinkinį. o @jastrzab2024Standa rekomenduoja aiškiai apibrėžti laiko matavimą, paleidimų skaičių. Tokia standartizacija leidžia prasmingai lyginti lygiagretintų ir nuoseklių algoritmų efektyvumą.
 
-Algoritmų lyginimui VRP literatūroje plačiai naudojami standartizuoti testų rinkiniai su geriausiais žinomais sprendiniais (BKS). Vienas iš plačiausiai taikomų yra Uchoa 2017 CVRP rinkinys @uchoa2017, kuriame pateiktos klientų koordinatės, paklausos ir talpos apribojimai, todėl galima lyginti sprendinių kokybę tarp skirtingų algoritmų ir platformų. Šis uždavinių rinkinys apima platų klientų skaičiaus intervalą, todėl leidžia įvertinti algoritmo elgesį didėjant problemos dydžiui.
+Algoritmų lyginimui VRP literatūroje plačiai naudojami standartizuoti testų rinkiniai su geriausiais žinomais sprendiniais (BKS). Vienas iš plačiausiai taikomų yra Uchoa 2017 CVRP rinkinys @uchoa2017. Šis uždavinių rinkinys apima platų įmanomų uždavinių skirtumus: maršruto ilgis, depo pradinė vieta, klientų pasiskirstymas ir geografinis tankumas. Todėl galima tiksliau įvertinti algoritmo charakteristikas skirtingose uždavinių tipuose.
 
-Kadangi metaheuristikos yra stochastinės, rezultatų vertinimui paprastai naudojami vidurkiai ir geriausi pasiekti sprendiniai iš kelių paleidimų. Spraga nuo BKS išlieka svarbiausia kokybės metrika, tačiau lyginant lygiagretintas ir nuoseklias versijas svarbu vertinti ne tik galutinę spragą, bet ir spragos kitimą per laiką.
+Kadangi metaheuristikos yra stochastinės, rezultatų vertinimui paprastai naudojami vidurkiai ir geriausi pasiekti sprendiniai iš kelių paleidimų. Spraga nuo BKS išlieka svarbiausia kokybės metrika>
 
 Rekomenduojama aiškiai apibrėžti laiko limitus, paleidimų skaičių ir aparatinę įrangą, nes šie veiksniai daro didelę įtaką rezultatų interpretacijai. Standartizuotos metodikos leidžia palyginti tiek algoritmo kokybę, tiek jo greitėjimo potencialą skirtingose platformose.
 
@@ -319,48 +294,23 @@ Greitaveiką riboja nuoseklūs žingsniai. Kryžminimo, baudų parametrų tiksli
 
 
 #figure(
-  caption: [Lygiagretinto HGS-CVRP pseudokodas (grįstas pagal @vidal2012A_Hybr)]
-)[
-  #let alg-line(num, body, indent: 0, bar: false) = {
-    let stroke = if bar { (left: 0.4pt + gray) } else { none }
-    grid(
-      columns: (auto, 1fr),
-      row-gutter: 0em,
-      align: top,
-    )[
-      #text(weight: "semibold")[#num]
-      #box(stroke: stroke, inset: (left: indent * 0.85em))#body
-    ]
-  }
-
-  #block(
-    stroke: black,
-    inset: 0.55em,
-    fill: luma(98%),
-    radius: 2pt,
-    spacing: 0.5em,
-  )[
-    #set par(leading: 0.4em, first-line-indent: (amount: 0cm))
-
-    #align(left)[
-      #stack(
-        spacing: 0.5em,
-        alg-line("1", [Sugeneruoti pradinę populiaciją ir pagerinti ją vietine paieška]),
-        alg-line("2", [*Kol* iteracijų be pagerėjimo skaičius ir vykdymo laikas neviršija limitų:], bar: true),
-        alg-line("3", [Pasirinkti $2N$#footnote[N -- gijų skaičius] tėvinius individus (dvejetainis turnyras #angl[binary tournament])], indent: 1, bar: true),
-        alg-line("4", [Atlikti kryžminimą #angl[crossover] N kartų], indent: 1, bar: true),
-        alg-line("5", [(Kiekvienoje gijoje) išmokyti naują individą], indent: 1, bar: true),
-        alg-line("6", [Įterpti išmokytą individą į atitinkamą subpopuliaciją], indent: 1, bar: true),
-        alg-line("7", [*Jeigu* individas neįvykdomas:], indent: 1, bar: true),
-        alg-line("8", [(Kiekvienoje gijoje) su 50% tikimybe bandyti sutaisyti individą ir įtraukti į atitinkamą subpopuliaciją], indent: 2, bar: true),
-        alg-line("9", [*Jeigu* pasiektas maksimalus aibės dydis:], indent: 1, bar: true),
-        alg-line("10", [pašalinti blogiausius ir neįvairius individus iš populiacijos], indent: 2, bar: true),
-        alg-line("11", [Patikslinti baudos parametrus #angl[penalty parameters]], indent: 1, bar: true),
-        alg-line("12", [Grąžinti geriausią įvykdomą individą]),
-      )
-    ]
+  caption: [Lygiagretinto HGS-CVRP pseudokodas (grįstas pagal @vidal2012A_Hybr)],
+  pseudocode-list(bookbooks: true)[
+  + Sugeneruoti pradinę populiaciją ir pagerinti ją vietine paieška
+  + *Kol* iteracijų be pagerėjimo skaičius ir vykdymo laikas neviršija limitų:
+    + Pasirinkti $2N$#footnote[N -- gijų skaičius] tėvinius individus (dvejetainis turnyras #angl[binary tournament])
+    + Atlikti kryžminimą #angl[crossover]
+    + *Kiekvienoje gijoje*:
+      + Išmokyti naują individą (vietinė paieška)
+      +Įterpti išmokytą individą į atitinkamą subpopuliaciją
+      + *Jeigu* individas neįvykdomas:
+        + Su 50% tikimybe bandyti sutaisyti individą ir įtraukti į atitinkamą subpopuliaciją
+    + *Jeigu* pasiektas maksimalus populiacijos dydis
+      + Pašalinti blogiausius ir neįvairius individus iš populiacijos
+    + Patikslinti baudos parametrus #angl[penalty parameters]
+  + Grąžinti geriausią įvykdomą individą
   ]
-] <algo_parallel>
+) <algo_parallel>
 
 // == Teorinis greitėjimo apribojimas
 
@@ -445,16 +395,17 @@ Lyginant lygiagrečią ir nuoseklią versijas naudojamas realus laikas #angl[wal
   ) <speedup-plot>]
 )
 
-// #table_speedup_all_instances(x_speedups)
+Lygiagreti algoritmo versija sparčiau mažina sprendinio spragą ne tik vykdymo pabaigoje, bet ir ankstyvuosiuose jo etapuose.
+// Šalia pateiktas santykio grafikas patvirtina, kad našumas sparčiai didėja iki 8 gijų, o vėliau augimas lėtėja ir stabilizuojasi. Šis prisotinimo reiškinys, kai sinchronizacijos kaštai pradeda viršyti lygiagretinimo teikiamą naudą, yra analogiškas aptariamam @pandian2023Effect ir @stadtler2023parallel darbuose.
 
-Vidutinių spragų kreivė parodo, kad lygiagreti versija sparčiau mažina spragą ne tik galutiniame taške, bet ir ankstyvuose etapuose. Santykio grafikas, pateiktas šalia, įrodo, jog grąža didėja greitai iki 8 gijų, o vėlesnėse stadijose stagnuoja – analogiškas prisotinimas aptariamas @pandian2023Effect ir @stadtler2023parallel, kai sinchronizacijos kaštai ima dominuoti. 16 gijų atveju galutinis santykis apie 1.8 artimas @jamshidi2025A_Para rezultatams, tačiau tiesioginis palyginimas ribotas dėl skirtingų $T_"max"$ ir aparatinės įrangos.
+Nors 16 gijų atveju pasiektas ~1.8 santykis yra artimas @jamshidi2025A_Para rezultatams, tiesioginis palyginimas yra komplikuotas dėl skirtingų maksimalaus vykdymo laiko ($T_"max"$) ir aparatinės įrangos konfigūracijų.
 
 Pagreitėjimą galima matuoti ir pagal Amdalo taisyklę:
 $ S_p = 1 / ((1 - f) + f / p) \
   #[kur $f$ - lygiagretinomos dalies vykdymo laikas prieš pagreitėjimą]
 $
 
-Kadangi spraga yra per vykdymo laiką kintantis dydis, matavimui parenkamas atsitiktinis dydis. Naudojantis tuo faktu, kad visos spragos daugiagyjų matavimų mažesnės arba lygios viengijoms, lygiagretinto HGS-CVRP pagreitėjimui galima naudoti vienos gijos spragą $S_1$ santykiniu laiko momentu 100%.
+Sprendinio spraga yra metrika, kintanti per visą algoritmo vykdymo laiką. Siekiant nustatyti nuoseklų pagreitėjimo matavimo kriterijų, būtina pasirinkti tikslinę spragos vertę. Atsižvelgiant į tai, kad daugiagijis vykdymas bet kuriuo laiko momentu pasiekia ne didesnę spragą nei viengijis, galutinė viengijės versijos pasiekta spraga ($S_1$), esant 100% santykiniam laikui, yra tinkamas atskaitos taškas. Todėl lygiagretaus HGS-CVRP pagreitėjimas yra nustatomas matuojant laiką, per kurį daugiagijis vykdymas pasiekia tą pačią tikslinę spragos vertę $S_1$.
 
 #let amdahl_parallel_fraction = 0.91
 #let amdahl_from_thread_no = p => 1/((1 - amdahl_parallel_fraction) + amdahl_parallel_fraction / p)
@@ -470,6 +421,25 @@ Kadangi spraga yra per vykdymo laiką kintantis dydis, matavimui parenkamas atsi
     [#str(amdahl_from_thread_no(16)).slice(0, 5)],
   )
 ) <amdalh_theory_table>
+
+// #let time_to_match_instance = all_data.at(0)
+// #let time_to_match_results = time_to_match_from_raw(time_to_match_instance.raw_data)
+
+// #figure(
+//   caption: [Vykdymo šimtainė, per kurią pasiekiama vienos gijos sprendinio kaina],
+//   table(
+//     columns: (auto, auto, auto, auto, auto),
+//     // table.header(
+//       [_Gijos_],
+//       [2],
+//       [4],
+//       [8],
+//       [16],
+//     // ),
+//     [_Vykdymo laikas (%)_],
+//     ..time_to_match_results.map(entry => { str(entry.time_step) })
+//   )
+// )
 
 // // Pagreitėjimo duomenys:
 // #let x_time_to_target = time_to_target_data(instances: x_vrp_instances)
