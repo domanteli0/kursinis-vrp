@@ -1,6 +1,6 @@
 #import "style.typ": style
 #import "utils.typ": *
-#import "data.typ": format_2, x_vrp_instances
+#import "data.typ": *
 #import "data_gap.typ": gap_data
 #import "data_speedup.typ": time_to_target_data, time_to_target_fixed
 #import "tables/table1.typ": table_100_avg_from
@@ -107,8 +107,8 @@ Tuo tarpu metaheuristiniai algoritmai šioje uždavinių klasėje išsiskiria ef
 
 == VRP variacijos
 
-Praktikoje taikomos kelios VRP variacijos (CVRP, VRPTW, MDPVRP, PVRP ir kt.).
-Jos įveda papildomus apribojimus maršrutų ilgiui, transporto priemonių panaudojimo laikui ir talpai arba prideda papildomas sąlygas:
+Egzistuoja ir VRP variacijos (CVRP, VRPTW, MDPVRP, PVRP ir kt.).
+Jos įveda papildomus apribojimus, (pavyzdžiui: maršrutų ilgiui, transporto priemonių panaudojimo laikui ir talpai) arba prideda papildomas sąlygas:
 - naudojamos transporto priemonės turi limituotą talpą (CVRP);
 - visi klientai gali būti aplankyti tik specifinėmis darbo valandomis (VRPTW);
 - keli depai, iš kurių galima pradėti maršrutą (MDVRP);
@@ -407,8 +407,7 @@ Palyginimui naudoti geriausių sprendinių rinkiniai#footnote[https://galgos.inf
 
 Vykdimo duomenys surinkti paleidžiant lygiagretintą ir palyginimui originalią HGS-CVRP programos versijas. Naudotodos įrangos konfiguracija: "Intel® Xeon® Gold 6252" procesorius, 384GiB atmintis, "Qlustar 13" ("Ubuntu" pagrindas) opracinė sistema.
 
-#todo[restore original par]
-// Kadangi spragos mažėjimo fazė sutraukia 90–99% vykdymo laiko, @yelmewad2021Parall ir @abdelatti2020An_imp pabrėžia, kad svarbu fiksuoti realų laiką #angl[wall-clock] ir negryninti CPU laiko sumos. Vadovaujamės tomis rekomendacijomis, todėl matavimai fiksuojami tiesiogiai iš sistemos laikrodžio ir užfiksuojamas tik geriausias sprendimas kiekviename 1% žingsnyje.
+Lyginant lygiagrečią ir nuoseklią versijas naudojamas realus laikas #angl[wall-clock], vietoje procesoriaus laiko #angl[CPU-time], nes daugiagijės versijos CPU laiko matavimas parodytų kiekvieno procesoriaus vykdymo laikų sumą ir neatitiktų realaus vykdymo laiko.
 
 // == Duomenų surinkimas ir apdorojimas
 
@@ -420,7 +419,8 @@ Vykdimo duomenys surinkti paleidžiant lygiagretintą ir palyginimui originalią
 // 3. Rezultatai agreguojami ir skaičiuojami vidurkiai pagal gijų skaičių.
 // 4. Spraga nustatoma kaip bazinės viengijos spraga pabaigoje, o kiekviena gijų konfigūracija vertinama pagal pirmą etapą, kuriame ši spraga arba geresnė pasiekiama.
 
-== Rezultatai
+== Palyginimas
+
 
 #let x_gap_result = gap_data(instances: x_vrp_instances)
 // #let golden_gap_result = gap_data(instances: golden_instances)
@@ -444,8 +444,54 @@ Vykdimo duomenys surinkti paleidžiant lygiagretintą ir palyginimui originalią
 
 Vidutinių spragų kreivė parodo, kad lygiagreti versija sparčiau mažina spragą ne tik galutiniame taške, bet ir ankstyvuose etapuose. Santykio grafikas, pateiktas šalia, įrodo, jog grąža didėja greitai iki 8 gijų, o vėlesnėse stadijose stagnuoja – analogiškas prisotinimas aptariamas @pandian2023Effect ir @stadtler2023parallel, kai sinchronizacijos kaštai ima dominuoti. 16 gijų atveju galutinis santykis apie 1.8 artimas @jamshidi2025A_Para rezultatams, tačiau tiesioginis palyginimas ribotas dėl skirtingų $T_"max"$ ir aparatinės įrangos.
 
+Pagreitėjimą galima estimuoti pagal Amdalo taisyklę:
+$ S_p = 1 / ((1 - f) + f / p) \
+  #[kur $f$ - lygiagretinomos dalies vykdymo laikas prieš pagreitėjimą]
+$
+
+Kadangi spraga yra per vykdymo laiką kintantis dydis, matavimui parenkamas atsitiktinis dydis. Naudojantis tuo faktu, kad visos spragos daugiagyjų matavimų mažesnės arba lygios viengijoms, lygiagretinto HGS-CVRP pagreitėjimui galima naudoti vienos gijos spragą $S_1$ santykiniu laiko momentu 100%.
+
+#let amdahl_parallel_fraction = 0.86
+#let amdahl_from_thread_no = p => 1/((1 - amdahl_parallel_fraction) + amdahl_parallel_fraction / p)
+#figure(
+  caption: [Teorinis pagreitėjimas pagal Amdalo taisyklę],
+  table(
+    columns: (auto, auto, auto, auto, auto),
+    [$p$], [2 gijos], [4 gijos], [8 gijos], [16 gijos],
+    [$S_p$],
+    [#str(amdahl_from_thread_no(2)).slice(0, 5)],
+    [#str(amdahl_from_thread_no(4)).slice(0, 5)],
+    [#str(amdahl_from_thread_no(8)).slice(0, 5)],
+    [#str(amdahl_from_thread_no(16)).slice(0, 5)],
+  )
+) <amdalh_theory_table>
+
+#let raw_data = read_raw_instance(x_vrp_instances.at(0))
+#let time_to_match = time_to_match_from_raw(raw_data)
+
+#figure(
+  caption: [Vykdymo šimtainė, per kurią pasiekiama vienos gijos sprendinio kaina],
+  table(
+    columns: (auto, auto, auto, auto, auto),
+    // table.header(
+      [_Gijos_],
+      [2],
+      [4],
+      [8],
+      [16],
+    // ),
+    [_Vykdymo laikas (%)_],
+    ..time_to_match.map(entry => {
+      if entry.time_step == none {
+        "N/A"
+      } else {
+        str(entry.time_step)
+      }
+    })
+  )
+)
+
 // // Pagreitėjimo duomenys:
-// #let amdahl_parallel_fraction = 0.86
 // #let x_time_to_target = time_to_target_data(instances: x_vrp_instances)
 // #x_time_to_target.series
 
@@ -484,6 +530,7 @@ Vidutinių spragų kreivė parodo, kad lygiagreti versija sparčiau mažina spra
 
 // Tikrojo greitėjimo figūra parodo, kad 2, 4, 8 ir 16 gijų atveju vidutinės vertės yra maždaug 2.81, 3.66, 4.85 ir 5.48 (lentelė #ref(<speedup-table>)). Teorinis Amdahl greitėjimas (1.75, 2.82, 4.04, 5.16) pateiktas šalia esančioje diagramoje, tačiau skirtumas paaiškinamas tuo, kad paralelinės gijos kuria daugiau sprendinių variantų ir pirmos pasiekia tikslinį spragos slenkstį. Tokie superlinijiniai efektai taip pat pastebimi `@pandian2023Effect`, `@yelmewad2021Parall` ir `@abdelatti2020An_imp`, kai papildomi leidimai bei GPU sinchronizacijos sumažinimas leidžia greičiau pagerinti sprendinius.
 // Efektyvumas (#ref(<speedup-table>)) krenta nuo 1.00 iki maždaug 0.34 16 gijų atveju, kas rodo, kad sinchronizacija ir laukimo laikai ima dominuoti.
+
 #pagebreak()
 #set heading(numbering: none)
 = Rezultatai ir išvados

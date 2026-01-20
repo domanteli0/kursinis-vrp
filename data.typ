@@ -181,12 +181,10 @@
   }
 }
 
-#let read_instance(instance_name) = {
-  let powers = range(0, 5)
-    .map(it => calc.pow(2, it))
-
-  let attempts = range(1, 6)
-  let percents = (1, 2, 5, 10, 15, 20, 30, 50, 75, 100)
+#let ATTEMPTS = range(1, 6)
+#let PERCENTS = (1, 2, 5, 10, 15, 20, 30, 50, 75, 100)
+#let POWERS = range(0, 5).map(it => calc.pow(2, it))
+#let TIMESERIES = range(0, 101)
 
   let combinations = powers.map(pow => (pow, attempts))
 
