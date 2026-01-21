@@ -31,7 +31,7 @@
   inset: 0pt,
 )
 
-#let parallel_hgs = diagram(
+#let parallel_hgs_diagram = diagram(
   spacing: 8pt,
   cell-size: (10mm, 10mm),
   edge-stroke: 1pt,
@@ -128,4 +128,4 @@
   }
 )
 
-#parallel_hgs
+#parallel_hgs_diagram

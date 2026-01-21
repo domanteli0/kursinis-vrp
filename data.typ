@@ -108,7 +108,7 @@
 )
 
 #let x_vrp_instances = (
-  small_x_vrp_instances,
+  // small_x_vrp_instances,
   medium_x_vrp_instances,
   large_x_vrp_instances,
 ).flatten()

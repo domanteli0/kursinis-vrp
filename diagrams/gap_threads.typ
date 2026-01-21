@@ -98,7 +98,7 @@
   )
 
   let result = data
-  let y_ticks = (0.02, 0.05, 0.1, 0.25, 0.5, 1, 2, 5, 10, 20)
+  let y_ticks = (0.02, 0.05, 0.1, 0.25, 0.5, 1, 2, 4, 10, 20)
   let non_empty_series = gap_threads_series(result)
 
   plot.plot(
@@ -110,8 +110,8 @@
     x-minor-tick-step: none,
     x-label: [Vykdymo laikas (%)],
     x-mode: "log",
-    y-min: 0.125,
-    y-max: 2.74,
+    y-min: 0.24,
+    y-max: 4.1,
     y-mode: "log",
     y-base: 10,
     y-label: [Spraga (%)],

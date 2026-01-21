@@ -1,5 +1,5 @@
 #import "../data.typ": read_raw_instance, time_to_match_from_raw, POWERS, format_2
-#import "@preview/cetz-plot:0.1.3": plot
+#import "@preview/cetz-plot:0.1.3": plot, chart,
 #import "@preview/cetz:0.4.2": canvas, draw
 #import "gap_threads.typ": thread_style, thread_mark, thread_label, legend_preview, tick_mark_size, draw_mark_shape
 
@@ -57,37 +57,57 @@
     ),
   )
 
-  let points = ()
-  for i in range(0, speedup_data.threads.len()) {
-    points.push((speedup_data.threads.at(i), speedup_data.average.at(i)))
-  }
+  let points = range(0, speedup_data.threads.len())
+    .map(i => { (speedup_data.threads.at(i), speedup_data.average.at(i)) })
 
   let y_max = calc.max(..speedup_data.average)
-  // let y_ticks = range(1, calc.ceil(y_max) + 2).map(i => float(i))
+  let y_ticks = range(1, calc.ceil(y_max) + 2).map(i => float(i))
 
   plot.plot(
-    size: (12, 9),
-    x-min: 1.75,
+    size: (12, 8),
+    x-min: 1.65,
     x-max: 18,
     x-ticks: speedup_data.threads,
     x-tick-step: none,
     x-label: [Gijų skaičius],
     x-mode: "log",
     x-base: 2,
-    y-min: 0,
-    y-max: y_max * 1.1,
+    y-min: 1,
+    y-max: 5.2,
     y-label: [Vidutinis pagreitėjimas],
-    y-ticks: (2, 3, 4, 5, 6, 7),
+    y-ticks: (0, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6),
     y-tick-step: none,
     y-grid: "major",
     y-format: format_2,
-    legend: none,
+    legend: "north",
     {
       plot.add(points, line: "linear", style: (stroke: black))
+      plot.add(
+        ((2, 1.754), (4, 2.816), (8, 4.040), (16, 5.161)),
+        style: (stroke: black),
+        label: "Teorinis pagreitėjimas",
+        line: "linear"
+      )
 
-      for p in points {
-          plot.add((p,), mark: "o", mark-size: tick_mark_size, style: (stroke:none), mark-style: (stroke: black, fill: white))
-      }
+        plot.add(
+          points,
+          label: "Tikrasis pagreitėjimas",
+          mark: "o", mark-size: tick_mark_size, mark-style: (stroke: black, fill: white),
+          style: (stroke: (paint: black, dash: (0.5em, 0.2em))),
+        )
     },
   )
+
+  let points2 = range(0, speedup_data.threads.len())
+    .map(i => { ([#speedup_data.threads.at(i)], speedup_data.average.at(i)) })
+
+  //   draw.set-style(legend: (fill: white), barchart: (bar-width: .8, cluster-gap: 0))
+  //   chart.barchart(
+  //     size: (12, 9),
+  //     bar-style: (fill: white.darken(10%), width: .1, stroke: (paint: black)),
+  //     points2,
+  //     y-label: [Gijų skaičius],
+  //     x-label: [Pagreitėjimas],
+  //     legend: none,
+  //   )
 })
