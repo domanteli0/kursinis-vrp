@@ -21,14 +21,30 @@
 
 #import "@preview/cetz:0.4.2": canvas, draw
 #import "@preview/cetz-plot:0.1.3": plot, chart
+#import "style.typ": content-style
 
 #let handout = sys.inputs.at("handout", default: "false") == "true"
 #let aspect-ratio = sys.inputs.at("aspect", default: "4-3")
 
+#let viewbox(content, height: 100%) = layout(size => {
+  let content-at-12pt = text(size: 12pt, content)
+  context {
+    let dim = measure(content-at-12pt)
+    // Check for zero height to avoid division by zero
+    if dim.height == 0pt {
+      content-at-12pt
+    } else {
+      let target-h = size.height * (height / 100%)
+      let s = target-h / dim.height * 100
+      scale(s * 1%, content-at-12pt)
+    }
+  }
+})
+
 #show: simple-theme.with(
   aspect-ratio: aspect-ratio,
   footer: [HGS-CVRP Lygiagretinimas],
-  config-common(handout: handout),
+  config-common: (handout: handout),
 )
 
 #title-slide[
@@ -65,7 +81,7 @@
   4.  *Populiacijos valdymas:* Įvairovės palaikymas ir blogiausių šalinimas.
 
   #align(center)[
-     #scale(45%, reflow: true, hgs_flowchart)
+     #content-style[#viewbox(hgs_flowchart, height: 60%)]
   ]
 ]
 
@@ -103,7 +119,7 @@
   - Sinchronizacija prieš populiacijos atnaujinimą.
 
   #align(center)[
-    #scale(70%, reflow: true, parallel_hgs_memory)
+    #content-style[#viewbox(parallel_hgs_memory, height: 75%)]
   ]
 ]
 
@@ -116,7 +132,7 @@
   Lygiagreti versija (spalvotos linijos) pasiekia geresnius rezultatus (mažesnę spragą) greičiau nei nuosekli (juoda linija).
 
   #align(center)[
-    #scale(55%, reflow: true)[#gap_threads_plot_from(x_gap_result)]
+    #content-style[#viewbox(gap_threads_plot_from(x_gap_result), height: 70%)]
   ]
 ]
 
@@ -132,7 +148,7 @@
   - 16 gijų: $~#str(points.at(3).at(1)).slice(0, 4) times$
 
   #align(center)[
-    #scale(50%, reflow: true, plot_average_speedup(x_speedups))
+    #content-style[#viewbox(plot_average_speedup(x_speedups), height: 60%)]
   ]
 ]
 
@@ -142,7 +158,7 @@
   Efektyvumas mažėja didėjant gijų skaičiui. Tai lemia Amdahlo dėsnis (nuoseklios dalys: populiacijos valdymas, kryžminimas) ir sinchronizacijos laukimas.
 
   #align(center)[
-    #scale(50%, reflow: true, plot_average_efficiency(x_speedups))
+    #content-style[#viewbox(plot_average_efficiency(x_speedups), height: 60%)]
   ]
 ]
 
