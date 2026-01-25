@@ -111,3 +111,69 @@
   //     legend: none,
   //   )
 })
+
+// Function to plot average efficiency
+#let plot_average_efficiency(speedup_data) = canvas({
+  import draw: *
+
+  set-style(
+    axes: (
+      stroke: .5pt,
+      tick: (stroke: .5pt),
+      grid: (stroke: (paint: gray.lighten(70%), thickness: .4pt)),
+    ),
+    legend: (
+      stroke: none,
+      orientation: ltr,
+      item: (spacing: .3, preview: (width: .6, height: .6, margin: .15)),
+      scale: 80%,
+    ),
+  )
+
+  let points = range(0, speedup_data.threads.len())
+    .map(i => { (speedup_data.threads.at(i), speedup_data.average.at(i) / speedup_data.threads.at(i)) })
+
+  let y_max = calc.max(..points.map(p => p.at(1))) * 1.1
+
+  plot.plot(
+    size: (12, 8),
+    x-min: 1.65,
+    x-max: 18,
+    x-ticks: speedup_data.threads,
+    x-tick-step: none,
+    x-label: [Gijų skaičius],
+    x-mode: "log",
+    x-base: 2,
+    y-min: 0,
+    y-max: 1.5,
+    y-label: [Vidutinis efektyvumas],
+    y-tick-step: none,
+    y-grid: "major",
+    y-format: format_2,
+    legend: "north",
+    {
+      plot.add(points, line: "linear", style: (stroke: black))
+      
+      // Theoretical efficiency (Amdahl's law with f=0.86)
+      // S_p = 1 / ((1-f) + f/p)
+      // E_p = S_p / p
+      let amdahl_f = 0.86
+      let amdahl_eff = p => (1.0 / ((1.0 - amdahl_f) + amdahl_f / p)) / p
+      let theoretical_points = speedup_data.threads.map(t => (t, amdahl_eff(t)))
+      
+      plot.add(
+        theoretical_points,
+        style: (stroke: black),
+        label: "Teorinis efektyvumas",
+        line: "linear"
+      )
+
+      plot.add(
+        points,
+        label: "Tikrasis efektyvumas",
+        mark: "o", mark-size: tick_mark_size, mark-style: (stroke: black, fill: white),
+        style: (stroke: (paint: black, dash: (0.5em, 0.2em))),
+      )
+    },
+  )
+})

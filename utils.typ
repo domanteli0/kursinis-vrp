@@ -55,4 +55,5 @@
 #let lt_ame(label) = context { [#str(ref_number(label))-ame] }
 #let lt_oje(label) = context { [#str(ref_number(label))-oje] }
 #let lt_a(label) = context { [#str(ref_number(label))-a] }
+#let lt_as(label) = context { [#str(ref_number(label))-as] }
 #let lt_o(label) = context { [#str(ref_number(label))-o] }
