@@ -2,7 +2,7 @@ present-4-3:
     typst compile pres.typ pres_4-3.pdf
 
 handout:
-    # typst compile pres.typ --input handout=true .build/pres_still_4-3.pdf
+    typst compile pres.typ --input handout=true .build/pres_still_4-3.pdf
     pdfjam \
       --nup 2x3 \
       --frame true \

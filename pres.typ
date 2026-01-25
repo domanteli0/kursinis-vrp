@@ -27,7 +27,7 @@
 #let aspect-ratio = sys.inputs.at("aspect", default: "4-3")
 
 #let viewbox(content, height: 100%) = layout(size => {
-  let content-at-12pt = text(size: 12pt, content)
+  let content-at-12pt = text(size: 12pt, weight: "regular", stroke: none, content)
   context {
     let dim = measure(content-at-12pt)
     // Check for zero height to avoid division by zero
@@ -46,6 +46,8 @@
   footer: [HGS-CVRP Lygiagretinimas],
   config-common: (handout: handout),
 )
+
+#set text(weight: "regular")
 
 #title-slide[
   = Hibridinio genetinio paieškos algoritmo transporto maršrutų optimizavimo uždaviniams spręsti lygiagretinimas
@@ -169,12 +171,4 @@
   2.  *Kokybės pagerėjimas:* Lygiagreti versija randa geresnius sprendinius per tą patį laiką.
   3.  *Našumas:* Pasiektas ~5.5x pagreitėjimas su 16 gijų.
   4.  *Ribojimai:* Pagreitėjimą riboja nuoseklios algoritmo dalys (Amdahlo dėsnis).
-]
-
-#slide[
-  #align(center + horizon)[
-    *Ačiū už dėmesį!*
-
-    Klausimai?
-  ]
 ]

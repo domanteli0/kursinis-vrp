@@ -1,3 +1,18 @@
+#let content-style(body) = {
+  set text(lang: "LT", font: "Palemonas", weight: "regular")
+  
+  show figure.caption: it => {
+    let num = it.counter.display(it.numbering)
+    let label = if it.kind == table { "lentelė." } else { "pav." }
+    [#num #h(0.4em) #label #h(0.4em) #it.body #v(0.6em)]
+  }
+
+  show figure.where(kind: table): set figure.caption(position: top)
+  set math.equation(numbering: "(1)")
+  
+  body
+}
+
 #let style(
   university: "Vilniaus universitetas",
   faculty: "Matematikos ir informatikos fakultetas",
@@ -11,21 +26,15 @@
   date: none,
   body
 ) = {
-  set text(lang: "LT", font: "palemonas", size: 14pt)
+  show: content-style
+
+  set text(size: 14pt)
   set par(leading: 0.865em, spacing: 0.865em, first-line-indent: (amount: 1cm, all: true))
   set cite(style: "alphanumeric")
   show link: it => {
     set text(rgb("#0b00d5"))
     underline(it)
   }
-
-  show figure.caption: it => {
-    let num = it.counter.display(it.numbering)
-    let label = if it.kind == table { "lentelė." } else { "pav." }
-    [#num #h(0.4em) #label #h(0.4em) #it.body #v(0.6em)]
-  }
-
-  show figure.where(kind: table): set figure.caption(position: top)
 
   // Set document properties
   set document(
@@ -104,7 +113,6 @@
   set text(size: 12pt)
   set par(justify: true)
 
-  set math.equation(numbering: "(1)")
   // Main content
   body
 }
