@@ -129,10 +129,11 @@ CVRP nagrinėjamas grafas $G = (V, E)$, kuriame $v_0 in V$ žymi depą, kuris tu
 $ c_(i, j) = sqrt((x_i - x_j)^2 + (y_i - y_j)^2) $
 <math_dist>
 
-$ "Sprendinio kaina" &= &&sum_(k=1)^(K) sum_(i=0)^(|V|) sum_(j=0)^(|V|) c_(i,j) x_(i,j,k) $
-  x_(i,j,k) &= &&1 "Indikatorinė" "funkcija", "kuri" $
-  & &&"lygi" 1, "jei" "transporto" "priemonė" k " " (1 <= k <= K)
-  & &&"keliauja" "nuo" "kliento" i "iki" "kliento" j, $
+$
+  "Sprendinio kaina" &= &&sum_(k=1)^(K) sum_(i=0)^(|V|) sum_(j=0)^(|V|) c_(i,j) x_(i,j,k) \
+  x_(i,j,k) &= &&1 "Indikatorinė" "funkcija", "kuri" \
+  & &&"lygi" 1, "jei" "transporto" "priemonė" k " " (1 <= k <= K)\
+  & &&"keliauja" "nuo" "kliento" i "iki" "kliento" j, \
   & &&"lygi" 0 "priešingu" "atveju"
 $ <math_cost>
 
@@ -374,7 +375,7 @@ Lyginant lygiagrečią ir nuoseklią versijas naudojamas tikrasis laikas (angl. 
     scale(60%, reflow: true)[#gap_threads_plot_from(x_gap_result)]
   ) <gap_over_time_plot>],
   [#figure(
-    caption: [Vidutinis ir tikrasis pagreitėjimas. (Uchoa 2017 X-n rinkinys)],
+    caption: [Vidutinis ir tikrasis pagreitėjimas, (Uchoa 2017 X-n rinkinys)],
     scale(60%, reflow: true, plot_average_speedup(x_speedups)),
   ) <x-speedup-plot>]
 )
