@@ -74,15 +74,20 @@
 
 == Transporto maršrutų optimizavimas (VRP)
 
-*:* Surasti optimalų maršrutų rinkinį transporto priemonėms, aplankant visus klientus.
+*VRP tikslas:* Surasti optimalų maršrutų rinkinį transporto priemonėms, aplankant visus klientus. Egzistuoja daugelys variantai: _VRPTW_, _GVRP_, _MDPVRP_, kt. .
 
-*CVRP (Capacitated VRP):*
-- Ribota transporto priemonių talpa ($Q$).
+*CVRP:*
+- Transporto priemonės ribojamos talpa.
 - Tikslas: Minimizuoti bendrą atstumą (kainą).
 
-*Svarba:*
-- Realaus pasaulio logistikos optimizavimas.
-- $"NP"$-hard uždavinys $\to$ Metaheuristikos (pvz., HGS) yra efektyviausios.
+*Ypatybės:*
+- Tai yra NP-hard uždavinys.
+- Tikslūs metodai nėra efektyvūs.
+- Praktikoje naudojami (meta-)heuristiniai algoritmai (pvz. HGS ar ALNS).
+
+*Svarba:* Optimaliai suformuoti maršrutai mažina transporto išlaidas.
+
+Hydridinis genetinis paieškos algoritmas (HGS) yra vienas
 
 == Hibridinis genetinis paieškos algoritmas (HGS)
 
@@ -99,89 +104,123 @@
     ) <hgs_flowchart>
   ]
 
-  == Literatūros analizė
+== Darbo tikslas ir uždaviniai
 
-  *Egzistuojantys sprendimai:*
-  - *GPU skaičiavimai:* Masiškai lygiagretina kaimynystes (pvz., *2-opt*), bet dažnai atsisako sudėtingų operatorių (*Swap\**).
-  - *Salų modelis (Island Model):* Kelios nepriklausomos populiacijos su periodine migracija.
+*Tikslas:* Išlygiagretinti HGS-CVRP algoritmą, siekiant sumažinti vykdymo laiką neprarandant sprendinių kokybės.
 
-  *Problematika:*
-  - GPU realizacijos reikalauja specifinių duomenų struktūrų ir yra sudėtingos įgyvendinti pilnam HGS.
-  - Daugelis metodų aukoja *Swap\** kaimynystę, kuri yra kritinė HGS kokybei.
+*Uždaviniai:*
+1.  Išanalizuoti HGS veikimą (Vietinė paieška – 86% laiko).
+2.  Atrinkti ir realizuoti lygiagretinimo strategiją (OpenMP).
+3.  Palyginti su nuoseklia versija naudojant standartinius duomenis (Uchoa 2017).
 
-  *Pasirinkta kryptis:* Lygiagreti vietinė paieška (CPU) išlaikant visus HGS operatorius.
+== Vietinė paieška
 
-  == Darbo tikslas ir uždaviniai
+#figure(caption: [Įvairių kaimynysčių veikimas])[#neiborhoods]
 
-  *Tikslas:* Išlygiagretinti HGS-CVRP algoritmą, siekiant sumažinti vykdymo laiką neprarandant sprendinių kokybės.
+== Literatūros analizė
 
-  *Uždaviniai:*
-  1.  Išanalizuoti HGS veikimą (Vietinė paieška – 86% laiko).
-  2.  Atrinkti ir realizuoti lygiagretinimo strategiją (OpenMP).
-  3.  Palyginti su nuoseklia versija naudojant standartinius duomenis (Uchoa 2017).
+*Egzistuojantys sprendimai:*
+- *GPU skaičiavimai:* Masiškai lygiagretina kaimynystes (pvz., *2-opt*), bet dažnai atsisako sudėtingų operatorių (*Swap\**).
+- *Salų modelis (Island Model):* Kelios nepriklausomos populiacijos su periodine migracija.
 
-  == Lygiagretinimo strategija
+*Problematika:*
+- GPU realizacijos reikalauja specifinių duomenų struktūrų ir yra sudėtingos įgyvendinti pilnam HGS.
+- Daugelis metodų aukoja *Swap\** kaimynystę, kuri yra kritinė HGS kokybei.
 
-  #figure(
-    caption: [Dalis lygiagretinto HGS-CVRP pseudokodas (grįstas pagal @vidal2012A_Hybr)],
-    pseudocode-list(booktabs: true)[
-    + Pasirinkti $2N$#footnote[N – gijų skaičius] tėvinius individus (dvejetainis turnyras, angl. _binary tournament_)
-    + Atlikti kryžminimą (angl. _crossover_)
-    + *Kiekvienoje gijoje*:
-      + Išmokyti naują individą (vietinė paieška)
-      + *Jeigu* individas neįvykdomas:
-        + Su 50 % tikimybe bandyti sutaisyti individą
-    +Įterpti išmokytus individus į atitinkamas subpopuliacijas
-    + *Jeigu* pasiektas maksimalus populiacijos dydis
-      + Pašalinti blogiausius ir neįvairius individus iš populiacijos
-    + Patikslinti baudos parametrus (angl. _penalty parameters_)
-    ]
-  ) <algo_parallel>
+*Pasirinkta kryptis:* Lygiagreti vietinė paieška (CPU) išlaikant visus HGS operatorius.
 
-  #align(center)[
-    #scale(20%, reflow: true, image("img/parallel_memory.png"))
+#figure(
+  caption: [HGS su salų modeliu @jamshidi2025A_Para],
+  scale(50%, reflow: true, island_model)
+) <hgs_island_model>
+
+
+== Lygiagretinimo strategija
+
+#figure(
+  caption: [Dalis lygiagretinto HGS-CVRP pseudokodas (grįstas pagal @vidal2012A_Hybr)],
+  pseudocode-list(booktabs: true)[
+  + Pasirinkti $2N$#footnote[N – gijų skaičius] tėvinius individus (dvejetainis turnyras, angl. _binary tournament_)
+  + Atlikti kryžminimą (angl. _crossover_)
+  + *Kiekvienoje gijoje*:
+    + Išmokyti naują individą (vietinė paieška)
+    + *Jeigu* individas neįvykdomas:
+      + Su 50 % tikimybe bandyti sutaisyti individą
+  +Įterpti išmokytus individus į atitinkamas subpopuliacijas
+  + *Jeigu* pasiektas maksimalus populiacijos dydis
+    + Pašalinti blogiausius ir neįvairius individus iš populiacijos
+  + Patikslinti baudos parametrus (angl. _penalty parameters_)
   ]
+) <algo_parallel>
+
+#align(center)[
+  #scale(30%, reflow: true, image("img/parallel_memory.png"))
+]
+
+== Metodika
+
+- Matuojami rezultatai po 1%, 2%, 5%, 10%, 15%, 20%, 30%, 50%, 75% ir 100% vykdymo laiko. // SPEAK: kad būtų galima palyginti tarp duomenų rinkinių.
+- Laiko limitas priklauso nuo duomenų kiekio, $T_"max" = n dot 24/100$; $T_"max"$ - laiko limitas, $n$ - klientų skaičius.
+
+== Sprendinių kaina
+
+$
+  "Sprendinio kaina" &= &&sum_(k=1)^(K) sum_(i=0)^(|V|) sum_(j=0)^(|V|) c_(i,j) x_(i,j,k) \
+  x_(i,j,k) &= &&1 "Indikatorinė" "funkcija", "kuri" \
+  & &&"lygi" 1, "jei" "transporto" "priemonė" k " " (1 <= k <= K)\
+  & &&"keliauja" "nuo" "kliento" i "iki" "kliento" j, \
+  & &&"lygi" 0 "priešingu" "atveju"
+$ <math_cost>
+
+$
+  "Spraga" &= ((Z_s - Z_"BKS") / Z_"BKS") dot 100% \
+  Z_s &= #[Pasirinkto algoritmo sprendinio kaina] \
+  Z_"BKS" &= #[Geriausio sprendinio kaina]
+$ <math_gap>
+
+== Rezultatai: Sprendinių kokybė
 
 #let x_gap_result = gap_data(instances: x_vrp_instances)
 #let x_speedups = calculate_all_speedups(x_vrp_instances)
 
-  == Rezultatai: Sprendinių kokybė (Gap)
+#align(center)[
+  #content-style[#viewbox(gap_threads_plot_from(x_gap_result), height: 70%)]
+]
 
-  Lygiagreti versija (spalvotos linijos) pasiekia geresnius rezultatus (mažesnę spragą) greičiau nei nuosekli (juoda linija).
+== Rezultatai: Pagreitėjimas ir efektyvumas
+// NOTE: kadangi HGS gali veikti nustatutą
 
-  #align(center)[
-    #content-style[#viewbox(gap_threads_plot_from(x_gap_result), height: 70%)]
-  ]
+*Pagreitėjimas:* $S_p = 1 / ((1 - f) + f / p) $, *efektyvumas*: $E_p = S_p / p $ <math_efficiency>
 
-  == Rezultatai: Pagreitėjimas (Speedup)
+$f$ - lygiagretinamos dalies vykdymo laikas $\/$ visas algoritmo vykdymo laikas.
 
-  #let points = range(0, x_speedups.threads.len()).map(i => { (x_speedups.threads.at(i), x_speedups.average.at(i)) })
+$p$ - gijų skaičius.
 
-  *Vidutinis pagreitėjimas:*
-  - 2 gijos: $~#str(points.at(0).at(1)).slice(0, 4) times$
-  - 4 gijos: $~#str(points.at(1).at(1)).slice(0, 4) times$
-  - 8 gijos: $~#str(points.at(2).at(1)).slice(0, 4) times$
-  - 16 gijų: $~#str(points.at(3).at(1)).slice(0, 4) times$
+#let points = range(0, x_speedups.threads.len()).map(i => { (x_speedups.threads.at(i), x_speedups.average.at(i)) })
 
-  #align(center)[
-    #content-style[#viewbox(plot_average_speedup(x_speedups), height: 60%)]
-  ]
+*Vidutinis pagreitėjimas:* 2 gijos: $~#str(points.at(0).at(1)).slice(0, 4) times$, 4 gijos: $~#str(points.at(1).at(1)).slice(0, 4) times$, 8 gijos: $~#str(points.at(2).at(1)).slice(0, 4) times$, 16 gijų: $~#str(points.at(3).at(1)).slice(0, 4) times$.
 
-  == Rezultatai: Efektyvumas
+// Function to plot average speedup
+#grid(
+  columns: 2,
+  gutter: 2em,
+  [#figure(
+    caption: [Vidutinė sprendinių spraga pagal gijų skaičių per vykdymo laiką (Uchoa 2017 X-n rinkinys)],
+    content-style[#viewbox(plot_average_speedup(x_speedups), height: 60%)]
+  ) <gap_over_time_plot>],
+  [#figure(
+    caption: [Vidutinis ir tikrasis pagreitėjimas, (Uchoa 2017 X-n rinkinys)],
+    content-style[#viewbox(plot_average_efficiency(x_speedups), height: 60%)]
+  ) <x-speedup-plot>]
+)
 
-  Efektyvumas mažėja didėjant gijų skaičiui. Tai lemia Amdahlo dėsnis (nuoseklios dalys: populiacijos valdymas, kryžminimas) ir sinchronizacijos laukimas.
+== Išvados
 
-  #align(center)[
-    #content-style[#viewbox(plot_average_efficiency(x_speedups), height: 60%)]
-  ]
+1.  *Sėkmingas realizavimas:* HGS-CVRP sėkmingai išlygiagretintas naudojant OpenMP, išlaikant sudėtingą *Swap\** kaimynystę.
+2.  *Kokybės pagerėjimas:* Lygiagreti versija randa geresnius sprendinius per tą patį laiką.
+3.  *Našumas:* Pasiektas ~5.5x pagreitėjimas su 16 gijų.
+4.  *Ribojimai:* Pagreitėjimą riboja nuoseklios algoritmo dalys (Amdahlo dėsnis).
 
-  == Išvados
+== Šaltiniai
 
-  1.  *Sėkmingas realizavimas:* HGS-CVRP sėkmingai išlygiagretintas naudojant OpenMP, išlaikant sudėtingą *Swap\** kaimynystę.
-  2.  *Kokybės pagerėjimas:* Lygiagreti versija randa geresnius sprendinius per tą patį laiką.
-  3.  *Našumas:* Pasiektas ~5.5x pagreitėjimas su 16 gijų.
-  4.  *Ribojimai:* Pagreitėjimą riboja nuoseklios algoritmo dalys (Amdahlo dėsnis).
-
-  == Šaltiniai
-
-  #bibliography(title: none, "bibliography.bib")
+#bibliography(title: none, "bibliography.bib")
