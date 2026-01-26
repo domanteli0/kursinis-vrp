@@ -52,9 +52,9 @@
   config-info(
     title: [Hibridinio genetinio paieškos algoritmo transporto maršrutų optimizavimo uždaviniams spręsti lygiagretinimas],
     subtitle: [Parallelization of Hybrid Genetic Search Algorithm for Solving Vehicle Routing Problem],
-    author: [Domantas Keturakis \ Doc., Dr. Algirdas Lančinskas],
-    date: datetime.today(),
-    institution: [VU MIF],
+    author: [Domantas Keturakis \ Darbo vadoas: Doc., Dr. Algirdas Lančinskas],
+    // date: datetime.today(),
+    institution: [],
   ),
   config-colors(
     primary: rgb("#000000"),
@@ -67,18 +67,17 @@
   config-common: (handout: handout),
 )
 #set text(lang: "LT")
+#set cite(style: "alphanumeric")
 
 #title-slide()
 
 #set text(weight: "regular")
 
-== Transporto maršrutų optimizavimas (VRP)
+== Transporto maršrutų optimizavimo uždavinys
 
-*VRP tikslas:* Surasti optimalų maršrutų rinkinį transporto priemonėms, aplankant visus klientus. Egzistuoja daugelys variantai: _VRPTW_, _GVRP_, _MDPVRP_, kt. .
+Šis uždavinio #angl[Vehicle Routing Problem - VRP] tikslas surasti optimalų maršrutų rinkinį transporto priemonėms, aplankant visus klientus. Egzistuoja daugelys variantai: _VRPTW_, _GVRP_, _MDPVRP_, kt. .
 
-*CVRP:*
-- Transporto priemonės ribojamos talpa.
-- Tikslas: Minimizuoti bendrą atstumą (kainą).
+*CVRP:* Transporto priemonės ribojamos talpa.
 
 *Ypatybės:*
 - Tai yra NP-hard uždavinys.
@@ -87,11 +86,9 @@
 
 *Svarba:* Optimaliai suformuoti maršrutai mažina transporto išlaidas.
 
-Hydridinis genetinis paieškos algoritmas (HGS) yra vienas
-
 == Darbo tikslas ir uždaviniai
 
-*Tikslas:* Išlygiagretinti HGS-CVRP algoritmą, siekiant sumažinti vykdymo laiką neprarandant sprendinių kokybės.
+*Tikslas:* Išlygiagretinti HGS algoritmą, siekiant sumažinti vykdymo laiką neprarandant sprendinių kokybės.
 
 *Uždaviniai:*
 1. Išsirinkti duomenų rinkinį, pagal kurį galima būtų testuoti ir analizuoti sprendinius.
@@ -101,18 +98,24 @@ Hydridinis genetinis paieškos algoritmas (HGS) yra vienas
 
 == Hibridinis genetinis paieškos algoritmas (HGS)
 
-  *HGS komponentai:*
-  1.  *Populiacija:* Įvykdomi (Feasible) ir neįvykdomi (Infeasible) sprendiniai.
-  2.  *Kryžminimas (Crossover):* Dvejetainis turnyras tėvų atrankai.
-  3.  *Vietinė paieška (Local Search):* Intensyvus gerinimas (*Swap\**, *Relocate*, *2-opt*).
-  4.  *Populiacijos valdymas:* Įvairovės palaikymas ir blogiausių šalinimas.
+#grid(
+  columns: (auto, auto),
+  [
+    *HGS komponentai:*
+    1.  *Populiacija:* Įvykdomų ir neįvykdomų sprendinių aibės.
+    2.  *Kryžminimas:* Dvejetainis turnyras tėvų atrankai.
+    3.  *Gerinimas:* "Split" kaimynystės taikymas.
+    4.  *Vietinė paieška (Local Search):* Intensyvus gerinimas (*Swap\**, *Relocate*, *2-opt*).
+    5.  *Populiacijos valdymas:* Įvairovės palaikymas ir blogiausių šalinimas.
+  ],
+  align(center)[
+    #figure(
+      caption: [HGS veikimas @vidal2022Hybrid],
+      content-style[#viewbox(hgs_flowchart, height: 60%)]
+    ) <hgs_flowchart>
+  ]
+)
 
-#align(center)[
-  #figure(
-    caption: [HGS veikimas @vidal2022Hybrid],
-    content-style[#viewbox(hgs_flowchart, height: 60%)]
-  ) <hgs_flowchart>
-]
 
 
 == Vietinė paieška
@@ -123,13 +126,11 @@ Hydridinis genetinis paieškos algoritmas (HGS) yra vienas
 
 *Egzistuojantys sprendimai:*
 - *GPU skaičiavimai:* Masiškai lygiagretina kaimynystes (pvz., *2-opt*), bet dažnai atsisako sudėtingų operatorių (*Swap\**).
+  - Randa beveik optimalius sprendimus greičiau nei nuosekli versija.
+  - Daugelis metodų aukoja *Swap\** kaimynystę, kuri yra kritinė HGS kokybei.
 - *Salų modelis (Island Model):* Kelios nepriklausomos populiacijos su periodine migracija.
+  - Sunkesnis įgyvendinimas ir pritaikymas.
 
-*Problematika:*
-- GPU realizacijos reikalauja specifinių duomenų struktūrų ir yra sudėtingos įgyvendinti pilnam HGS.
-- Daugelis metodų aukoja *Swap\** kaimynystę, kuri yra kritinė HGS kokybei.
-
-*Pasirinkta kryptis:* Lygiagreti vietinė paieška (CPU) išlaikant visus HGS operatorius.
 
 #figure(
   caption: [HGS su salų modeliu @jamshidi2025A_Para],
@@ -137,21 +138,22 @@ Hydridinis genetinis paieškos algoritmas (HGS) yra vienas
 ) <hgs_island_model>
 
 
-== Lygiagretinimo strategija
+== Lygiagretinimas
+
+*Pasirinkta kryptis:* Lygiagreti vietinė paieška (CPU) išlaikant visus HGS operatorius.
 
 #figure(
   caption: [Dalis lygiagretinto HGS-CVRP pseudokodas (grįstas pagal @vidal2012A_Hybr)],
   pseudocode-list(booktabs: true)[
-  + Pasirinkti $2N$#footnote[N – gijų skaičius] tėvinius individus (dvejetainis turnyras, angl. _binary tournament_)
-  + Atlikti kryžminimą (angl. _crossover_)
+  + ...
+  + Atlikti kryžminimą ir gerinimą $N$#footnote[$N$ - gijų skaičius] kartų
   + *Kiekvienoje gijoje*:
     + Išmokyti naują individą (vietinė paieška)
     + *Jeigu* individas neįvykdomas:
       + Su 50 % tikimybe bandyti sutaisyti individą
-  +Įterpti išmokytus individus į atitinkamas subpopuliacijas
-  + *Jeigu* pasiektas maksimalus populiacijos dydis
-    + Pašalinti blogiausius ir neįvairius individus iš populiacijos
-  + Patikslinti baudos parametrus (angl. _penalty parameters_)
+  + Įterpti išmokytus individus į atitinkamas subpopuliacijas
+  + Kas $N$ ciklų populiacijos valdymas
+  + ...
   ]
 ) <algo_parallel>
 
@@ -175,7 +177,7 @@ $
 $ <math_cost>
 
 $
-  "Spraga" &= ((Z_s - Z_"BKS") / Z_"BKS") dot 100% \
+  #[*Spraga laiko momentu $t$:*] G &= ((Z_s - Z_"BKS") / Z_"BKS") dot 100% \
   Z_s &= #[Pasirinkto algoritmo sprendinio kaina] \
   Z_"BKS" &= #[Geriausio sprendinio kaina]
 $ <math_gap>
@@ -192,11 +194,14 @@ $ <math_gap>
 == Rezultatai: Pagreitėjimas ir efektyvumas
 // NOTE: kadangi HGS gali veikti nustatutą
 
-*Pagreitėjimas:* $S_p = 1 / ((1 - f) + f / p) $, *efektyvumas*: $E_p = S_p / p $ <math_efficiency>
+*Teorinis pagreitėjimas:* $S^A_p = 1 / ((1 - f) + f / p) $, *faktinis pagreitėjimas:* $S_p = T_p / T_1 $,
+*Efektyvumas*: $E_p = S_p / p $
 
 $f$ - lygiagretinamos dalies vykdymo laikas $\/$ visas algoritmo vykdymo laikas.
 
 $p$ - gijų skaičius.
+
+$T_p$ - laikas, kurį algoritmas vykdė su $p$ gijomis, kad pasiekti numatytą spragą.
 
 #let points = range(0, x_speedups.threads.len()).map(i => { (x_speedups.threads.at(i), x_speedups.average.at(i)) })
 
@@ -211,7 +216,7 @@ $p$ - gijų skaičius.
     content-style[#viewbox(plot_average_speedup(x_speedups), height: 60%)]
   ) <gap_over_time_plot>],
   [#figure(
-    caption: [Vidutinis ir tikrasis pagreitėjimas, (Uchoa 2017 X-n rinkinys)],
+    caption: [Vidutinis ir tikrasis efektyvumas, (Uchoa 2017 X-n rinkinys)],
     content-style[#viewbox(plot_average_efficiency(x_speedups), height: 60%)]
   ) <x-speedup-plot>]
 )

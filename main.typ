@@ -23,7 +23,6 @@
 #import "@preview/cetz-plot:0.1.3": plot, chart
 #import "@preview/i-figured:0.2.4"
 
-#set text(lang: "LT")
 #show: style.with(
   university: "Vilniaus universitetas",
   faculty: "Matematikos ir informatikos fakultetas",
@@ -389,7 +388,7 @@ Lygiagreti algoritmo versija rodo mažesnę spragą ne tik vykdymo pabaigoje, be
 
 Lygiagretinimo teorinį pagreitinimą galima įvertinti Amdahlo dėsniu, kuris susieja nuoseklią algoritmo dalį su maksimaliu greitėjimu. Jei algoritmo nuosekli dalis užima $1 - f$ laiko dalį, o likusi $f$ dalis gali būti vykdoma lygiagrečiai, teorinis greitėjimas $S_p^A$ su $p$ gijų aprašomas:
 
-$ S_p = 1 / ((1 - f) + f / p) $
+$ S_p = 1 / ((1 - f) + f / p) $ <math_speedup>
 
 Taip pat lygiagrečią programą galima įvertinti efektyvumu. Jis parodo, kuri dalis visų procesorių atlieka naudingą darbą, t. y. kaip efektyviai išnaudojami turimi resursai. Efektyvumas apibrėžiamas kaip pagreitėjimo ir gijų skaičiaus santykis:
 

@@ -1,6 +1,6 @@
 #let content-style(body) = {
   set text(lang: "LT", font: "Palemonas", weight: "regular")
-  
+
   show figure.caption: it => {
     let num = it.counter.display(it.numbering)
     let label = if it.kind == table { "lentelė." } else { "pav." }
@@ -9,7 +9,7 @@
 
   show figure.where(kind: table): set figure.caption(position: top)
   set math.equation(numbering: "(1)")
-  
+
   body
 }
 
