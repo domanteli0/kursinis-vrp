@@ -47,7 +47,7 @@
 // #set text(font: "Computer Modern")
 
 #show: metropolis-theme.with(
-  ratio: aspect-ratio,
+  ratio: "4-3",
   footer: self => self.info.institution,
   config-info(
     title: [Hibridinio genetinio paieškos algoritmo transporto maršrutų optimizavimo uždaviniams spręsti lygiagretinimas],
@@ -163,8 +163,9 @@
 
 == Metodika
 
-- Matuojami rezultatai po 1%, 2%, 5%, 10%, 15%, 20%, 30%, 50%, 75% ir 100% vykdymo laiko. // SPEAK: kad būtų galima palyginti tarp duomenų rinkinių.
-- Laiko limitas priklauso nuo duomenų kiekio, $T_"max" = n dot 24/100$; $T_"max"$ - laiko limitas, $n$ - klientų skaičius.
+- Naudotas "X" duomenų rinkinys @uchoa2017
+- Laiko limitas priklauso nuo duomenų kiekio, $T_"max" = n dot 24/100$; $T_"max"$ - laiko limitas, $n$ - klientų skaičius. @uchoa2017, @vidal2022Hybrid
+  - Matuojami rezultatai po 1%, 2%, 5%, 10%, 15%, 20%, 30%, 50%, 75% ir 100% vykdymo laiko. // SPEAK: kad būtų galima palyginti tarp duomenų rinkinių.
 
 == Sprendinių kaina
 
@@ -212,14 +213,21 @@ $T_p$ - laikas, kurį algoritmas vykdė su $p$ gijomis, kad pasiekti numatytą s
   columns: 2,
   gutter: 2em,
   [#figure(
-    caption: [Vidutinė sprendinių spraga pagal gijų skaičių per vykdymo laiką (Uchoa 2017 X-n rinkinys)],
+    caption: [Vidutinė sprendinių spraga pagal gijų skaičių per vykdymo laiką ("X" rinkinys)],
     content-style[#viewbox(plot_average_speedup(x_speedups), height: 60%)]
   ) <gap_over_time_plot>],
   [#figure(
-    caption: [Vidutinis ir tikrasis efektyvumas, (Uchoa 2017 X-n rinkinys)],
+    caption: [Vidutinis ir tikrasis efektyvumas, ("X" rinkinys)],
     content-style[#viewbox(plot_average_efficiency(x_speedups), height: 60%)]
   ) <x-speedup-plot>]
 )
+
+== Rezultatai
+
+1. Parinktas duomenų rinkinys (Uchoa, 2017, "X-n" rinkinys)
+2. Atlikta HGS algoritmo veikimo analizė ir aprašyta HGS specifika.
+3. Įgyvendintas vietinės paieškos lygiagretinimas ir aprašyta lygiagretinimo specifika.
+4. Pateiktas rezultatų palyginimas.
 
 == Išvados
 
