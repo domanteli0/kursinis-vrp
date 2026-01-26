@@ -23,6 +23,7 @@
 #import "@preview/cetz-plot:0.1.3": plot, chart
 #import "@preview/i-figured:0.2.4"
 
+#set text(lang: "LT")
 #show: style.with(
   university: "Vilniaus universitetas",
   faculty: "Matematikos ir informatikos fakultetas",

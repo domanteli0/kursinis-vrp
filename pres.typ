@@ -1,7 +1,8 @@
 #import "@preview/touying:0.6.1": *
-#import themes.simple: *
+#import themes.metropolis: *
+#import "@preview/numbly:0.1.0": numbly
+#import "@preview/lovelace:0.3.0": *
 
-// Imports from main.typ to reuse data and diagrams
 #import "utils.typ": *
 #import "data.typ": *
 #import "data_gap.typ": gap_data
@@ -27,6 +28,8 @@
 #let aspect-ratio = sys.inputs.at("aspect", default: "4-3")
 
 #let viewbox(content, height: 100%) = layout(size => {
+  set text(lang: "LT", font: "Palemonas", weight: "regular")
+
   let content-at-12pt = text(size: 12pt, weight: "regular", stroke: none, content)
   context {
     let dim = measure(content-at-12pt)
@@ -41,40 +44,47 @@
   }
 })
 
-#show: simple-theme.with(
-  aspect-ratio: aspect-ratio,
-  footer: [HGS-CVRP Lygiagretinimas],
+// #set text(font: "Computer Modern")
+
+#show: metropolis-theme.with(
+  ratio: aspect-ratio,
+  footer: self => self.info.institution,
+  config-info(
+    title: [Hibridinio genetinio paieškos algoritmo transporto maršrutų optimizavimo uždaviniams spręsti lygiagretinimas],
+    subtitle: [Parallelization of Hybrid Genetic Search Algorithm for Solving Vehicle Routing Problem],
+    author: [Domantas Keturakis \ Doc., Dr. Algirdas Lančinskas],
+    date: datetime.today(),
+    institution: [VU MIF],
+  ),
+  config-colors(
+    primary: rgb("#000000"),
+    primary-light: rgb("#d6c6b7"),
+    secondary: rgb("#3333b2"),
+    // neutral-lightest: rgb("#fafafa"),
+    // neutral-dark: rgb("#3333b2"),
+    // neutral-darkest: rgb("#3333b2"),
+  ),
   config-common: (handout: handout),
 )
+#set text(lang: "LT")
+
+#title-slide()
 
 #set text(weight: "regular")
 
-#title-slide[
-  = Hibridinio genetinio paieškos algoritmo transporto maršrutų optimizavimo uždaviniams spręsti lygiagretinimas
+== Transporto maršrutų optimizavimas (VRP)
 
-  *Domantas Keturakis*
+*:* Surasti optimalų maršrutų rinkinį transporto priemonėms, aplankant visus klientus.
 
-  Vadovas: Doc., Dr. Algirdas Lančinskas
+*CVRP (Capacitated VRP):*
+- Ribota transporto priemonių talpa ($Q$).
+- Tikslas: Minimizuoti bendrą atstumą (kainą).
 
-  Vilniaus universitetas, MIF
-]
+*Svarba:*
+- Realaus pasaulio logistikos optimizavimas.
+- $"NP"$-hard uždavinys $\to$ Metaheuristikos (pvz., HGS) yra efektyviausios.
 
-#slide[
-  ==Įvadas: Transporto maršrutų optimizavimas (VRP)
-
-  *Tikslas:* Surasti optimalų maršrutų rinkinį transporto priemonėms, aplankant visus klientus.
-
-  *CVRP (Capacitated VRP):*
-  - Ribota transporto priemonių talpa ($Q$).
-  - Tikslas: Minimizuoti bendrą atstumą (kainą).
-
-  *Svarba:*
-  - Realaus pasaulio logistikos optimizavimas.
-  - $"NP"$-hard uždavinys $\to$ Metaheuristikos (pvz., HGS) yra efektyviausios.
-]
-
-#slide[
-  == Hibridinis genetinis paieškos algoritmas (HGS)
+== Hibridinis genetinis paieškos algoritmas (HGS)
 
   *HGS komponentai:*
   1.  *Populiacija:* Įvykdomi (Feasible) ir neįvykdomi (Infeasible) sprendiniai.
@@ -83,11 +93,12 @@
   4.  *Populiacijos valdymas:* Įvairovės palaikymas ir blogiausių šalinimas.
 
   #align(center)[
-     #content-style[#viewbox(hgs_flowchart, height: 60%)]
+    #figure(
+      caption: [HGS veikimas @vidal2022Hybrid],
+      content-style[#viewbox(hgs_flowchart, height: 60%)]
+    ) <hgs_flowchart>
   ]
-]
 
-#slide[
   == Literatūros analizė
 
   *Egzistuojantys sprendimai:*
@@ -99,9 +110,7 @@
   - Daugelis metodų aukoja *Swap\** kaimynystę, kuri yra kritinė HGS kokybei.
 
   *Pasirinkta kryptis:* Lygiagreti vietinė paieška (CPU) išlaikant visus HGS operatorius.
-]
 
-#slide[
   == Darbo tikslas ir uždaviniai
 
   *Tikslas:* Išlygiagretinti HGS-CVRP algoritmą, siekiant sumažinti vykdymo laiką neprarandant sprendinių kokybės.
@@ -110,25 +119,32 @@
   1.  Išanalizuoti HGS veikimą (Vietinė paieška – 86% laiko).
   2.  Atrinkti ir realizuoti lygiagretinimo strategiją (OpenMP).
   3.  Palyginti su nuoseklia versija naudojant standartinius duomenis (Uchoa 2017).
-]
 
-#slide[
   == Lygiagretinimo strategija
 
-  *Daugiagijis apdorojimas (OpenMP):*
-  - Nuosekli tėvų atranka ir kryžminimas.
-  - *Lygiagreti vietinė paieška:* Kiekviena gija apdoroja atskirą palikuonį.
-  - Sinchronizacija prieš populiacijos atnaujinimą.
+  #figure(
+    caption: [Dalis lygiagretinto HGS-CVRP pseudokodas (grįstas pagal @vidal2012A_Hybr)],
+    pseudocode-list(booktabs: true)[
+    + Pasirinkti $2N$#footnote[N – gijų skaičius] tėvinius individus (dvejetainis turnyras, angl. _binary tournament_)
+    + Atlikti kryžminimą (angl. _crossover_)
+    + *Kiekvienoje gijoje*:
+      + Išmokyti naują individą (vietinė paieška)
+      + *Jeigu* individas neįvykdomas:
+        + Su 50 % tikimybe bandyti sutaisyti individą
+    +Įterpti išmokytus individus į atitinkamas subpopuliacijas
+    + *Jeigu* pasiektas maksimalus populiacijos dydis
+      + Pašalinti blogiausius ir neįvairius individus iš populiacijos
+    + Patikslinti baudos parametrus (angl. _penalty parameters_)
+    ]
+  ) <algo_parallel>
 
   #align(center)[
-    #content-style[#viewbox(parallel_hgs_memory, height: 75%)]
+    #scale(20%, reflow: true, image("img/parallel_memory.png"))
   ]
-]
 
 #let x_gap_result = gap_data(instances: x_vrp_instances)
 #let x_speedups = calculate_all_speedups(x_vrp_instances)
 
-#slide[
   == Rezultatai: Sprendinių kokybė (Gap)
 
   Lygiagreti versija (spalvotos linijos) pasiekia geresnius rezultatus (mažesnę spragą) greičiau nei nuosekli (juoda linija).
@@ -136,9 +152,7 @@
   #align(center)[
     #content-style[#viewbox(gap_threads_plot_from(x_gap_result), height: 70%)]
   ]
-]
 
-#slide[
   == Rezultatai: Pagreitėjimas (Speedup)
 
   #let points = range(0, x_speedups.threads.len()).map(i => { (x_speedups.threads.at(i), x_speedups.average.at(i)) })
@@ -152,9 +166,7 @@
   #align(center)[
     #content-style[#viewbox(plot_average_speedup(x_speedups), height: 60%)]
   ]
-]
 
-#slide[
   == Rezultatai: Efektyvumas
 
   Efektyvumas mažėja didėjant gijų skaičiui. Tai lemia Amdahlo dėsnis (nuoseklios dalys: populiacijos valdymas, kryžminimas) ir sinchronizacijos laukimas.
@@ -162,13 +174,14 @@
   #align(center)[
     #content-style[#viewbox(plot_average_efficiency(x_speedups), height: 60%)]
   ]
-]
 
-#slide[
   == Išvados
 
   1.  *Sėkmingas realizavimas:* HGS-CVRP sėkmingai išlygiagretintas naudojant OpenMP, išlaikant sudėtingą *Swap\** kaimynystę.
   2.  *Kokybės pagerėjimas:* Lygiagreti versija randa geresnius sprendinius per tą patį laiką.
   3.  *Našumas:* Pasiektas ~5.5x pagreitėjimas su 16 gijų.
   4.  *Ribojimai:* Pagreitėjimą riboja nuoseklios algoritmo dalys (Amdahlo dėsnis).
-]
+
+  == Šaltiniai
+
+  #bibliography(title: none, "bibliography.bib")
