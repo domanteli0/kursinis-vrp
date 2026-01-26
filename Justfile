@@ -1,10 +1,10 @@
 present-4-3:
-    typst compile pres.typ pres_4-3.pdf
+    typst compile pres.typ --input aspect=4-3 pres_4-3.pdf
 
 handout:
-    typst compile pres.typ --input handout=true .build/pres_still_4-3.pdf
+    typst compile pres.typ --input aspect=4-3 --input handout=true .build/pres_still_4-3.pdf
     pdfjam \
-      --nup 2x3 \
+      --nup 2x4 \
       --frame true \
       --scale 0.95 \
       --delta "8pt 10pt" \

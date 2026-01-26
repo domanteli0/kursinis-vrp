@@ -147,6 +147,7 @@
     y-min: 0,
     y-max: 1.5,
     y-label: [Vidutinis efektyvumas],
+    y-ticks: (0, 0.2, 0.4, 0.6, 0.8, 1.0, 1.2, 1.4),
     y-tick-step: none,
     y-grid: "major",
     y-format: format_2,
