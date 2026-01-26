@@ -89,6 +89,16 @@
 
 Hydridinis genetinis paieškos algoritmas (HGS) yra vienas
 
+== Darbo tikslas ir uždaviniai
+
+*Tikslas:* Išlygiagretinti HGS-CVRP algoritmą, siekiant sumažinti vykdymo laiką neprarandant sprendinių kokybės.
+
+*Uždaviniai:*
+1. Išsirinkti duomenų rinkinį, pagal kurį galima būtų testuoti ir analizuoti sprendinius.
+2. Išanalizuoti, kaip veikia HGS algoritmas.
+3. Atrinkti lygiagretinamas dalis, kurias galima pakeisti lygiagrečiomis.
+4. Palyginti rezultatus su literatūroje aprašytais pažangiausiais algoritmais.
+
 == Hibridinis genetinis paieškos algoritmas (HGS)
 
   *HGS komponentai:*
@@ -97,21 +107,13 @@ Hydridinis genetinis paieškos algoritmas (HGS) yra vienas
   3.  *Vietinė paieška (Local Search):* Intensyvus gerinimas (*Swap\**, *Relocate*, *2-opt*).
   4.  *Populiacijos valdymas:* Įvairovės palaikymas ir blogiausių šalinimas.
 
-  #align(center)[
-    #figure(
-      caption: [HGS veikimas @vidal2022Hybrid],
-      content-style[#viewbox(hgs_flowchart, height: 60%)]
-    ) <hgs_flowchart>
-  ]
+#align(center)[
+  #figure(
+    caption: [HGS veikimas @vidal2022Hybrid],
+    content-style[#viewbox(hgs_flowchart, height: 60%)]
+  ) <hgs_flowchart>
+]
 
-== Darbo tikslas ir uždaviniai
-
-*Tikslas:* Išlygiagretinti HGS-CVRP algoritmą, siekiant sumažinti vykdymo laiką neprarandant sprendinių kokybės.
-
-*Uždaviniai:*
-1.  Išanalizuoti HGS veikimą (Vietinė paieška – 86% laiko).
-2.  Atrinkti ir realizuoti lygiagretinimo strategiją (OpenMP).
-3.  Palyginti su nuoseklia versija naudojant standartinius duomenis (Uchoa 2017).
 
 == Vietinė paieška
 
@@ -216,10 +218,8 @@ $p$ - gijų skaičius.
 
 == Išvados
 
-1.  *Sėkmingas realizavimas:* HGS-CVRP sėkmingai išlygiagretintas naudojant OpenMP, išlaikant sudėtingą *Swap\** kaimynystę.
-2.  *Kokybės pagerėjimas:* Lygiagreti versija randa geresnius sprendinius per tą patį laiką.
-3.  *Našumas:* Pasiektas ~5.5x pagreitėjimas su 16 gijų.
-4.  *Ribojimai:* Pagreitėjimą riboja nuoseklios algoritmo dalys (Amdahlo dėsnis).
+1. Lygiagreti vietinė paieška HGS-CVRP algoritme pagerina sprendinių kokybę per tą patį laiko tarpą.
+2. Įmanoma lygiagretinti hibridinį genetinį paieškos algoritmą, kuris naudoja _swap\*_ kaimynystę, užtikrinant mažesnį vykdymo laiką.
 
 == Šaltiniai
 
