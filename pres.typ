@@ -183,7 +183,7 @@ $
   Z_"BKS" &= #[Geriausio sprendinio kaina]
 $ <math_gap>
 
-== Rezultatai: Sprendinių kokybė
+== Sprendinių kokybė
 
 #let x_gap_result = gap_data(instances: x_vrp_instances)
 #let x_speedups = calculate_all_speedups(x_vrp_instances)
@@ -192,7 +192,7 @@ $ <math_gap>
   #content-style[#viewbox(gap_threads_plot_from(x_gap_result), height: 70%)]
 ]
 
-== Rezultatai: Pagreitėjimas ir efektyvumas
+== Pagreitėjimas ir efektyvumas
 // NOTE: kadangi HGS gali veikti nustatutą
 
 *Teorinis pagreitėjimas:* $S^A_p = 1 / ((1 - f) + f / p) $, *faktinis pagreitėjimas:* $S_p = T_p / T_1 $,
@@ -222,14 +222,16 @@ $T_p$ - laikas, kurį algoritmas vykdė su $p$ gijomis, kad pasiekti numatytą s
   ) <x-speedup-plot>]
 )
 
-== Rezultatai
+== Rezultatai ir išvados
+
+=== Rezultatai
 
 1. Parinktas duomenų rinkinys (Uchoa, 2017, "X-n" rinkinys)
 2. Atlikta HGS algoritmo veikimo analizė ir aprašyta HGS specifika.
 3. Įgyvendintas vietinės paieškos lygiagretinimas ir aprašyta lygiagretinimo specifika.
 4. Pateiktas rezultatų palyginimas.
 
-== Išvados
+=== Išvados
 
 1. Lygiagreti vietinė paieška HGS-CVRP algoritme pagerina sprendinių kokybę per tą patį laiko tarpą.
 2. Įmanoma lygiagretinti hibridinį genetinį paieškos algoritmą, kuris naudoja _swap\*_ kaimynystę, užtikrinant mažesnį vykdymo laiką.
