@@ -1,246 +1,170 @@
-#import "@preview/fletcher:0.5.8" as f: diagram, node, edge
-#import f.shapes: diamond
+#import "@preview/cetz:0.4.2": canvas, draw
+#import draw: rect, line, content, polygon
 #set text(font: "palemonas")
 
-#let box(
-  pos,
-  label,
-  name: none,
-  fill: white,
-  width: 26mm,
-  height: 14mm,
-  radius: 4pt,
-  stroke: 1pt + black,
-  ..args,
-) = node(
-  pos,
-  align(center, label),
-  name: name,
-  fill: fill,
-  stroke: stroke,
-  width: width,
-  height: height,
-  corner-radius: radius,
-  ..args,
-)
+#let island_model = canvas({
+  let gx = 30mm
+  let gy = 12mm
 
-#let label_node(pos, label) = node(
-  pos,
-  label,
-  stroke: none,
-  fill: none,
-  inset: 0pt,
-)
+  let coord(x, y) = (x * gx, -y * gy)
 
-#let island_model = diagram(
-  spacing: 8pt,
-  cell-size: (10mm, 10mm),
-  edge-stroke: 1pt,
-  edge-corner-radius: 4pt,
-  mark-scale: 70%,
-  {
-    let hgs_fill = rgb("#f6e7d5")
-    let mig_fill = rgb("#dff2d6")
-    let init_fill = rgb("#d9e7ff")
-    let exchange_fill = rgb("#cdf5c7")
-    let stop_fill = rgb("#f6c5c5")
-    let output_fill = rgb("#d8d5f3")
-
-    let x1 = 0
-    let x2 = 1
-    let x3 = 2
-    let x4 = 3
-    let x_center = 1.5
-
-    node(
-      [],
-      name: <island1>,
-      enclose: (<hgs1>, <stop1>),
-      stroke: 1pt + red,
-      fill: none,
-      corner-radius: 6pt,
-      inset: 6pt,
+  let box(center, size, label, name: none, fill: white, stroke: 1pt + black, radius: 4pt) = {
+    let (w, h) = size
+    let (x, y) = center
+    rect(
+      (x - w / 2, y - h / 2),
+      (x + w / 2, y + h / 2),
+      name: name,
+      fill: fill,
+      stroke: stroke,
+      radius: radius,
     )
-    node(
-      [],
-      name: <island2>,
-      enclose: (<hgs2>, <stop2>),
-      stroke: 1pt + red,
-      fill: none,
-      corner-radius: 6pt,
-      inset: 6pt,
-    )
-    node(
-      [],
-      name: <island3>,
-      enclose: (<hgs3>, <stop3>),
-      stroke: 1pt + red,
-      fill: none,
-      corner-radius: 6pt,
-      inset: 6pt,
-    )
-    node(
-      [],
-      name: <island4>,
-      enclose: (<hgs4>, <stop4>),
-      stroke: 1pt + red,
-      fill: none,
-      corner-radius: 6pt,
-      inset: 6pt,
-    )
-
-    box(
-      (x_center, 0),
-      text(size: 14pt)[Inicializuoti salų\ parametrus],
-      name: <init>,
-      fill: init_fill,
-      width: 52mm,
-      height: 16mm,
-    )
-
-    label_node((x1, 1), [Sala 1])
-    label_node((x2, 1), [Sala 2])
-    label_node((x3, 1), [Sala n-1])
-    label_node((x4, 1), [Sala n])
-
-    box((x1, 2), [HGS], name: <hgs1>, fill: hgs_fill)
-    box((x2, 2), [HGS], name: <hgs2>, fill: hgs_fill)
-    box((x3, 2), [HGS], name: <hgs3>, fill: hgs_fill)
-    box((x4, 2), [HGS], name: <hgs4>, fill: hgs_fill)
-
-    box(
-      (x1, 4),
-      [Migracijos\ valdiklis],
-      name: <mig1>,
-      fill: mig_fill,
-      width: 32mm,
-      height: 18mm,
-    )
-    edge((<exchange.east>, 93.5%, <exchange.west>), "->")
-
-    box(
-      (x2, 4),
-      [Migracijos\ valdiklis],
-      name: <mig2>,
-      fill: mig_fill,
-      width: 32mm,
-      height: 18mm,
-    )
-    edge((<exchange.east>, 64.7%, <exchange.west>), "->")
-
-    box(
-      (x3, 4),
-      [Migracijos\ valdiklis],
-      name: <mig3>,
-      fill: mig_fill,
-      width: 32mm,
-      height: 18mm,
-    )
-    edge((<exchange.east>, 35.3%, <exchange.west>), "->")
-
-    box(
-      (x4, 4),
-      [Migracijos\ valdiklis],
-      name: <mig4>,
-      fill: mig_fill,
-      width: 32mm,
-      height: 18mm,
-    )
-    edge((<exchange.east>, 6.15%, <exchange.west>), "->")
-
-    node(
-      (x1, 8),
-      align(center, text(size: 9pt)[Vykdymas\ baigtas?]),
-      name: <stop1>,
-      shape: diamond,
-      fill: stop_fill,
-      stroke: 1pt + black,
-      width: 18mm,
-      height: 18mm,
-    )
-    node(
-      (x2, 8),
-      align(center, text(size: 9pt)[Vykdymas\ baigtas?]),
-      name: <stop2>,
-      shape: diamond,
-      fill: stop_fill,
-      stroke: 1pt + black,
-      width: 18mm,
-      height: 18mm,
-    )
-    node(
-      (x3, 8),
-      align(center, text(size: 9pt)[Vykdymas\ baigtas?]),
-      name: <stop3>,
-      shape: diamond,
-      fill: stop_fill,
-      stroke: 1pt + black,
-      width: 18mm,
-      height: 18mm,
-    )
-    node(
-      (x4, 8),
-      align(center, text(size: 9pt)[Vykdymas\ baigtas?]),
-      name: <stop4>,
-      shape: diamond,
-      fill: stop_fill,
-      stroke: 1pt + black,
-      width: 18mm,
-      height: 18mm,
-    )
-
-    node(
-      [Surinkti geriausius sprendinius ir\ grąžinti geriausią],
-      name: <output>,
-      enclose: ((x1 - 1, 10), (x4 + 1, 10)),
-      fill: output_fill,
-      stroke: 1pt + black,
-      corner-radius: 4pt,
-      inset: 4pt,
-      layer: 1,
-    )
-
-    edge(<init>, <hgs1>, "->")
-    edge(<init>, <hgs2>, "->")
-    edge(<init>, <hgs3>, "->")
-    edge(<init>, <hgs4>, "->")
-
-    // edge(<mig1>, <exchange>, "->")
-    // edge(<mig2>, <exchange>, "->")
-    // edge(<mig3>, <exchange>, "->")
-    // edge(<mig4>, <exchange>, "->")
-
-    // edge(<exchange>, <stop1>, "->")
-    // edge(<exchange>, <stop2>, "->")
-    // edge(<exchange>, <stop3>, "->")
-    // edge(<exchange>, <stop4>, "->")
-
-    edge(<stop1>, (rel: (0.5, 0)), "dd", "->", label: [Taip], label-pos: 0.65, label-side: right)
-    edge(<stop2>, (rel: (0.5, 0)), "dd", "->", label: [Taip], label-pos: 0.65, label-side: right)
-    edge(<stop3>, (rel: (0.5, 0)), "dd", "->", label: [Taip], label-pos: 0.65, label-side: right)
-    edge(<stop4>, (rel: (0.75, 0)), "dd", "->", label: [Taip], label-pos: 0.65, label-side: right)
-
-    edge(<stop1>, (rel: (-0.7, 0)),  "uuuuuu", <hgs1>, "-->", label: [Ne], label-pos: -0.3, label-sep: 1em, label-side: right)
-    edge(<stop2>, (rel: (-0.47, 0)), "uuuuuu", <hgs2>, "-->", label: [Ne], label-pos: -0.4, label-sep: 1em, label-side: right)
-    edge(<stop3>, (rel: (-0.47, 0)),  "uuuuuu", <hgs3>, "-->", label: [Ne], label-pos: -0.5, label-sep: 1em, label-side: right)
-    edge(<stop4>, (rel: (-0.45, 0)), "uuuuuu", <hgs4>, "-->", label: [Ne], label-pos: -0.6, label-sep: 1em, label-side: right)
-
-    node(
-      [Sprendinių apsikeitimas tarp salų \ pagal migracijos planą],
-      name: <exchange>,
-      enclose: ((x1 - 0.25, 6), (x4 + 0.25, 6)),
-      stroke: (paint: green.darken(20%), thickness: 1pt, dash: (2pt, 2pt)),
-      fill: exchange_fill,
-      corner-radius: 4pt,
-      inset: 4pt,
-      layer: 1,
-    )
-
-    edge((<exchange.east>, 6.5%, <exchange.west>), "dd", "->")
-    edge((<exchange.east>, 35.3%, <exchange.west>), "dd", "->")
-    edge((<exchange.east>, 64.7%, <exchange.west>), "dd", "->")
-    edge((<exchange.east>, 93.5%, <exchange.west>), "dd", "->")
+    content((x, y), label, anchor: "center")
   }
-)
+
+  let arrow(a, b, dashed: false) = {
+    let stroke_style = if dashed { (thickness: 1pt, dash: (2pt, 2pt)) } else { (thickness: 1pt) }
+    line(a, b, stroke: stroke_style, mark: (end: "stealth", scale: 0.8))
+  }
+
+  let hgs_fill = rgb("#f6e7d5")
+  let mig_fill = rgb("#dff2d6")
+  let init_fill = rgb("#d9e7ff")
+  let exchange_fill = rgb("#cdf5c7")
+  let stop_fill = rgb("#f6c5c5")
+  let output_fill = rgb("#d8d5f3")
+
+  let x1 = 0
+  let x2 = 1
+  let x3 = 2
+  let x4 = 3
+  let x_center = 1.5
+
+  let init = coord(x_center, 0)
+  box(
+    init,
+    (60mm, 18mm),
+    text(size: 14pt)[Inicializuoti salų\ parametrus],
+    name: "init",
+    fill: init_fill,
+  )
+
+  let label_y = 1
+  content(coord(x1, label_y), [Sala 1])
+  content(coord(x2, label_y), [Sala 2])
+  content(coord(x3, label_y), [Sala n-1])
+  content(coord(x4, label_y), [Sala n])
+
+  let hgs_y = 2
+  box(coord(x1, hgs_y), (26mm, 14mm), [HGS], name: "hgs1", fill: hgs_fill)
+  box(coord(x2, hgs_y), (26mm, 14mm), [HGS], name: "hgs2", fill: hgs_fill)
+  box(coord(x3, hgs_y), (26mm, 14mm), [HGS], name: "hgs3", fill: hgs_fill)
+  box(coord(x4, hgs_y), (26mm, 14mm), [HGS], name: "hgs4", fill: hgs_fill)
+
+  let mig_y = 4
+  box(coord(x1, mig_y), (32mm, 18mm), [Migracijos\ valdiklis], name: "mig1", fill: mig_fill)
+  box(coord(x2, mig_y), (32mm, 18mm), [Migracijos\ valdiklis], name: "mig2", fill: mig_fill)
+  box(coord(x3, mig_y), (32mm, 18mm), [Migracijos\ valdiklis], name: "mig3", fill: mig_fill)
+  box(coord(x4, mig_y), (32mm, 18mm), [Migracijos\ valdiklis], name: "mig4", fill: mig_fill)
+
+  let exch_y = 6
+  let exch_center = coord(x_center, exch_y)
+  let exch_size = (120mm, 18mm)
+  box(
+    exch_center,
+    exch_size,
+    [Sprendinių apsikeitimas tarp salų \ pagal migracijos planą],
+    name: "exchange",
+    fill: exchange_fill,
+    stroke: (paint: green.darken(20%), thickness: 1pt, dash: (2pt, 2pt)),
+  )
+
+  let stop_y = 8
+  let stop_radius = 9mm
+  polygon(coord(x1, stop_y), 4, angle: 45deg, radius: stop_radius, name: "stop1", fill: stop_fill, stroke: 1pt + black)
+  polygon(coord(x2, stop_y), 4, angle: 45deg, radius: stop_radius, name: "stop2", fill: stop_fill, stroke: 1pt + black)
+  polygon(coord(x3, stop_y), 4, angle: 45deg, radius: stop_radius, name: "stop3", fill: stop_fill, stroke: 1pt + black)
+  polygon(coord(x4, stop_y), 4, angle: 45deg, radius: stop_radius, name: "stop4", fill: stop_fill, stroke: 1pt + black)
+
+  content(coord(x1, stop_y), text(size: 9pt)[Vykdymas\ baigtas?])
+  content(coord(x2, stop_y), text(size: 9pt)[Vykdymas\ baigtas?])
+  content(coord(x3, stop_y), text(size: 9pt)[Vykdymas\ baigtas?])
+  content(coord(x4, stop_y), text(size: 9pt)[Vykdymas\ baigtas?])
+
+  let output_center = coord(x_center, 10)
+  box(
+    output_center,
+    (140mm, 18mm),
+    [Surinkti geriausius sprendinius ir\ grąžinti geriausią],
+    name: "output",
+    fill: output_fill,
+  )
+
+  // Enclosures for each island
+  let pad = 6mm
+  let hgs_box_h = 14mm
+  let stop_box_h = stop_radius * 2
+  for x in (x1, x2, x3, x4) {
+    let (cx, hgs_y_pos) = coord(x, hgs_y)
+    let (_, stop_y_pos) = coord(x, stop_y)
+    let top = hgs_y_pos + hgs_box_h / 2 + pad
+    let bottom = stop_y_pos - stop_box_h / 2 - pad
+    let left = cx - 20mm
+    let right = cx + 20mm
+    rect((left, bottom), (right, top), stroke: 1pt + red, fill: none, radius: 6pt)
+  }
+
+  // Flow arrows
+  arrow("init", "hgs1")
+  arrow("init", "hgs2")
+  arrow("init", "hgs3")
+  arrow("init", "hgs4")
+
+  arrow("hgs1", "mig1")
+  arrow("hgs2", "mig2")
+  arrow("hgs3", "mig3")
+  arrow("hgs4", "mig4")
+
+  arrow("mig1", "exchange")
+  arrow("mig2", "exchange")
+  arrow("mig3", "exchange")
+  arrow("mig4", "exchange")
+
+  arrow("exchange", "stop1")
+  arrow("exchange", "stop2")
+  arrow("exchange", "stop3")
+  arrow("exchange", "stop4")
+
+  arrow("stop1", "output")
+  arrow("stop2", "output")
+  arrow("stop3", "output")
+  arrow("stop4", "output")
+
+  // No branch back to HGS
+  let (stop1_x, stop1_y) = coord(x1, stop_y)
+  let (stop2_x, stop2_y) = coord(x2, stop_y)
+  let (stop3_x, stop3_y) = coord(x3, stop_y)
+  let (stop4_x, stop4_y) = coord(x4, stop_y)
+
+  let (_, hgs1_y) = coord(x1, hgs_y)
+  let (_, hgs2_y) = coord(x2, hgs_y)
+  let (_, hgs3_y) = coord(x3, hgs_y)
+  let (_, hgs4_y) = coord(x4, hgs_y)
+
+  arrow((stop1_x - 14mm, stop1_y), (stop1_x - 14mm, hgs1_y + 6mm), dashed: true)
+  arrow((stop2_x - 12mm, stop2_y), (stop2_x - 12mm, hgs2_y + 6mm), dashed: true)
+  arrow((stop3_x - 12mm, stop3_y), (stop3_x - 12mm, hgs3_y + 6mm), dashed: true)
+  arrow((stop4_x - 12mm, stop4_y), (stop4_x - 12mm, hgs4_y + 6mm), dashed: true)
+
+  content((stop1_x + 8mm, stop1_y - 6mm), text(size: 8pt)[Taip], anchor: "south")
+  content((stop2_x + 8mm, stop2_y - 6mm), text(size: 8pt)[Taip], anchor: "south")
+  content((stop3_x + 8mm, stop3_y - 6mm), text(size: 8pt)[Taip], anchor: "south")
+  content((stop4_x + 8mm, stop4_y - 6mm), text(size: 8pt)[Taip], anchor: "south")
+
+  content((stop1_x - 18mm, stop1_y + 6mm), text(size: 8pt)[Ne], anchor: "north")
+  content((stop2_x - 16mm, stop2_y + 6mm), text(size: 8pt)[Ne], anchor: "north")
+  content((stop3_x - 16mm, stop3_y + 6mm), text(size: 8pt)[Ne], anchor: "north")
+  content((stop4_x - 16mm, stop4_y + 6mm), text(size: 8pt)[Ne], anchor: "north")
+})
 
 #island_model

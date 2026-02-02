@@ -7,14 +7,14 @@
 #import "tables/table_params.typ": table_experiment_params
 #import "tables/table_gap.typ": *
 #import "tables/speedup.typ": *
-#import "diagrams/speedup.typ": *
-#import "diagrams/gap_threads.typ": gap_speedup_plot_from, gap_threads_plot_from, amdahl_speedup_plot
+#import "plots/speedup.typ": *
+#import "plots/gap_threads.typ": gap_speedup_plot_from, gap_threads_plot_from, amdahl_speedup_plot
 // #import "tables/table_parallel_compare.typ": table_parallel_compare
 #import "diagrams/hgs_flowchart.typ": hgs_flowchart
 #import "diagrams/parallel_hgs_arch.typ": parallel_hgs_diagram
 #import "diagrams/parallel_hgs_memory.typ": parallel_hgs_memory
 #import "diagrams/island_model.typ": island_model
-#import "diagrams/time_target_speedup.typ": speedup_plot_from, efficiency_plot_from
+#import "plots/time_target_speedup.typ": speedup_plot_from, efficiency_plot_from
 #import "diagrams/neiborhoods.typ": neiborhoods
 // #import "diagrams/parallel_hgs_thread_flow.typ": parallel_hgs_thread_flow
 #import "@preview/drafting:0.2.2": *
@@ -173,7 +173,7 @@ Vietinė paieška vykdoma iteratyviai taikant kelias kaimynystes, kol nebelieka 
 
 _Swap\*_ kaimynystėje du klientai iš skirtingų maršrutų išimami ir kiekvienas įterpiamas į bet kurią kito maršruto poziciją; nors galimų judesių labai daug, geriausiam judesiui pakanka tikrinti įterpimą į tą pačią vietą arba į vieną iš trijų geriausių iš anksto įvertintų pozicijų, todėl kaimynystė tiriama efektyviai. Toks apribojimas sumažina vietinės paieškos sudėtingumą nuo kvadratinio iki maždaug tiesinio pagal klientų skaičių, kartu išlaikant pakankamai gerą sprendinių kokybę @vidal2022Hybrid. Jeigu po vietinės paieškos individas yra neįvykdomas, su 50 % tikimybe taikoma taisymo procedūra (pakartotinė vietinė paieška).
 
-#figure(caption: [Įvairių kaimynysčių veikimas])[#neiborhoods]
+#figure(caption: [Įvairių kaimynysčių veikimas], scale(125%, reflow: true, neiborhoods))
 
 Jeigu po vietinės paieškos individas yra neįvykdomas, algoritmas jį, su 50 % tikimybe, bando taisyti (t. y. vėl taikyti vietinę paiešką) ir, priklausomai nuo rezultatų, individas yra įterpiamas į atitinkamą subpopuliaciją. Šis mechanizmas taip taupo procesoriaus išteklius bei išlaiko didesnę įvairovę.
 

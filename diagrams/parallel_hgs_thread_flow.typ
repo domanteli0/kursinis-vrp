@@ -1,139 +1,60 @@
-// #import "@preview/fletcher:0.5.8" as f: diagram, node, edge
-// #set text(font: "New Computer Modern")
+#import "@preview/cetz:0.4.2": canvas, draw
+#import draw: rect, line, content
+#set text(font: "palemonas")
 
-// #let stage_box(
-//   pos,
-//   label,
-//   name: none,
-//   width: 30mm,
-//   height: 14mm,
-//   radius: 4pt,
-//   ..args,
-// ) = node(
-//   pos,
-//   align(center, text(size: 9pt)[#label]),
-//   name: name,
-//   fill: white,
-//   stroke: 1pt + black,
-//   width: width,
-//   height: height,
-//   inset: 2pt,
-//   corner-radius: radius,
-//   ..args,
-// )
+#let parallel_hgs_thread_flow = canvas({
+  let left_x = 0mm
+  let mem_x = 90mm
 
-// #let thread_box(
-//   pos,
-//   label,
-//   name: none,
-//   width: 16mm,
-//   height: 6mm,
-//   radius: 3pt,
-//   ..args,
-// ) = node(
-//   pos,
-//   align(center, text(size: 8pt)[#label]),
-//   name: name,
-//   fill: white,
-//   stroke: 1pt + black,
-//   width: width,
-//   height: height,
-//   inset: 1pt,
-//   corner-radius: radius,
-//   ..args,
-// )
+  let box(center, size, label, name: none, fill: white, stroke: 1pt + black, radius: 4pt) = {
+    let (w, h) = size
+    let (x, y) = center
+    rect(
+      (x - w / 2, y - h / 2),
+      (x + w / 2, y + h / 2),
+      name: name,
+      fill: fill,
+      stroke: stroke,
+      radius: radius,
+    )
+    content((x, y), align(center, label))
+  }
 
-// #let memory_item(
-//   pos,
-//   label,
-//   name: none,
-//   width: 38mm,
-//   height: 6mm,
-//   ..args,
-// ) = node(
-//   pos,
-//   align(center, text(size: 8pt)[#label]),
-//   name: name,
-//   fill: white,
-//   stroke: 1pt + black,
-//   width: width,
-//   height: height,
-//   inset: 1pt,
-//   corner-radius: 0pt,
-//   ..args,
-// )
+  let arrow(a, b, dashed: false) = {
+    let stroke_style = if dashed { (thickness: 1pt, dash: (2pt, 2pt)) } else { (thickness: 1pt) }
+    line(a, b, stroke: stroke_style, mark: (end: "stealth", scale: 0.8))
+  }
 
-// #let text_node(pos, label) = node(
-//   pos,
-//   label,
-//   stroke: none,
-//   fill: none,
-//   inset: 0pt,
-// )
+  content((left_x, 10mm), text(size: 9pt, weight: "bold")[Kryžminimas], anchor: "west")
+  box((left_x + 20mm, 0mm), (16mm, 6mm), [Gija 1], name: "cross_t1")
 
-// #let parallel_hgs_thread_flow = diagram(
-//   spacing: 8pt,
-//   cell-size: (10mm, 10mm),
-//   edge-stroke: 1pt,
-//   edge-corner-radius: 4pt,
-//   mark-scale: 70%,
-//   {
-//     let left_x = 0
-//     let mem_x = 3
-//     let mem_y = 3.0
+  content((left_x, -18mm), text(size: 9pt, weight: "bold")[Vietinė paieška], anchor: "west")
+  box((left_x + 20mm, -26mm), (16mm, 6mm), [Gija 1], name: "ls_t1")
+  box((left_x + 20mm, -36mm), (17mm, 6mm), [Gija 2], name: "ls_t2")
+  box((left_x + 20mm, -46mm), (17mm, 6mm), [...], name: "ls_tn")
+  box((left_x + 20mm, -56mm), (17mm, 6mm), [Gija N], name: "ls_tn2")
 
-//     text_node((left_x, 0.5), text(size: 9pt, weight: "bold")[Kryžminimas])
-//     node(
-//       [],
-//       height: 2em,
-//       enclose: ((0, 0), <cross_t1>),
-//       stroke: 1pt + black,
-//       name: <local>,
-//       fill: white,
-//       corner-radius: 0pt,
-//     )
-//     thread_box((left_x, 1), [Gija 1], name: <cross_t1>)
-//     edge("rr", (<cross_t1>, 50%, <mem_off1>), "d,r", "->", label: [sukuria], label-side: right)
+  content((left_x, -74mm), text(size: 9pt, weight: "bold")[Populiacijos\ valdymas], anchor: "west")
+  box((left_x + 20mm, -82mm), (30mm, 14mm), [Populiacijos\ valdymas], name: "pop_mgmt")
+  box((left_x + 20mm, -94mm), (16mm, 6mm), [Gija 1], name: "pm_t1")
 
-//     text_node((left_x, 2.5), text(size: 9pt, weight: "bold")[Vietinė paieška])
-//     node(
-//       [],
-//       enclose: (<ls_t1>, <ls_tn>),
-//       stroke: 1pt + black,
-//       name: <local>,
-//       fill: white,
-//       corner-radius: 0pt,
-//     )
+  content((mem_x, -20mm), text(size: 9pt, weight: "bold")[Atmintis], anchor: "west")
+  rect((mem_x, -90mm), (mem_x + 50mm, -10mm), stroke: 1pt + black, fill: white, name: "memory")
+  box((mem_x + 25mm, -22mm), (38mm, 6mm), [Populiacija], name: "mem_pop", radius: 0pt)
+  box((mem_x + 25mm, -34mm), (38mm, 6mm), [Palikuonis 1], name: "mem_off1", radius: 0pt)
+  box((mem_x + 25mm, -46mm), (38mm, 6mm), [Palikuonis 2], name: "mem_off2", radius: 0pt)
+  content((mem_x + 25mm, -58mm), text(size: 9pt)[...])
+  box((mem_x + 25mm, -70mm), (38mm, 6mm), [Palikuonis N], name: "mem_offn", radius: 0pt)
 
-//     thread_box((left_x, 3), [Gija 1], name: <ls_t1>)
-//     thread_box((left_x, 4), [Gija 2], name: <ls_t2>, width: 17mm)
-//     stage_box((left_x, 5), [...], name: <ls_tn>, width: 17mm)
-//     thread_box((left_x, 6), [Gija N], name: <ls_tn>, width: 17mm)
+  arrow("cross_t1", (mem_x, -34mm))
+  content((mem_x - 8mm, -30mm), text(size: 8pt)[sukuria], anchor: "east")
 
-//     stage_box((left_x, 7), [Populiacijos\ valdymas], name: <pop_mgmt>, height: 14mm)
-//     thread_box((left_x, 8), [Gija 1], name: <pm_t1>)
+  arrow("ls_t1", "mem_off1", dashed: true)
+  arrow("ls_t2", "mem_off2", dashed: true)
+  arrow("ls_tn", "mem_offn", dashed: true)
 
-//     text_node((mem_x, mem_y - 0.5), text(size: 9pt, weight: "bold")[Atmintis])
-//     node(
-//       [],
-//       enclose: (<mem_pop>, <mem_offn>),
-//       stroke: 1pt + black,
-//       name: <memory>,
-//       fill: white,
-//       corner-radius: 0pt,
-//     )
-
-//     memory_item((mem_x, mem_y - 1.4), [Populiacija], name: <mem_pop>)
-//     memory_item((mem_x, mem_y - 0.8), [Palikuonis 1], name: <mem_off1>)
-//     memory_item((mem_x, mem_y - 0.2), [Palikuonis 2], name: <mem_off2>)
-//     text_node((mem_x, mem_y + 0.4), text(size: 9pt)[...])
-//     memory_item((mem_x, mem_y + 1.0), [Palikuonis N], name: <mem_offn>)
-
-//     edge(<ls_t1>, <mem_off1>, "->", "dashed", label: [Modifikuoja], label-side: right)
-//     edge(<ls_t2>, <mem_off2>, "->", "dashed", label: [Modifikuoja], label-side: right)
-//     edge(<ls_tn>, <mem_offn>, "->", "dashed", label: [Modifikuoja], label-side: right)
-//     edge(<pm_t1>, <mem_pop>, "->", label: [prideda Palikuonius 1-N], label-side: right)
-//   }
-// )
+  arrow("pm_t1", "mem_pop")
+  content((mem_x - 8mm, -22mm), text(size: 8pt)[prideda Palikuonius 1-N], anchor: "east")
+})
 
 // #parallel_hgs_thread_flow

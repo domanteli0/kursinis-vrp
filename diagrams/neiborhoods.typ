@@ -1,163 +1,257 @@
-#import "@preview/fletcher:0.5.8" as f: diagram, node, edge
+#import "@preview/cetz:0.4.2": canvas, draw
+#import draw: line, content, circle
 
 /// --- Styling (nodes a bit smaller) ---
-#let V(pos, lab) = f.node(
-  pos, [$#lab$],
-  inset: 3.5pt,          // was 5pt
-  stroke: 0.85pt,
-  fill: luma(95%)
-)
-#let del(a, b) = f.edge(a, b, stroke: (thickness: 1.1pt, dash: "dashed"))
-#let add(a, b) = f.edge(a, b, stroke: 1.1pt)
+#let V(pos, lab) = {
+  circle(pos, radius: 3.2mm, stroke: 0.85pt, fill: luma(95%))
+  content(pos, text(size: 4mm)[$#lab$], anchor: "center")
+}
+#let del(a, b) = line(a, b, stroke: (thickness: 1.1pt, dash: (2pt, 2pt)))
+#let add(a, b) = line(a, b, stroke: 1.1pt)
 
-/// --- Panel label (kept slightly larger) ---
-#let panel(label, body) = stack(
-  spacing: 1.5mm,
-  // scale diagrams down to 50%
-  scale(50%, body),
-  text(size: 9.5pt, weight: "medium")[#label],
+/// --- Fixed sizing for layout independence ---
+#let panel_w = 16mm
+#let panel_h = 10mm
+#let label_h = 4mm
+#let title_h = 4mm
+#let max_gutter = 5mm
+#let op_w = 3 * panel_w + 2 * max_gutter
+#let op_h = panel_h + label_h + title_h + 3mm
+
+/// --- Panel label (fixed dimensions) ---
+#let panel(label, body) = grid(
+  columns: (panel_w,),
+  rows: (panel_h, label_h),
+  row-gutter: 1mm,
+  align: center,
+  block(width: panel_w, height: panel_h, align(center, scale(42%, body))),
+  block(width: panel_w, height: label_h, align(center + bottom, text(size: 3mm, weight: "medium")[#label])),
 )
 
-/// --- Operator block: a/b/c horizontally ---
-#let opblock(title, a, b, c, gutter: 0mm) = stack(
-  spacing: 0.35em,
+/// --- Operator block: a/b/c horizontally (fixed width/height) ---
+#let opblock(title, a, b, c, gutter: 0mm) = block(
+  width: op_w,
+  height: op_h,
+  align(top + center, stack(
+    spacing: 1mm,
     grid(
-      columns: 3,
+      columns: (panel_w, panel_w, panel_w),
       column-gutter: gutter,
+      align: center,
       panel("1)", a),
       panel("2)", b),
       panel("3)", c),
     ),
-    text(size: 11pt, title)
+    block(width: op_w, height: title_h, align(center + bottom, text(size: 3mm, title))),
+  ))
 )
 
-/// --- Row helpers ---
+/// --- Row helpers (fixed column widths) ---
 #let row3(a, b, c) = grid(
-  columns: 3,
-  column-gutter: 12mm,
+  columns: (op_w, op_w, op_w),
+  column-gutter: 5mm,
   align: top + center,
   a, b, c
 )
 #let row2(a, b) = grid(
-  columns: 2,
-  column-gutter: 12mm,
+  columns: (op_w, op_w),
+  column-gutter: 5mm,
   align: top + center,
   a, b
 )
 
 /// --- Shared geometry ---
-#let s = (8mm, 6mm)
 #let x = 1.4
 #let y = 1.4
 
+#let dx = 8.5mm
+#let dy = 8.5mm
+
 /// =====================
-/// Diagrams (unchanged content)
+/// Diagrams
 /// =====================
 
-// 2-opt(*)
-#let d2opt_a = f.diagram(
-  spacing: s,
-  V((0,0), "A"), V((x,0), "B"),
-  V((0,y), "C"), V((x,y), "D"),
-  add((0,0), (x,y)),
-  add((0,y), (x,0)),
-)
-#let d2opt_b = f.diagram(
-  spacing: s,
-  V((0,0), "A"), V((x,0), "B"),
-  V((0,y), "C"), V((x,y), "D"),
-  del((0,0), (x,y)),
-  del((0,y), (x,0)),
-  add((0,0), (x,0)),
-  add((0,y), (x,y)),
-)
-#let d2opt_c = f.diagram(
-  spacing: s,
-  V((0,0), "A"), V((x,0), "B"),
-  V((0,y), "C"), V((x,y), "D"),
-  add((0,0), (x,0)),
-  add((0,y), (x,y)),
-)
+#let d2opt_a = canvas({
+  let p(x, y) = (x * dx, -y * dy)
 
-// Relocate
-#let drel_a = f.diagram(
-  spacing: s,
-  V((0,0), "A"), V((x,0), "X"), V((2*x,0), "B"),
-  add((0,0), (x,0)), add((x,0), (2*x,0)),
-  V((0,y), "C"), V((2*x,y), "D"),
-  add((0,y), (2*x,y)),
-)
-#let drel_b = f.diagram(
-  spacing: s,
-  V((0,0), "A"), V((x,0), "X"), V((2*x,0), "B"),
-  del((0,0), (x,0)), del((x,0), (2*x,0)),
-  add((0,0), (2*x,0)),
-  V((0,y), "C"), V((x,y), "X"), V((2*x,y), "D"),
-  del((0,y), (2*x,y)),
-  add((0,y), (x,y)), add((x,y), (2*x,y)),
-)
-#let drel_c = f.diagram(
-  spacing: s,
-  V((0,0), "A"), V((2*x,0), "B"),
-  add((0,0), (2*x,0)),
-  V((0,y), "C"), V((x,y), "X"), V((2*x,y), "D"),
-  add((0,y), (x,y)), add((x,y), (2*x,y)),
-)
+  add(p(0, 0), p(x, y))
+  add(p(0, y), p(x, 0))
+  V(p(0, 0), "A")
+  V(p(x, 0), "B")
+  V(p(0, y), "C")
+  V(p(x, y), "D")
+})
 
-// Swap
-#let dsw_a = f.diagram(
-  spacing: s,
-  V((0,0), "A"), V((x,0), "X"), V((2*x,0), "B"),
-  add((0,0), (x,0)), add((x,0), (2*x,0)),
-  V((0,y), "C"), V((x,y), "Y"), V((2*x,y), "D"),
-  add((0,y), (x,y)), add((x,y), (2*x,y)),
-)
-#let dsw_b = f.diagram(
-  spacing: s,
-  V((0,0), "A"), V((x,0), "X"), V((2*x,0), "B"),
-  V((0,y), "C"), V((x,y), "Y"), V((2*x,y), "D"),
-  del((0,0), (x,0)), del((x,0), (2*x,0)),
-  del((0,y), (x,y)), del((x,y), (2*x,y)),
-  add((0,0), (x,y)), add((x,y), (2*x,0)),
-  add((0,y), (x,0)), add((x,0), (2*x,y)),
-)
-#let dsw_c = f.diagram(
-  spacing: s,
-  V((0,0), "A"), V((x,0), "Y"), V((2*x,0), "B"),
-  add((0,0), (x,0)), add((x,0), (2*x,0)),
-  V((0,y), "C"), V((x,y), "X"), V((2*x,y), "D"),
-  add((0,y), (x,y)), add((x,y), (2*x,y)),
-)
+#let d2opt_b = canvas({
+  let p(x, y) = (x * dx, -y * dy)
 
-// Swap\*
+  del(p(0, 0), p(x, y))
+  del(p(0, y), p(x, 0))
+  add(p(0, 0), p(x, 0))
+  add(p(0, y), p(x, y))
+  V(p(0, 0), "A")
+  V(p(x, 0), "B")
+  V(p(0, y), "C")
+  V(p(x, y), "D")
+})
+
+#let d2opt_c = canvas({
+  let p(x, y) = (x * dx, -y * dy)
+
+  add(p(0, 0), p(x, 0))
+  add(p(0, y), p(x, y))
+  V(p(0, 0), "A")
+  V(p(x, 0), "B")
+  V(p(0, y), "C")
+  V(p(x, y), "D")
+})
+
+#let drel_a = canvas({
+  let p(x, y) = (x * dx, -y * dy)
+
+  add(p(0, 0), p(x, 0))
+  add(p(x, 0), p(2 * x, 0))
+  add(p(0, y), p(2 * x, y))
+
+  V(p(0, 0), "A")
+  V(p(x, 0), "X")
+  V(p(2 * x, 0), "B")
+  V(p(0, y), "C")
+  V(p(2 * x, y), "D")
+})
+
+#let drel_b = canvas({
+  let p(x, y) = (x * dx, -y * dy)
+
+  del(p(0, 0), p(x, 0))
+  del(p(x, 0), p(2 * x, 0))
+  add(p(0, 0), p(2 * x, 0))
+  del(p(0, y), p(2 * x, y))
+  add(p(0, y), p(x, y))
+  add(p(x, y), p(2 * x, y))
+
+  V(p(0, 0), "A")
+  V(p(x, 0), "X")
+  V(p(2 * x, 0), "B")
+  V(p(0, y), "C")
+  V(p(x, y), "X")
+  V(p(2 * x, y), "D")
+})
+
+#let drel_c = canvas({
+  let p(x, y) = (x * dx, -y * dy)
+
+  add(p(0, 0), p(2 * x, 0))
+  add(p(0, y), p(x, y))
+  add(p(x, y), p(2 * x, y))
+
+  V(p(0, 0), "A")
+  V(p(2 * x, 0), "B")
+  V(p(0, y), "C")
+  V(p(x, y), "X")
+  V(p(2 * x, y), "D")
+})
+
+#let dsw_a = canvas({
+  let p(x, y) = (x * dx, -y * dy)
+
+  add(p(0, 0), p(x, 0))
+  add(p(x, 0), p(2 * x, 0))
+  add(p(0, y), p(x, y))
+  add(p(x, y), p(2 * x, y))
+
+  V(p(0, 0), "A")
+  V(p(x, 0), "X")
+  V(p(2 * x, 0), "B")
+  V(p(0, y), "C")
+  V(p(x, y), "Y")
+  V(p(2 * x, y), "D")
+})
+
+#let dsw_b = canvas({
+  let p(x, y) = (x * dx, -y * dy)
+
+  del(p(0, 0), p(x, 0))
+  del(p(x, 0), p(2 * x, 0))
+  del(p(0, y), p(x, y))
+  del(p(x, y), p(2 * x, y))
+  add(p(0, 0), p(x, y))
+  add(p(x, y), p(2 * x, 0))
+  add(p(0, y), p(x, 0))
+  add(p(x, 0), p(2 * x, y))
+
+  V(p(0, 0), "A")
+  V(p(x, 0), "X")
+  V(p(2 * x, 0), "B")
+  V(p(0, y), "C")
+  V(p(x, y), "Y")
+  V(p(2 * x, y), "D")
+})
+
+#let dsw_c = canvas({
+  let p(x, y) = (x * dx, -y * dy)
+
+  add(p(0, 0), p(x, 0))
+  add(p(x, 0), p(2 * x, 0))
+  add(p(0, y), p(x, y))
+  add(p(x, y), p(2 * x, y))
+
+  V(p(0, 0), "A")
+  V(p(x, 0), "Y")
+  V(p(2 * x, 0), "B")
+  V(p(0, y), "C")
+  V(p(x, y), "X")
+  V(p(2 * x, y), "D")
+})
+
 #let dss_a = dsw_a
-#let dss_b = f.diagram(
-  spacing: s,
-  V((0,0), "A"), V((x,0), "X"), V((2*x,0), "B"),
-  V((0,y), "C"), V((x,y), "Y"), V((2*x,y), "D"),
-  del((0,0), (x,0)), del((x,0), (2*x,0)),
-  del((0,y), (x,y)), del((x,y), (2*x,y)),
-  add((0,0), (2*x,0)), add((2*x,0), (x,y)),
-  add((0,y), (x,0)), add((x,0), (2*x,y)),
-)
-#let dss_c = f.diagram(
-  spacing: s,
-  V((0,0), "A"), V((x,0), "B"), V((2*x,0), "Y"),
-  add((0,0), (x,0)), add((x,0), (2*x,0)),
-  V((0,y), "C"), V((x,y), "X"), V((2*x,y), "D"),
-  add((0,y), (x,y)), add((x,y), (2*x,y)),
-)
+
+#let dss_b = canvas({
+  let p(x, y) = (x * dx, -y * dy)
+
+  del(p(0, 0), p(x, 0))
+  del(p(x, 0), p(2 * x, 0))
+  del(p(0, y), p(x, y))
+  del(p(x, y), p(2 * x, y))
+  add(p(0, 0), p(2 * x, 0))
+  add(p(2 * x, 0), p(x, y))
+  add(p(0, y), p(x, 0))
+  add(p(x, 0), p(2 * x, y))
+
+  V(p(0, 0), "A")
+  V(p(x, 0), "X")
+  V(p(2 * x, 0), "B")
+  V(p(0, y), "C")
+  V(p(x, y), "Y")
+  V(p(2 * x, y), "D")
+})
+
+#let dss_c = canvas({
+  let p(x, y) = (x * dx, -y * dy)
+
+  add(p(0, 0), p(x, 0))
+  add(p(x, 0), p(2 * x, 0))
+  add(p(0, y), p(x, y))
+  add(p(x, y), p(2 * x, y))
+
+  V(p(0, 0), "A")
+  V(p(x, 0), "B")
+  V(p(2 * x, 0), "Y")
+  V(p(0, y), "C")
+  V(p(x, y), "X")
+  V(p(2 * x, y), "D")
+})
 
 #let neiborhoods = [
   #row2(
-    opblock([2-opt], d2opt_a, d2opt_b, d2opt_c),                 // tight
-    opblock([Relocate], drel_a, drel_b, drel_c, gutter: 14mm),   // wide
+    opblock([2-opt], d2opt_a, d2opt_b, d2opt_c),
+    opblock([Relocate], drel_a, drel_b, drel_c),
   )
 
   #v(0.5em)
 
   #row2(
-    opblock([Swap], dsw_a, dsw_b, dsw_c),                        // tight
-    opblock([Swap\*], dss_a, dss_b, dss_c),                      // tight
+    opblock([Swap], dsw_a, dsw_b, dsw_c),
+    opblock([Swap\*], dss_a, dss_b, dss_c),
   )
 ]

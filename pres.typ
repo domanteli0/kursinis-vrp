@@ -11,13 +11,13 @@
 #import "tables/table_params.typ": table_experiment_params
 #import "tables/table_gap.typ": *
 #import "tables/speedup.typ": *
-#import "diagrams/speedup.typ": *
-#import "diagrams/gap_threads.typ": gap_speedup_plot_from, gap_threads_plot_from, amdahl_speedup_plot
+#import "plots/speedup.typ": *
+#import "plots/gap_threads.typ": gap_speedup_plot_from, gap_threads_plot_from, amdahl_speedup_plot
 #import "diagrams/hgs_flowchart.typ": hgs_flowchart
 #import "diagrams/parallel_hgs_arch.typ": parallel_hgs_diagram
 #import "diagrams/parallel_hgs_memory.typ": parallel_hgs_memory
 #import "diagrams/island_model.typ": island_model
-#import "diagrams/time_target_speedup.typ": speedup_plot_from, efficiency_plot_from
+#import "plots/time_target_speedup.typ": speedup_plot_from, efficiency_plot_from
 #import "diagrams/neiborhoods.typ": neiborhoods
 
 #import "@preview/cetz:0.4.2": canvas, draw
@@ -120,7 +120,7 @@
 
 == Vietinė paieška
 
-#figure(caption: [Įvairių kaimynysčių veikimas])[#neiborhoods]
+#figure(caption: [Įvairių kaimynysčių veikimas], scale(150%, reflow: true, neiborhoods))
 
 == Literatūros analizė
 
