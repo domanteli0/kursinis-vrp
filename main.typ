@@ -89,7 +89,7 @@ siekiant sumažinti vykdymo laiką neprarandant ar net pagerinant sprendinių ko
 1. Išsirinkti duomenų rinkinį, pagal kurį galima būtų testuoti ir analizuoti sprendinius.
 2. Išanalizuoti, kaip veikia HGS algoritmas.
 3. Atrinkti lygiagretinamas dalis, kurias galima pakeisti lygiagrečiomis.
-4.Palyginti rezultatus su literatūroje aprašytais pažangiausiais algoritmais.
+4. Palyginti rezultatus su literatūroje aprašytais pažangiausiais algoritmais.
 
 #pagebreak()
 
